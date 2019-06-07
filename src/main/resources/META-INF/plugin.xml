@@ -1,0 +1,46 @@
+<idea-plugin>
+  <id>org.jboss.tools.intellij.analytics</id>
+  <name>Dependency Analytics</name>
+  <version>1.0</version>
+  <vendor email="support@redhat.com" url="http://www.redhat.com">Red Hat</vendor>
+
+  <description><![CDATA[
+      <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/openshift_logo.png" width="32" height="32"/>
+      <h2>Overview</h2>
+      <p>'Dependency Analytics Report' with Insights about your application dependencies:<p>
+      <ul>
+        <li>Flags a security vulnerability(CVE) and suggests a remedial version</li>
+      </ul>
+      <h2>Supported Languages</h2>
+      <p>'Dependency Analytics' extension supports projects using Maven, projects build on npm (Node ecosystem) and
+       Python projects. Extending support for Go languages is currently under progress.</p>
+      <h2>Prerequisites</h2>
+      <p>This extension assumes you have the following binaries on your <code>PATH</code>:</p>
+      <ul>
+        <li><code>node</code> (for running the LSP server)</li>
+      </ul>
+      <h2>Quick Start</h2>
+      <ul>
+        <li>Install the extension.</li>
+        <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code>) scans your application for security vulnerabilities.</li>
+      </ul>
+  ]]></description>
+
+  <change-notes><![CDATA[]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.github.gtache.lsp</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <preloadingActivity implementation="org.jboss.tools.intellij.analytics.AnalyticsPreloadActivity"/>
+  </extensions>
+
+
+</idea-plugin>
