@@ -26,7 +26,10 @@
       </ul>
   ]]></description>
 
-  <change-notes><![CDATA[]]>
+  <change-notes><![CDATA[
+  <p><b>0.0.1</b></p>
+  <p>Initial release</p>
+  ]]>
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
