@@ -40,13 +40,13 @@
         </li>
       </ul>
       <p>
-        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" alt="Demo">
+        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" width=700 alt="Demo">
       </p>
 
       <h2 id="user-content-know-more-about-dependency-analytics-platform" class="link-header">Know more about Dependency Analytics Platform</h2>
       <p>
         The mission of this project is to significantly enhance developer experience:
-        providing Insights(security, licenses, AI based guidance) for applications and helping developers, Enterprises.
+        providing Insights (security, licenses, AI based guidance) for applications and helping developers, Enterprises.
       </p>
       <ul>
         <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
@@ -59,7 +59,7 @@
 
       <h2 id="user-content-license" class="link-header">License</h2>
       <p>
-        Apache 2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/master/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE</a>
+        EPL-2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/master/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE</a>
         for more information.
       </p>
 
