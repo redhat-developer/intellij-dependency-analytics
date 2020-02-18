@@ -40,7 +40,7 @@
         </li>
       </ul>
       <p>
-        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" width=700 alt="Demo">
+        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" alt="Demo">
       </p>
 
       <h2 id="user-content-know-more-about-dependency-analytics-platform" class="link-header">Know more about Dependency Analytics Platform</h2>
@@ -50,6 +50,10 @@
       </p>
       <ul>
         <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
+      </ul>
+      <h3>Known Issues</h3>
+      <ul>
+        <li> Work in Progress for adding compatibility of IntelliJ Idea Community/Ultimate Edition. </li>
       </ul>
 
       <h2 id="user-content-feedback-%26-questions" class="link-header">Feedback &amp; Questions</h2>
