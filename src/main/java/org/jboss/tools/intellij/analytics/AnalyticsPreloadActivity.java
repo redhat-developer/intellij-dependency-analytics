@@ -1,23 +1,18 @@
 package org.jboss.tools.intellij.analytics;
 
-import com.github.gtache.lsp.client.languageserver.serverdefinition.ExeLanguageServerDefinition;
 import com.github.gtache.lsp.client.languageserver.serverdefinition.LanguageServerDefinition;
-import com.github.gtache.lsp.client.languageserver.serverdefinition.LanguageServerDefinition$;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.cl.PluginClassLoader;
-import com.intellij.openapi.application.PreloadingActivity;
+import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.openapi.progress.ProgressIndicator;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
-public class AnalyticsPreloadActivity extends PreloadingActivity {
+public class AnalyticsPreloadActivity implements BaseComponent {
   @Override
-  public void preload(@NotNull ProgressIndicator indicator) {
+  public void initComponent() {
     hackClassLoader();
     IdeaPluginDescriptor descriptor = PluginManager.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
     File serverPath = new File(descriptor.getPath(), "lib/server/server.js");
