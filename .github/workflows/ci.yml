@@ -24,7 +24,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-build-macos:
+  build-macos:
     runs-on: macos-latest
 
     steps:
@@ -38,7 +38,7 @@ build-macos:
     - name: Build with Gradle
       run: ./gradlew build
 
-build-windows:
+  build-windows:
     runs-on: windows-latest
 
     steps:
