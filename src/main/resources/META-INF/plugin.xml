@@ -51,6 +51,7 @@
       <ul>
         <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
       </ul>
+
       <h3>Known Issues</h3>
       <ul>
         <li> Work in Progress for adding compatibility of IntelliJ Idea Community/Ultimate Edition. </li>
@@ -85,10 +86,10 @@
   <depends>com.intellij.modules.lang</depends>
   <depends>com.github.gtache.lsp</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-    <preloadingActivity implementation="org.jboss.tools.intellij.analytics.AnalyticsPreloadActivity"/>
-  </extensions>
-
-
+  <application-components>
+    <component>
+      <interface-class>org.jboss.tools.intellij.analytics.AnalyticsPreloadActivity</interface-class>
+      <implementation-class>org.jboss.tools.intellij.analytics.AnalyticsPreloadActivity</implementation-class>
+    </component>
+  </application-components>
 </idea-plugin>
