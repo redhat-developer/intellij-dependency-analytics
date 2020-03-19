@@ -6,24 +6,63 @@
 
   <description><![CDATA[
       <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/openshift_logo.png" width="32" height="32"/>
+
       <h2>Overview</h2>
       <p>'Dependency Analytics Report' with Insights about your application dependencies:<p>
       <ul>
         <li>Flags a security vulnerability(CVE) and suggests a remedial version</li>
       </ul>
+
       <h2>Supported Languages</h2>
-      <p>'Dependency Analytics' extension supports projects using Maven, projects build on npm (Node ecosystem) and
-       Python projects. Extending support for Go languages is currently under progress.</p>
+      <p>
+        'Dependency Analytics' extension supports projects using Maven, projects build on npm (Node ecosystem) and
+         Python projects. Extending support for Go languages is currently under progress.
+      </p>
+
       <h2>Prerequisites</h2>
-      <p>This extension assumes you have the following binaries on your <code>PATH</code>:</p>
+      <p>
+        This extension assumes you have the following binaries on your <code>PATH</code>:
+      </p>
       <ul>
         <li><code>node</code> (for running the LSP server)</li>
       </ul>
+
       <h2>Quick Start</h2>
       <ul>
         <li>Install the extension.</li>
         <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code>) scans your application for security vulnerabilities.</li>
       </ul>
+
+      <h2>Features</h2>
+      <ul>
+        <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code>) scans your application for security vulnerabilities,
+            flag them along with 'quick fixes'.
+        </li>
+      </ul>
+      <p>
+        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" alt="Demo">
+      </p>
+
+      <h2 id="user-content-know-more-about-dependency-analytics-platform" class="link-header">Know more about Dependency Analytics Platform</h2>
+      <p>
+        The mission of this project is to significantly enhance developer experience:
+        providing Insights (security, licenses, AI based guidance) for applications and helping developers, Enterprises.
+      </p>
+      <ul>
+        <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
+      </ul>
+
+      <h2 id="user-content-feedback-%26-questions" class="link-header">Feedback &amp; Questions</h2>
+      <ul>
+        <li>File a bug in <a href="https://github.com/redhat-developer/intellij-dependency-analytics/issues" rel="noopener noreferrer" target="_blank">GitHub Issues</a></li>
+      </ul>
+
+      <h2 id="user-content-license" class="link-header">License</h2>
+      <p>
+        EPL-2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/master/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE</a>
+        for more information.
+      </p>
+
   ]]></description>
 
   <change-notes><![CDATA[
