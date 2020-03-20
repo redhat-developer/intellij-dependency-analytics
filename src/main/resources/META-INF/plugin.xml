@@ -66,6 +66,11 @@
   ]]></description>
 
   <change-notes><![CDATA[
+  <p><b>0.0.3</b></p>
+  <p>Bug fixes</p>
+  <ul>
+    <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics/issues/3">Files not analyzed at startup</a></li>
+  </ul>
   <p><b>0.0.2</b></p>
   <p>Based on ca-lsp-server v0.1.56</p>
   <p><b>0.0.1</b></p>
