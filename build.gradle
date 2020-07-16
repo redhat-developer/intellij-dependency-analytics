@@ -28,6 +28,8 @@ publishPlugin {
     channels jetBrainsChannel
 }
 
+//LSP plugin causes this task to fail
+buildSearchableOptions.enabled = false
 task downloadFile(type: Download) {
     src 'https://github.com/fabric8-analytics/fabric8-analytics-lsp-server/releases/download/v0.1.56/ca-lsp-server.tar'
     dest new File(buildDir, 'server.tgz')
