@@ -66,6 +66,8 @@
   ]]></description>
 
   <change-notes><![CDATA[
+  <p><b>0.0.4</b></p>
+  <p>Based on ca-lsp-server v0.2.2</p>
   <p><b>0.0.3</b></p>
   <p>Bug fixes</p>
   <ul>
