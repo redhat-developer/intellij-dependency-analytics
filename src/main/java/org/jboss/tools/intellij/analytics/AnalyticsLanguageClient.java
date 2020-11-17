@@ -1,14 +1,20 @@
 package org.jboss.tools.intellij.analytics;
 
-import com.github.gtache.lsp.client.LanguageClientImpl;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification;
+import org.jetbrains.annotations.NotNull;
+import org.wso2.lsp4intellij.client.ClientContext;
+import org.wso2.lsp4intellij.client.DefaultLanguageClient;
 
 import java.util.Map;
 
-public class AnalyticsLanguageClient extends LanguageClientImpl {
+public class AnalyticsLanguageClient extends DefaultLanguageClient {
+  public AnalyticsLanguageClient(@NotNull ClientContext context) {
+    super(context);
+  }
+
   @JsonNotification("caNotification")
   public void caNotify(Object payload) {
     if (payload instanceof Map) {
