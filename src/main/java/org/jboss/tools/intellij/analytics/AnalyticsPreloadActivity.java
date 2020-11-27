@@ -15,7 +15,7 @@ public class AnalyticsPreloadActivity implements BaseComponent {
   public void initComponent() {
     IdeaPluginDescriptor descriptor = PluginManager.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
     File serverPath = new File(descriptor.getPath(), "lib/server/server.js");
-    String[] cmds = {"node", serverPath.getAbsolutePath().toString(), "--stdio"};
+    final String[] cmds = {"node", serverPath.getAbsolutePath().toString(), "--stdio"};
     for(String ext : EXTENSIONS) {
       AnalyticsLanguageServerDefinition serverDefinition = new AnalyticsLanguageServerDefinition(ext, cmds);
       IntellijLanguageClient.addServerDefinition(serverDefinition);
