@@ -1,34 +1,27 @@
 package org.jboss.tools.intellij.analytics;
 
-import java.util.Properties;
-import java.util.Locale;
+import com.intellij.openapi.util.SystemInfo;
 
 public class Platform {
   public String lspBundleName;
 
-  public static final Platform WINDOWS = new Platform("analytics-lsp-win.exe");
-  public static final Platform LINUX = new Platform("analytics-lsp-linux");
-  public static final Platform MACOS = new Platform("analytics-lsp-macos");
+  private static final Platform WINDOWS = new Platform("analytics-lsp-win.exe");
+  private static final Platform LINUX = new Platform("analytics-lsp-linux");
+  private static final Platform MACOS = new Platform("analytics-lsp-macos");
 
   private Platform(String lspBundleName) {
     this.lspBundleName = lspBundleName;
   }
 
-  static Platform detect(Properties systemProperties) {
-    final String osName = systemProperties.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-    switch(osName) {
-      case "linux":
-        return LINUX;
-      case "osx":
-      case "darwin":
-      case "mac os x":
-        return MACOS;
-      default:
-        if (osName.contains("windows"))
-          return WINDOWS;
-        throw new PlatformDetectionException(osName + " is not supported");
-    }
+  private static Platform detect() {
+    if (SystemInfo.isLinux)
+      return LINUX;
+    if (SystemInfo.isWindows)
+      return WINDOWS;
+    if (SystemInfo.isMac)
+      return MACOS;
+    throw new PlatformDetectionException(SystemInfo.OS_NAME + " is not supported");
   }
 
-  public static final Platform current = detect(System.getProperties());
+  public static final Platform current = detect();
 }
