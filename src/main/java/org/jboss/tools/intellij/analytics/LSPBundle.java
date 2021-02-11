@@ -82,10 +82,12 @@ public final class LSPBundle {
     if (!isNewRelease(latestReleaseTag) && cliFile.exists()) {
       return;
     }
+    final String devUrl = System.getenv("ANALYTICS_LSP_FILE_PATH");
     final String url = this.downloader.getDownloadUri(latestReleaseTag, Platform.current.lspBundleName);
+    final String actualUrl = devUrl != null ? devUrl : url;
+    log.info(String.format("url %s", url));
     HttpRequests
-      .request(url)
-      // .request("file:///tmp/analytics-lsp-macos")
+      .request(actualUrl)
       .productNameAsUserAgent()
       .saveToFile(cliFile, indicator);
 

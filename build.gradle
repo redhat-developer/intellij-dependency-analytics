@@ -31,25 +31,7 @@ publishPlugin {
 //LSP plugin causes this task to fail
 buildSearchableOptions.enabled = false
 
-task downloadFile(type: Download) {
-    src 'https://github.com/fabric8-analytics/fabric8-analytics-lsp-server/releases/download/v0.4.4/ca-lsp-server.tar'
-    dest new File(buildDir, 'server.tgz')
-    overwrite false
-}
-
-task downloadAndUnzipFile(dependsOn: downloadFile, type: Copy) {
-    from tarTree(resources.bzip2(downloadFile.dest))
-    into new File(buildDir, 'server/server')
-}
-
-prepareSandbox {
-    dependsOn downloadAndUnzipFile
-}
-
 dependencies {
-    compile files(new File(buildDir, 'server')) {
-        builtBy 'downloadAndUnzipFile'
-    }
     implementation 'com.github.ballerina-platform:lsp4intellij:master-SNAPSHOT'
     implementation 'org.kohsuke:github-api:1.119'
     testImplementation("junit:junit:4.12")
