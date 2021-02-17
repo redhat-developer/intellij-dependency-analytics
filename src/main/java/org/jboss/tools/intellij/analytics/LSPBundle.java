@@ -28,6 +28,10 @@ public final class LSPBundle {
 
   private static final Logger log = Logger.getInstance(LSPBundle.class);
 
+  static interface DownloadListener {
+    void downloadCompleted(final File path);
+  }
+
   public LSPBundle(final Project project) {
     this.project = project;
     try {
@@ -43,20 +47,9 @@ public final class LSPBundle {
     return this.cliFile;
   }
 
-  private void addLSPDefinitions() {
-    final String[] EXTENSIONS = {"xml", "json", "txt"};
-    final String[] cmds = {this.cliFile.toString(), "--stdio"};
-    ApplicationManager.getApplication().invokeAndWait(() -> {
-      for(String ext : EXTENSIONS) {
-        AnalyticsLanguageServerDefinition serverDefinition = new AnalyticsLanguageServerDefinition(ext, cmds);
-        IntellijLanguageClient.addServerDefinition(serverDefinition);
-        IntellijLanguageClient.addExtensionManager(ext, serverDefinition);
-      }
-    });
-  }
-  public void download() {
+  public void download(final LSPBundle.DownloadListener listener) {
     log.debug("download lsp bundle");
-    taskQueue.run(new Task.Backgroundable(this.project, "Analytics cli download", true) {
+    taskQueue.run(new Task.Backgroundable(this.project, "Analytics lsp download", true) {
       @Override
       public void run(final ProgressIndicator indicator) {
         try {
@@ -66,7 +59,9 @@ public final class LSPBundle {
           log.warn("failed to download cli " + LSPBundle.this.cliFile);
           return;
         }
-        addLSPDefinitions();
+        ApplicationManager.getApplication().invokeAndWait(() -> {
+          listener.downloadCompleted(LSPBundle.this.cliFile);
+        });
       }
     });
   }
