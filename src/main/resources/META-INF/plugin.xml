@@ -66,6 +66,8 @@
   ]]></description>
 
   <change-notes><![CDATA[
+  <p><b>0.1.1</b></p>
+  <p>Based on ca-lsp-server v0.4.20</p>
   <p><b>0.0.4</b></p>
   <p>Based on ca-lsp-server v0.2.2</p>
   <p><b>0.0.3</b></p>
@@ -81,7 +83,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="201"/>
+  <idea-version since-build="201.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
