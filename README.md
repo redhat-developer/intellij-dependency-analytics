@@ -17,13 +17,6 @@
 'Dependency Analytics' plugin supports projects using Maven, projects build on npm (Node ecosystem) and projects using Python.
 Extending support for Golang and other languages is currently under progress.
 
-## Prerequisites
-
-This extension assumes you have the following binaries on your `PATH`:
-
-- `node`
-
-
 > **NOTE** Dependency Analytics is an online service hosted and maintained by Red Hat. This open source software will access only your manifests file(s) to learn about application dependencies before giving you the report.
 
 ## Quick Start

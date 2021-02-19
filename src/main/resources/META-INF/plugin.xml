@@ -93,13 +93,10 @@
     <externalAnnotator id="LSPAnnotator-xml" language="XML" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
     <externalAnnotator id="LSPAnnotator-json" language="JSON" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
     <externalAnnotator id="LSPAnnotator-txt" language="TEXT" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
+    <postStartupActivity implementation="org.jboss.tools.intellij.analytics.PostStartupActivity"/>
   </extensions>
 
   <application-components>
-    <component>
-      <interface-class>org.jboss.tools.intellij.analytics.AnalyticsPreloadActivity</interface-class>
-      <implementation-class>org.jboss.tools.intellij.analytics.AnalyticsPreloadActivity</implementation-class>
-    </component>
     <component>
       <implementation-class>org.wso2.lsp4intellij.IntellijLanguageClient</implementation-class>
     </component>
