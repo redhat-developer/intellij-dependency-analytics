@@ -9,13 +9,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
-public class GithubReleaseTest {
+public class GitHubReleaseTest {
 
-  private GithubRelease release;
+  private GitHubRelease release;
 
   @Before
   public void setup() throws IOException {
-    final GithubRelease release = new GithubRelease("fabric8-analytics/fabric8-analytics-lsp-server");
+    final GitHubRelease release = new GitHubRelease("fabric8-analytics/fabric8-analytics-lsp-server");
     assertNotNull(release);
     this.release = release;
   }
