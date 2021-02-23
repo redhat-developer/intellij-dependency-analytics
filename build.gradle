@@ -8,7 +8,6 @@ repositories {
 	flatDir {
 	    dirs buildDir
 	}
-    mavenLocal()
     maven { url 'https://jitpack.io' }
 }
 
