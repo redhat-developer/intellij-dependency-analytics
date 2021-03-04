@@ -6,6 +6,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import com.intellij.util.xmlb.annotations.MapAnnotation;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 public final class Settings implements ICookie, PersistentStateComponent<Settings> {
 
     // str representation of ICookie.Name values are key.
-    final private static Map<String, String> settings = new HashMap();
+    private Map<String, String> settings = new HashMap();
 
     @Override
     public Settings getState() {
@@ -39,5 +40,14 @@ public final class Settings implements ICookie, PersistentStateComponent<Setting
     @Override
     public String getValue(ICookie.Name name) {
       return this.settings.getOrDefault(name.name(), "");
+    }
+
+    @MapAnnotation
+    public Map<String, String> getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Map<String, String> settings) {
+        this.settings = settings;
     }
 }
