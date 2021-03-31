@@ -88,6 +88,7 @@
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
+  <depends>com.redhat.devtools.intellij.telemetry</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <externalAnnotator id="LSPAnnotator-xml" language="XML" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>

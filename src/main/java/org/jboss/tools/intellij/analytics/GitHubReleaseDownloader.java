@@ -8,13 +8,17 @@ import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.io.HttpRequests;
+import com.redhat.devtools.intellij.telemetry.core.service.TelemetryMessageBuilder;
+import com.redhat.devtools.intellij.telemetry.core.service.TelemetryMessageBuilder.ActionMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class GitHubReleaseDownloader {
+  private static Logger LOGGER = LoggerFactory.getLogger(GitHubReleaseDownloader.class);
   private final IdeaPluginDescriptor descriptor = PluginManager.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
   private final String fileName;
   private final ICookie cookies;
@@ -37,14 +41,22 @@ public final class GitHubReleaseDownloader {
     if (!isNewRelease(latestReleaseTag) && dest.exists()) {
       return dest;
     }
-    final String url = this.release.getDownloadUri(latestReleaseTag, this.fileName);
-    HttpRequests
-      .request(url)
-      .productNameAsUserAgent()
-      .saveToFile(dest, indicator);
+    final ActionMessage telemetry = TelemetryService.instance().action("lsp:download").property("lspVersion", latestReleaseTag);
+    try {
+      final String url = this.release.getDownloadUri(latestReleaseTag, this.fileName);
+      HttpRequests
+        .request(url)
+        .productNameAsUserAgent()
+        .saveToFile(dest, indicator);
 
-    dest.setExecutable(true);
-    cookies.setValue(ICookie.Name.LSPVersion, latestReleaseTag);
-    return dest;
+      dest.setExecutable(true);
+      cookies.setValue(ICookie.Name.LSPVersion, latestReleaseTag);
+      telemetry.send();
+      return dest;
+    } catch (IOException e) {
+      telemetry.error(e).send();
+      LOGGER.warn(e.getLocalizedMessage(), e);
+      throw e;
+    }
   }
 }
