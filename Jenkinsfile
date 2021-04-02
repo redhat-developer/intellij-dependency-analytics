@@ -46,7 +46,7 @@ node('rhel7'){
                     def zip = findFiles(glob: '**/*.zip')
                     sh "rsync -Pzrlt --rsh=ssh --protocol=28 ${zip[0].path} ${UPLOAD_LOCATION}/stable/intellij-dependency-analytics/"
                     currentBuild.keepLog = true
-                    currentBuild.description = "${version"}
+                    currentBuild.description = "${version}"
                 }
             }
         }
