@@ -99,7 +99,23 @@
     <externalAnnotator id="LSPAnnotator-txt" language="TEXT" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
     <preloadingActivity implementation="org.jboss.tools.intellij.analytics.PreloadLanguageServer"
                 id="org.jboss.tools.intellij.analytics.PostStartupActivity"/>
+    <preloadingActivity implementation="org.jboss.tools.intellij.analytics.PreloadCli"
+                        id="org.jboss.tools.intellij.analytics.PostStartupCliActivity"/>
   </extensions>
+
+  <!-- Action for running SA added in Editor window, Navigation Bar and Project window -->
+  <actions>
+    <group>
+      <action id="saAnalysis" text="Dependency Analytics Report" class="org.jboss.tools.intellij.analytics.StackAnalysisAction"
+              icon="SdkIcons.Sdk_default_icon"/>
+
+      <separator/>
+
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+      <add-to-group group-id="NavBarToolBar" anchor="first"/>
+    </group>
+  </actions>
 
   <application-components>
     <component>
