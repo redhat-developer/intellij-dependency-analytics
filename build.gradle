@@ -22,7 +22,7 @@ targetCompatibility = '1.8'
 intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
-    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.1.9']
+    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.2.18']
     updateSinceUntilBuild = false
 }
 
