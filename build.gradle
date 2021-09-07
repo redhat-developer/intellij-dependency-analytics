@@ -26,6 +26,10 @@ intellij {
     updateSinceUntilBuild = false
 }
 
+runPluginVerifier {
+    ideVersions = [ideaVersion]
+}
+
 publishPlugin {
     token    = jetBrainsToken
     channels = [jetBrainsChannel]
