@@ -8,61 +8,82 @@
       <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/openshift_logo.png" width="32" height="32"/>
 
       <h2>Overview</h2>
+      <p>
+      'Dependency Analytics is powered by <a href="https://snyk.io/product/vulnerability-database/" rel="noopener noreferrer" target="_blank">Snyk Intel Vulnerability DB</a>, it is the most advanced and accurate open source vulnerability database in the industry. That adds value with the latest, fastest and more number of vulnerabilities derived from numerous sources.
+      <p>
       <p>'Dependency Analytics Report' with Insights about your application dependencies:<p>
       <ul>
-        <li>Flags a security vulnerability(CVE) and suggests a remedial version</li>
+        <li>Flags a security vulnerability(CVE) and suggests a remedial version.</li>
       </ul>
-
+      <ul>
+        <li>Shows Github popularity metrics along with latest version.</li>
+      </ul>
+      <ul>
+        <li>Suggests a project level license, check for conflicts between dependency licences.</li>
+      </ul>
+      <ul>
+        <li>AI based guidance for additional, alternative dependencies</li>
+      </ul>
+      <p>Disclaimer: Dependency Analytics does not analyse dev/test dependencies.<p>
       <h2>Supported Languages</h2>
       <p>
-        'Dependency Analytics' extension supports projects using Maven, projects build on npm (Node ecosystem) and
-         Python projects. Extending support for Go languages is currently under progress.
+      	'Dependency Analytics' extension supports projects using Maven, projects build on npm (Node ecosystem), projects using Python and projects using Golang. Extending support for other languages is currently under progress.
       </p>
 
       <h2>Prerequisites</h2>
-      <p>
-        This extension assumes you have the following binaries on your <code>PATH</code>:
-      </p>
+       <p>This plug-in assumes that you have installed all packages given in target manifest file which will be used to create transitive dependency for showing Stack Analysis, you also need to have following binaries on your IDE PATH:</p>
       <ul>
-        <li><code>node</code> (for running the LSP server)</li>
+        <li><code>npm</code> (for analyzing Node applications and running the LSP server)</li>
+        <li><code>mvn</code> (for analyzing Java applications)</li>
+        <li><code>python</code> (for analyzing Python applications)</li>
+        <li><code>go</code> (for analyzing Golang applications)</li>
       </ul>
+      <p>Note: In this plug-in mvn/npm/go/python commands are executed using <code>ProcessBuilder</code>, which requires that binaries for thse are found in your IDE Environment PATH.</p>
 
       <h2>Quick Start</h2>
       <ul>
         <li>Install the extension.</li>
         <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code>) scans your application for security vulnerabilities.</li>
+        <li>Opening or editing a manifest file (pom.xml / package.json / requirements.txt / go.mod) scans your application for security vulnerabilities.</li>
+        <li>Click on icon from 'Navigation bar' or right click on a manifest file (pom.xml/package.json / requirements.txt / go.mod) in the 'File explorer' or 'File editor' to display 'Dependency Analytics Report' for your application.</li>
       </ul>
 
       <h2>Features</h2>
       <ul>
-        <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code>) scans your application for security vulnerabilities,
-            flag them along with 'quick fixes'.
-        </li>
+        <li>Opening or editing a manifest file (`pom.xml` / `package.json` / `requirements.txt` / `go.mod`) scans your application for security vulnerabilities, flag them along with 'quick fixes'.</li>
       </ul>
       <p>
         <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" alt="Demo">
       </p>
-
-      <h2 id="user-content-know-more-about-dependency-analytics-platform" class="link-header">Know more about Dependency Analytics Platform</h2>
-      <p>
-        The mission of this project is to significantly enhance developer experience:
-        providing Insights (security, licenses, AI based guidance) for applications and helping developers, Enterprises.
-      </p>
       <ul>
-        <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
-      </ul>
+      	<li>Right click on a manifest file(`pom.xml` / `package.json` / `requirements.txt` / `go.mod`) and choose 'Dependency Analytics Report ...' OR click on <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/report-icon.png" alt="Icon"> icon in navigation bar to display 'Dependency Analytics' report as shown below. This report covers deeper insights into your application dependencies:
+      	<p>- Flags a security vulnerability(CVE) and suggests a remedial version</p>
+      	<p>- Shows Github popularity metrics along with latest version</p>
+      	<p>- Suggests a project level license, check for conflicts between dependency licences</p>
+      	<p>- AI based guidance for additional,alternative dependencies</p>
+     	</li>
+     </ul>
+     <p><img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/stack-analysis.gif" alt="Stack Analysis"></p>
 
-      <h2 id="user-content-feedback-%26-questions" class="link-header">Feedback &amp; Questions</h2>
-      <ul>
-        <li>File a bug in <a href="https://github.com/redhat-developer/intellij-dependency-analytics/issues" rel="noopener noreferrer" target="_blank">GitHub Issues</a></li>
-      </ul>
+     <h2 id="user-content-know-more-about-dependency-analytics-platform" class="link-header">Know more about Dependency Analytics Platform</h2>
+     <p>
+       The mission of this project is to significantly enhance developer experience:
+       providing Insights (security, licenses, AI based guidance) for applications and helping developers, Enterprises.
+     </p>
+     <ul>
+       <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
+     </ul>
 
-      <h2 id="user-content-license" class="link-header">License</h2>
-      <p>
-        EPL-2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/master/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE</a>
-        for more information.
-      </p>
+     <h2 id="user-content-feedback-%26-questions" class="link-header">Feedback &amp; Questions</h2>
+     <ul>
+       <li>File a bug in <a href="https://github.com/redhat-developer/intellij-dependency-analytics/issues" rel="noopener noreferrer" target="_blank">GitHub Issues</a></li>
+     </ul>
 
+     <h2 id="user-content-license" class="link-header">License</h2>
+     <p>
+       EPL-2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/master/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE</a>
+       for more information.
+     </p>
   ]]></description>
 
   <change-notes><![CDATA[
@@ -86,7 +107,7 @@
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="201.0"/>
+  <idea-version since-build="211.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -99,7 +120,25 @@
     <externalAnnotator id="LSPAnnotator-txt" language="TEXT" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
     <preloadingActivity implementation="org.jboss.tools.intellij.analytics.PreloadLanguageServer"
                 id="org.jboss.tools.intellij.analytics.PostStartupActivity"/>
+    <preloadingActivity implementation="org.jboss.tools.intellij.stackanalysis.PreloadCli"
+                        id="org.jboss.tools.intellij.analytics.PostStartupCliActivity"/>
+    <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
+    <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider" order="first"/>
   </extensions>
+
+  <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
+  <actions>
+    <group>
+      <action id="saAnalysis" text="Dependency Analytics Report" class="org.jboss.tools.intellij.stackanalysis.SaAction"
+              icon="/images/report-icon.png"/>
+
+      <separator/>
+
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+      <add-to-group group-id="NavBarToolBar" anchor="first"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+    </group>
+  </actions>
 
   <application-components>
     <component>

@@ -23,7 +23,7 @@ public class GitHubRelease {
     final GHAsset asset = release.listAssets()
                                  .toList()
                                  .stream()
-                                 .filter(a -> a.getLabel().equals(fileLabel))
+                                 .filter(a -> a.getName().equals(fileLabel))
                                  .findFirst()
                                  .orElseThrow(() -> new IOException(fileLabel + ": unable to download"));
     return asset.getBrowserDownloadUrl();
