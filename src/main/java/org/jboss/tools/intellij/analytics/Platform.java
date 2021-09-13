@@ -4,6 +4,9 @@ import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.openapi.util.SystemInfo;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Platform {
   //Set Plugin location in host machine. Location will be used as download location.
   public static final String pluginDirectory = PluginManagerCore.getPlugin(
@@ -32,4 +35,8 @@ public class Platform {
   }
 
   public static final Platform current = detect();
+
+  // Set supported file names
+  public static final List<String> supportedManifestFiles = Arrays.asList("pom.xml",
+          "package.json", "go.mod", "requirements.txt", "requirements-dev.txt");
 }
