@@ -43,7 +43,7 @@
       <h2>Quick Start</h2>
       <ul>
         <li>Install the extension.</li>
-        <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code>) scans your application for security vulnerabilities.</li>
+        <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code> / <code>go.mod</code>) scans your application for security vulnerabilities.</li>
         <li>Opening or editing a manifest file (pom.xml / package.json / requirements.txt / go.mod) scans your application for security vulnerabilities.</li>
         <li>Click on icon from 'Navigation bar' or right click on a manifest file (pom.xml/package.json / requirements.txt / go.mod) in the 'File explorer' or 'File editor' to display 'Dependency Analytics Report' for your application.</li>
       </ul>

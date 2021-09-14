@@ -2,6 +2,7 @@ package org.jboss.tools.intellij.analytics;
 
 import java.io.File;
 import java.io.IOException;
+
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PreloadingActivity;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -14,14 +15,13 @@ public final class PreloadLanguageServer extends PreloadingActivity {
   private final ICookie cookies = ServiceManager.getService(Settings.class);
 
   private void attachLanguageClient(final File cliFile) {
-    final String[] EXTENSIONS = {"xml", "json", "txt"};
     final String[] cmds = {cliFile.toString(), "--stdio"};
     ApplicationManager.getApplication().invokeAndWait(() -> {
-      for (String ext : EXTENSIONS) {
+      Platform.supportedManifestFiles.stream().map(s -> s.substring(s.lastIndexOf('.') + 1)).distinct().forEach(ext -> {
         AnalyticsLanguageServerDefinition serverDefinition = new AnalyticsLanguageServerDefinition(ext, cmds);
         IntellijLanguageClient.addServerDefinition(serverDefinition);
-        IntellijLanguageClient.addExtensionManager(ext, serverDefinition);
-      }
+        IntellijLanguageClient.addExtensionManager(ext, serverDefinition);}
+      );
     });
     log.warn(String.format("lsp registration done %s", cliFile));
   }

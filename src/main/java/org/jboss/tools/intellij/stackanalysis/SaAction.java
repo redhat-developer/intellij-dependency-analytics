@@ -21,9 +21,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 
+import org.jboss.tools.intellij.analytics.Platform;
 import org.jetbrains.annotations.NotNull;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class SaAction extends AnAction {
@@ -69,16 +68,12 @@ public class SaAction extends AnAction {
      */
     @Override
     public void update(AnActionEvent event) {
-        // Set supported file names
-        List<String> supportedManifestFiles = Arrays.asList("pom.xml", "package.json",
-                "requirements.txt", "requirements-dev.txt", "go.mod");
-
         PsiFile psiFile = event.getData(CommonDataKeys.PSI_FILE);
 
         // Check if file where context menu is opened is type of supported extension.
         // If yes then show the action for SA in menu
         if (psiFile != null) {
-            event.getPresentation().setEnabledAndVisible(supportedManifestFiles
+            event.getPresentation().setEnabledAndVisible(Platform.supportedManifestFiles
                     .contains(psiFile.getName()));
         } else {
             event.getPresentation().setEnabledAndVisible(false);
