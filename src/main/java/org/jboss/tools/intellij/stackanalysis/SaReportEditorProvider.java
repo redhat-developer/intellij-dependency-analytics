@@ -25,7 +25,7 @@ public class SaReportEditorProvider implements FileEditorProvider, DumbAware {
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         // If file name is matching with Report file name then allow it to open in custom editor.
-        return virtualFile.getExtension().equals("sa");
+        return "sa".equals(virtualFile.getExtension());
     }
 
     @Override
