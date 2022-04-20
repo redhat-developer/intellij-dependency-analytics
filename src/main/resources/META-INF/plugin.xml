@@ -87,6 +87,9 @@
   ]]></description>
 
   <change-notes><![CDATA[
+  <p><b>0.4.0</b></p>
+  <p>Security fixes.</p>
+  <p>Fix NPE when opening editor.</p>
   <p><b>0.3.0</b></p>
   <p>Stack Analysis capability is implemented to see detailed analysis of stack.</p>
   <p>Support for Golang dependencies in Component Analysis.</p>
