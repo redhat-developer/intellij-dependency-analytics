@@ -1,6 +1,6 @@
 
 plugins {
-    id "org.jetbrains.intellij" version "1.5.2"
+    id "org.jetbrains.intellij" version "1.9.0"
 }
 
 repositories {
@@ -39,7 +39,7 @@ dependencies {
     implementation 'com.github.ballerina-platform:lsp4intellij:master-SNAPSHOT'
     implementation 'org.kohsuke:github-api:1.306'
     implementation 'org.apache.commons:commons-compress:1.21'
-    testImplementation("junit:junit:4.12")
+    testImplementation('junit:junit:4.13.1')
 }
 
 runIde {
