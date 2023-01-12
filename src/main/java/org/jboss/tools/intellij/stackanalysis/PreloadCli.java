@@ -14,6 +14,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PreloadingActivity;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import org.jboss.tools.intellij.analytics.GitHubReleaseDownloader;
 import org.jboss.tools.intellij.analytics.ICookie;
@@ -66,6 +67,7 @@ public final class PreloadCli extends PreloadingActivity {
       new SaProcessExecutor().authenticateUser();
     } catch(IOException | InterruptedException e) {
       logger.warn(e);
+      throw new ProcessCanceledException(e);
     }
   }
 }

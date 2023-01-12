@@ -29,7 +29,7 @@ public class SaProcessExecutor {
 	private static final Logger logger = Logger.getInstance(SaProcessExecutor.class);
 	private static final String CLI_CONFIG_FILE_PATH = Paths.get(System.getProperty("user.home"),
 			".crda", "config.yaml").toString();
-	private static final String CLI_COMMAND =  SystemInfo.isLinux ? "./crda" : "crda";
+	private static final String CLI_COMMAND =  Platform.pluginDirectory + File.separator + "crda";
 
 
 	/**
