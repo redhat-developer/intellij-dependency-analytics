@@ -87,6 +87,8 @@
   ]]></description>
 
   <change-notes><![CDATA[
+  <p><b>0.5.0</b></p>
+  <p>Analysis report generation fixes.</p>
   <p><b>0.4.0</b></p>
   <p>Security fixes.</p>
   <p>Fix NPE when opening editor.</p>
