@@ -18,6 +18,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 
@@ -57,6 +58,9 @@ public class SaAction extends AnAction {
             saUtils.openCustomEditor(FileEditorManager.getInstance(event.getProject()), manifestDetails);
         } catch (Exception e) {
             logger.warn(e);
+            Messages.showErrorDialog(event.getProject(),
+                    "Can't run report generation " + e.getLocalizedMessage(),
+                    "Error");
         }
     }
 
