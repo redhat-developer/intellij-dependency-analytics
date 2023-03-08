@@ -15,7 +15,7 @@ import java.util.HashMap;
 @State(
     name = "Settings",
     storages = {
-      @Storage(file = "analytics.settings.xml", roamingType = RoamingType.DISABLED)
+      @Storage(value = "analytics.settings.xml", roamingType = RoamingType.DISABLED)
 })
 public final class Settings implements ICookie, PersistentStateComponent<Settings> {
 
