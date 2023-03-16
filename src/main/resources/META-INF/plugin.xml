@@ -123,13 +123,24 @@
   <depends>com.redhat.devtools.intellij.telemetry</depends>
 
   <extensions defaultExtensionNs="com.intellij">
+    <postStartupActivity implementation="org.jboss.tools.intellij.analytics.PreloadLanguageServer"/>
+    <postStartupActivity implementation="org.jboss.tools.intellij.stackanalysis.PreloadCli"/>
+    <!-- register intellijLanguageClient as a Service -->
+    <applicationService serviceImplementation="org.wso2.lsp4intellij.IntellijLanguageClient"/>
+    <!-- register a listener on editor events, required for lsp file sync -->
+    <editorFactoryListener implementation="org.wso2.lsp4intellij.listeners.LSPEditorListener"/>
+    <fileDocumentManagerListener implementation="org.wso2.lsp4intellij.listeners.LSPFileDocumentManagerListener"/>
+    <!-- for displaying notifications by lsp -->
+     <notificationGroup id="lsp" displayType="STICKY_BALLOON"/>
+    <!-- for displaying the statusbar lsp icon -->
+    <statusBarWidgetFactory implementation="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"
+                            id="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"
+                            order="first" />
+    <!-- needed for code diagnostics by lsp -->
     <externalAnnotator id="LSPAnnotator-xml" language="XML" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
     <externalAnnotator id="LSPAnnotator-json" language="JSON" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
     <externalAnnotator id="LSPAnnotator-txt" language="TEXT" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
-    <preloadingActivity implementation="org.jboss.tools.intellij.analytics.PreloadLanguageServer"
-                id="org.jboss.tools.intellij.analytics.PostStartupActivity"/>
-    <preloadingActivity implementation="org.jboss.tools.intellij.stackanalysis.PreloadCli"
-                        id="org.jboss.tools.intellij.analytics.PostStartupCliActivity"/>
+
     <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
     <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider" order="first"/>
   </extensions>
@@ -148,9 +159,12 @@
     </group>
   </actions>
 
-  <application-components>
-    <component>
-      <implementation-class>org.wso2.lsp4intellij.IntellijLanguageClient</implementation-class>
-    </component>
-  </application-components>
+  <applicationListeners>
+    <!-- required for lsp file sync -->
+    <listener class="org.wso2.lsp4intellij.listeners.VFSListener"
+              topic="com.intellij.openapi.vfs.VirtualFileListener"/>
+    <listener class="org.wso2.lsp4intellij.listeners.LSPProjectManagerListener"
+              topic="com.intellij.openapi.project.ProjectManagerListener"/>
+  </applicationListeners>
+
 </idea-plugin>

@@ -11,11 +11,11 @@
 package org.jboss.tools.intellij.stackanalysis;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.PreloadingActivity;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProcessCanceledException;
-import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.startup.StartupActivity;
 import org.jboss.tools.intellij.analytics.GitHubReleaseDownloader;
 import org.jboss.tools.intellij.analytics.ICookie;
 import org.jboss.tools.intellij.analytics.Platform;
@@ -24,23 +24,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-
-public final class PreloadCli extends PreloadingActivity {
+public final class PreloadCli implements StartupActivity.Background {
   private static final Logger logger = Logger.getInstance(PreloadCli.class);
   private final ICookie cookies = ServiceManager.getService(Settings.class);
 
-  /**
-   * <p> Activity need to be performed when plugin/IDE is started.</p>
-   *
-   * When IDE is started or plugin is installed setup prerequisites for plugin.
-   *
-   * @param indicator An object of ProgressIndicator
-   */
   @Override
-  public void preload(@NotNull ProgressIndicator indicator) {
+  public void runActivity(@NotNull Project project) {
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       return;
     }
+
     logger.info("CLI preload is called");
 
     try {
@@ -50,13 +43,13 @@ public final class PreloadCli extends PreloadingActivity {
       // If Env variable is not set download binary from GitHub Repo
       if (cliPath == null) {
         final GitHubReleaseDownloader bundle = new GitHubReleaseDownloader(
-                Platform.current.cliTarBallName,
-                cookies,
-                "fabric8-analytics/cli-tools",
-                true);
+          Platform.current.cliTarBallName,
+          cookies,
+          "fabric8-analytics/cli-tools",
+          true);
 
         // Download the CLI tarball
-        bundle.download(indicator);
+        bundle.download();
 
         // Extract tar file to get CLI Binary
         new SaUtils().unTarBundle(Platform.current.cliTarBallName, Cli.current.cliBinaryName);
