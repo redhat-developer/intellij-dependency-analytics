@@ -3,7 +3,7 @@ package org.jboss.tools.intellij.analytics;
 import java.io.File;
 import java.io.IOException;
 
-import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.util.io.HttpRequests;
 import com.redhat.devtools.intellij.telemetry.core.service.TelemetryMessageBuilder.ActionMessage;
 import com.intellij.openapi.diagnostic.Logger;
@@ -36,7 +36,7 @@ public class GitHubReleaseDownloader {
   }
 
 
-  public File download(final ProgressIndicator indicator) throws IOException {
+  public File download() throws IOException {
     final ActionMessage telemetry;
     final String latestReleaseTag;
     final File dest = new File(Platform.pluginDirectory, fileName);
@@ -72,7 +72,7 @@ public class GitHubReleaseDownloader {
       HttpRequests
         .request(url)
         .productNameAsUserAgent()
-        .saveToFile(dest, indicator);
+        .saveToFile(dest, ProgressManager.getGlobalProgressIndicator());
 
       dest.setExecutable(true);
       cookies.setValue(cookieName, latestReleaseTag);
