@@ -22,7 +22,7 @@ targetCompatibility = '11'
 intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
-    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.2.18']
+    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33']
     updateSinceUntilBuild = false
 }
 
@@ -36,7 +36,7 @@ publishPlugin {
 }
 
 dependencies {
-    implementation 'com.github.ballerina-platform:lsp4intellij:master-SNAPSHOT'
+    implementation 'com.github.ballerina-platform:lsp4intellij:0.95.1'
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
     testImplementation('junit:junit:4.13.1')
