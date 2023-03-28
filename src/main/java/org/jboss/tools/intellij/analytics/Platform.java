@@ -13,9 +13,9 @@ public class Platform {
           PluginId.getId("org.jboss.tools.intellij.analytics")).getPluginPath().toAbsolutePath().toString();
 
   // Set LSP and CLI tarballs to be downloaded, CLI version is pinned to last stable version instead of latest.
-  private static final Platform WINDOWS = new Platform("analytics-lsp-win.exe", "crda_0.2.4_Windows_64bit.tar.gz");
-  private static final Platform LINUX = new Platform("analytics-lsp-linux", "crda_0.2.4_Linux_64bit.tar.gz");
-  private static final Platform MACOS = new Platform("analytics-lsp-macos", "crda_0.2.4_macOS_64bit.tar.gz");
+  private static final Platform WINDOWS = new Platform("analytics-lsp-win.exe", "crda_0.2.5_Windows_64bit.tar.gz");
+  private static final Platform LINUX = new Platform("analytics-lsp-linux", "crda_0.2.5_Linux_64bit.tar.gz");
+  private static final Platform MACOS = new Platform("analytics-lsp-macos", "crda_0.2.5_macOS_64bit.tar.gz");
 
   public String lspBundleName;
   public String cliTarBallName;
