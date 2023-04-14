@@ -36,7 +36,16 @@ publishPlugin {
 }
 
 dependencies {
-    implementation 'com.github.ballerina-platform:lsp4intellij:master-SNAPSHOT'
+    // WATCH OUT - lsp4intellij version 0.95.1 breaks diagnostics for opened files
+    implementation 'com.github.ballerina-platform:lsp4intellij:0.95.0'
+    constraints {
+        implementation('com.google.guava:guava:30.0-jre') {
+            because 'version 27.1-jre introduced by lsp4intellij:0.95.0 reports vulnerabilities'
+        }
+        implementation('com.google.code.gson:gson:2.8.9') {
+            because 'version 2.8.2 introduced by lsp4intellij:0.95.0 reports vulnerabilities'
+        }
+    }
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
     testImplementation('junit:junit:4.13.1')
