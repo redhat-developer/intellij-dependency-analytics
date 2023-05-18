@@ -87,6 +87,11 @@
   ]]></description>
 
   <change-notes><![CDATA[
+  <p><b>0.6.0</b></p>
+  <p>Various dependency bumps.</p>
+  <p>Various maintenance resolutions.</p>
+  <p>Bump Java 8 to Java 11.</p>
+  <p>Fix break introduced with 2022.3.</p>
   <p><b>0.5.0</b></p>
   <p>Analysis report generation fixes.</p>
   <p><b>0.4.0</b></p>
