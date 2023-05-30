@@ -43,6 +43,11 @@ publishPlugin {
 }
 
 dependencies {
+    configurations.all {
+        // this means SNAPSHOT versions will be updated for every build
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
     // WATCH OUT - lsp4intellij version 0.95.1 breaks diagnostics for opened files
     implementation 'com.github.ballerina-platform:lsp4intellij:0.95.0'
     constraints {
