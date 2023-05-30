@@ -16,13 +16,16 @@ node('rhel7'){
 		def isSnapshot = props['projectVersion'].contains('-SNAPSHOT')
 		def version = isSnapshot?props['projectVersion'].replace('-SNAPSHOT', ".${env.BUILD_NUMBER}"):props['projectVersion'] + ".${env.BUILD_NUMBER}"
 
-		stage('Build') {
-			sh "./gradlew assemble  -PprojectVersion=${version}"
-		}
+        // github user and token are required for consuming the crda-java-api module from GHPR in build-time
+        withCredentials([[$class: 'StringBinding', credentialsId: 'rhdevelopersci-github-token', variable: 'GITHUB_TOKEN']]) {
+            stage('Build') {
+                sh "./gradlew assemble  -PprojectVersion=${version} -Pgpr.username=rhdevelopers-ci -Pgpr.token=${GITHUB_TOKEN}"
+            }
 
-		stage('Package') {
-			sh "./gradlew buildPlugin -PprojectVersion=${version}"
-		}
+            stage('Package') {
+                sh "./gradlew buildPlugin -PprojectVersion=${version} -Pgpr.username=rhdevelopers-ci -Pgpr.token=${GITHUB_TOKEN}"
+            }
+        }
 
 		if(params.UPLOAD_LOCATION) {
 			stage('Upload') {
@@ -41,9 +44,12 @@ node('rhel7'){
 
 			stage("Publish to Marketplace") {
 				unstash 'zip'
-				withCredentials([[$class: 'StringBinding', credentialsId: 'JetBrains marketplace token', variable: 'TOKEN']]) {
-					sh "./gradlew publishPlugin -PjetBrainsToken=${TOKEN} -PprojectVersion=${version} -PjetBrainsChannel=${channel}"
-				}
+				// github user and token are required for consuming the crda-java-api module from GHPR in build-time
+				withCredentials([[$class: 'StringBinding', credentialsId: 'rhdevelopersci-github-token', variable: 'GITHUB_TOKEN']]) {
+                    withCredentials([[$class: 'StringBinding', credentialsId: 'JetBrains marketplace token', variable: 'TOKEN']]) {
+                        sh "./gradlew publishPlugin -PjetBrainsToken=${TOKEN} -PprojectVersion=${version} -PjetBrainsChannel=${channel} -Pgpr.username=rhdevelopers-ci -Pgpr.token=${GITHUB_TOKEN}"
+                    }
+                }
 				archive includes:"**.zip"
 
 				if (!isSnapshot) {
