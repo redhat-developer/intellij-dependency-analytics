@@ -16,18 +16,26 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 
+import org.jboss.tools.intellij.crda.ApiService;
+import com.redhat.crda.tools.Ecosystem;
 import org.jboss.tools.intellij.analytics.Platform;
 import org.jetbrains.annotations.NotNull;
 
-
 public class SaAction extends AnAction {
     private static final Logger logger = Logger.getInstance(SaAction.class);
+
+    private final ApiService apiService;
+
+    public SaAction() {
+      apiService = ServiceManager.getService(ApiService.class);
+    }
 
     /**
      * <p>Intellij Plugin Action implementation for triggering SA.</p>
@@ -43,7 +51,16 @@ public class SaAction extends AnAction {
             VirtualFile manifestFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
 
             // Get SA report for given manifest file.
-            JsonObject saReportJson = saUtils.getReport(manifestFile.getPath());
+            String reportLink;
+            if ("pom.xml".equals(manifestFile.getName())) {
+                reportLink = apiService.getStackAnalysis(
+                  Ecosystem.PackageManager.MAVEN,
+                  manifestFile.getName(),
+                  manifestFile.getPath()
+                ).toUri().toString();
+            } else {
+                reportLink = saUtils.getReport(manifestFile.getPath()).get("report_link").getAsString();
+            }
 
             // Manifest file details to be saved in temp file which will be used while opening Report tab
             JsonObject manifestDetails = new JsonObject();
@@ -51,7 +68,7 @@ public class SaAction extends AnAction {
             manifestDetails.addProperty("manifestName", manifestFile.getName());
             manifestDetails.addProperty("manifestPath", manifestFile.getPath());
             manifestDetails.addProperty("manifestFileParent", manifestFile.getParent().getName());
-            manifestDetails.addProperty("report_link", saReportJson.get("report_link").getAsString());
+            manifestDetails.addProperty("report_link", reportLink);
             manifestDetails.addProperty("manifestNameWithoutExtension", manifestFile.getNameWithoutExtension());
 
             // Open custom editor window which will load SA Report in browser attached to it.

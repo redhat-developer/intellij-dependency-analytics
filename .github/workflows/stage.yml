@@ -26,7 +26,10 @@ jobs:
       - name: Build plugin with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: buildPlugin
+          arguments: |
+            buildPlugin
+            -Pgpr.username=${{ github.actor }}
+            -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload distribution archive as artifact
         uses: actions/upload-artifact@v3

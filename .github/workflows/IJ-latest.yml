@@ -6,7 +6,7 @@ name: Latest IJ
 on:
   schedule:
   - cron: "0 0 * * *"
-  
+
 jobs:
 
   build:
@@ -23,7 +23,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew build --continue -PideaVersion=LATEST-EAP-SNAPSHOT
+        run: >
+          ./gradlew build
+          --continue
+          -PideaVersion=LATEST-EAP-SNAPSHOT
+          -Pgpr.username=${{ github.actor }}
+          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v2
         if: always()
         with:
