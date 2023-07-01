@@ -33,18 +33,18 @@ public final class ApiService {
   }
 
   public Path getStackAnalysis(
-    final Ecosystem.PackageManager packageManager,
+    final String packageManager,
     final String manifestName,
     final String manifestPath
   ) throws RuntimeException {
 
     var telemetryMsg = TelemetryService.instance().action("stack-analysis");
-    telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager.toString());
+    telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
     telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
     telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
 
     try {
-      var htmlContent = crdaApi.stackAnalysisHtmlAsync(manifestPath);
+      var htmlContent = crdaApi.stackAnalysisHtml(manifestPath);
       var tmpFile = Files.createTempFile("crda_", ".html");
       Files.write(tmpFile, htmlContent.get());
 
