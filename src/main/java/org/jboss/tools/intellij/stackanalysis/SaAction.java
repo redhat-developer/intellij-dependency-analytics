@@ -54,7 +54,7 @@ public class SaAction extends AnAction {
             String reportLink;
             if ("pom.xml".equals(manifestFile.getName())) {
                 reportLink = apiService.getStackAnalysis(
-                  Ecosystem.PackageManager.MAVEN,
+                  "maven",
                   manifestFile.getName(),
                   manifestFile.getPath()
                 ).toUri().toString();
