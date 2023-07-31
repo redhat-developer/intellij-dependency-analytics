@@ -71,7 +71,7 @@ public class ProjectUtility {
 
     public static void clickOnTrustProjectIfAppears(RemoteRobot robot) {
         try {
-            JButtonFixture trustProjectButton = robot.find(JButtonFixture.class, byXpath("//div[@text.key='untrusted.project.dialog.trust.button']"));
+            JButtonFixture trustProjectButton = robot.find(JButtonFixture.class, byXpath("//div[@text.key='untrusted.project.dialog.trust.button']"), Duration.ofSeconds(20));
             trustProjectButton.click();
         } catch (WaitForConditionTimeoutException e) {
             // no dialog appeared, no need to exception handling
