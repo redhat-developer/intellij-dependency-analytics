@@ -52,7 +52,7 @@ public class ProjectUtility {
     public static void copyProjectFromVSC(RemoteRobot robot) {
         final FlatWelcomeFrame flatWelcomeFrame = robot.find(FlatWelcomeFrame.class);
         flatWelcomeFrame.clearWorkspace();
-        JButtonFixture copyProjectFromVSCList = robot.findAll(JButtonFixture.class, byXpath("//div[@accessiblename='Get from VCS' and @accessiblename.key='Vcs.VcsClone.Tabbed.Welcome.text' and @class='JBOptionButton' and @text='Get from VCS' and @text.key='Vcs.VcsClone.Tabbed.Welcome.text']")).get(0);
+        JButtonFixture copyProjectFromVSCList = robot.find(JButtonFixture.class, byXpath("//div[@accessiblename.key='action.Vcs.VcsClone.text']"));
         copyProjectFromVSCList.click();
         JTextFieldFixture textField = robot.find(JTextFieldFixture.class, byXpath("//div[@class='BorderlessTextField']"));
         textField.click();
