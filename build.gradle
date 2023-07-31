@@ -4,6 +4,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 	flatDir {
 	    dirs buildDir
@@ -15,6 +16,15 @@ repositories {
             username = project.findProperty("gpr.username") ?: System.getenv("GITHUB_USERNAME")
             password = project.findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN")
         }
+    }
+    maven {
+        url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
+    }
+    maven {
+        url 'https://repository.jboss.org/nexus/content/groups/public'
+    }
+    maven {
+        url 'https://packages.jetbrains.team/maven/p/ij/intellij-dependencies'
     }
 }
 
@@ -62,6 +72,7 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'com.redhat.crda:crda-java-api:0.0.1-SNAPSHOT'
     testImplementation('junit:junit:4.13.1')
+    implementation 'com.redhat.devtools.intellij:intellij-common-ui-test-library:0.2.0'
 }
 
 runIde {
@@ -70,6 +81,25 @@ runIde {
 
 runIdeForUiTests {
     systemProperties['com.redhat.devtools.intellij.telemetry.mode'] = 'debug'
+}
+
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/it/java')
+        resources.srcDir file('src/it/resources')
+        compileClasspath += sourceSets.main.output + configurations.runtimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    description = 'Runs the integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+    mustRunAfter test
 }
 
 group 'org.jboss.tools.intellij'
