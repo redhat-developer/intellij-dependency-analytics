@@ -23,8 +23,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 
-import org.jboss.tools.intellij.crda.ApiService;
-import com.redhat.crda.tools.Ecosystem;
+import org.jboss.tools.intellij.exhort.ApiService;
 import org.jboss.tools.intellij.analytics.Platform;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,9 +51,9 @@ public class SaAction extends AnAction {
 
             // Get SA report for given manifest file.
             String reportLink;
-            if ("pom.xml".equals(manifestFile.getName())) {
+            if ("pom.xml".equals(manifestFile.getName()) || "package.json".equals(manifestFile.getName()) ) {
                 reportLink = apiService.getStackAnalysis(
-                  "maven",
+                  determinePackageManagerName(manifestFile.getName()),
                   manifestFile.getName(),
                   manifestFile.getPath()
                 ).toUri().toString();
@@ -79,6 +78,22 @@ public class SaAction extends AnAction {
                     "Can't run report generation " + e.getLocalizedMessage(),
                     "Error");
         }
+    }
+
+    private String determinePackageManagerName(String name) {
+        String packageManager;
+        switch(name)
+        {
+            case "pom.xml":
+                packageManager = "maven";
+                break;
+            case "package.json":
+                packageManager =  "npm";
+                break;
+            default:
+                throw new IllegalArgumentException("package manager not implemented");
+        }
+        return packageManager;
     }
 
 

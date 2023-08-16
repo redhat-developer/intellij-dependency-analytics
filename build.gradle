@@ -10,7 +10,7 @@ repositories {
 	}
     maven { url 'https://jitpack.io' }
     maven {
-        url 'https://maven.pkg.github.com/RHEcosystemAppEng/crda-java-api'
+        url 'https://maven.pkg.github.com/RHEcosystemAppEng/exhort-java-api'
         credentials {
             username = project.findProperty("gpr.username") ?: System.getenv("GITHUB_USERNAME")
             password = project.findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN")
@@ -60,7 +60,7 @@ dependencies {
     }
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
-    implementation 'com.redhat.crda:crda-java-api:0.0.1-SNAPSHOT'
+    implementation 'com.redhat.exhort:exhort-java-api:0.0.1-SNAPSHOT'
     testImplementation('junit:junit:4.13.1')
 }
 
