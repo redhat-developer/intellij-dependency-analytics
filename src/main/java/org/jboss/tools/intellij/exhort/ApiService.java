@@ -1,9 +1,9 @@
-package org.jboss.tools.intellij.crda;
+package org.jboss.tools.intellij.exhort;
 
 import com.intellij.openapi.components.Service;
-import com.redhat.crda.Api;
-import com.redhat.crda.impl.CrdaApi;
-import com.redhat.crda.tools.Ecosystem;
+import com.redhat.exhort.Api;
+import com.redhat.exhort.impl.ExhortApi;
+import com.redhat.exhort.tools.Ecosystem;
 import org.jboss.tools.intellij.analytics.TelemetryService;
 
 import java.io.IOException;
@@ -22,14 +22,14 @@ public final class ApiService {
     }
   }
 
-  private final Api crdaApi;
+  private final Api exhortApi;
 
   public ApiService() {
-    this(new CrdaApi());
+    this(new ExhortApi());
   }
 
-  ApiService(Api crdaApi) {
-    this.crdaApi = crdaApi;
+  ApiService(Api exhortApi) {
+    this.exhortApi = exhortApi;
   }
 
   public Path getStackAnalysis(
@@ -44,8 +44,8 @@ public final class ApiService {
     telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
 
     try {
-      var htmlContent = crdaApi.stackAnalysisHtml(manifestPath);
-      var tmpFile = Files.createTempFile("crda_", ".html");
+      var htmlContent = exhortApi.stackAnalysisHtml(manifestPath);
+      var tmpFile = Files.createTempFile("exhort_", ".html");
       Files.write(tmpFile, htmlContent.get());
 
       telemetryMsg.send();
