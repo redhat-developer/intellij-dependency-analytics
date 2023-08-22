@@ -11,6 +11,7 @@
 package org.jboss.tools.intellij.stackanalysis;
 
 import com.intellij.ui.jcef.JBCefBrowser;
+
 import javax.swing.JComponent;
 
 

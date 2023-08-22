@@ -24,21 +24,28 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 
 import org.jboss.tools.intellij.exhort.ApiService;
-import org.jboss.tools.intellij.analytics.Platform;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class SaAction extends AnAction {
     private static final Logger logger = Logger.getInstance(SaAction.class);
 
-    private final ApiService apiService;
+    private static final List<String> supportedManifestFiles = Arrays.asList(
+            "pom.xml",
+            "package.json"
+//            Disable support for go and python
+//            , "go.mod", "requirements.txt", "requirements-dev.txt"
+    );
 
     public SaAction() {
-      apiService = ServiceManager.getService(ApiService.class);
+
     }
 
     /**
      * <p>Intellij Plugin Action implementation for triggering SA.</p>
-     *
+     * <p>
      * Analysis will be performed on the file for which Action is triggered and Report will be shown in editor workspace.
      *
      * @param event An instance of AnActionEvent.
@@ -52,26 +59,25 @@ public class SaAction extends AnAction {
             // Get SA report for given manifest file.
             String reportLink;
             if ("pom.xml".equals(manifestFile.getName()) || "package.json".equals(manifestFile.getName()) ) {
+                ApiService apiService = ServiceManager.getService(ApiService.class);
                 reportLink = apiService.getStackAnalysis(
                   determinePackageManagerName(manifestFile.getName()),
                   manifestFile.getName(),
                   manifestFile.getPath()
                 ).toUri().toString();
-            } else {
-                reportLink = saUtils.getReport(manifestFile.getPath()).get("report_link").getAsString();
+
+                // Manifest file details to be saved in temp file which will be used while opening Report tab
+                JsonObject manifestDetails = new JsonObject();
+                manifestDetails.addProperty("showParent", false);
+                manifestDetails.addProperty("manifestName", manifestFile.getName());
+                manifestDetails.addProperty("manifestPath", manifestFile.getPath());
+                manifestDetails.addProperty("manifestFileParent", manifestFile.getParent().getName());
+                manifestDetails.addProperty("report_link", reportLink);
+                manifestDetails.addProperty("manifestNameWithoutExtension", manifestFile.getNameWithoutExtension());
+
+                // Open custom editor window which will load SA Report in browser attached to it.
+                saUtils.openCustomEditor(FileEditorManager.getInstance(event.getProject()), manifestDetails);
             }
-
-            // Manifest file details to be saved in temp file which will be used while opening Report tab
-            JsonObject manifestDetails = new JsonObject();
-            manifestDetails.addProperty("showParent", false);
-            manifestDetails.addProperty("manifestName", manifestFile.getName());
-            manifestDetails.addProperty("manifestPath", manifestFile.getPath());
-            manifestDetails.addProperty("manifestFileParent", manifestFile.getParent().getName());
-            manifestDetails.addProperty("report_link", reportLink);
-            manifestDetails.addProperty("manifestNameWithoutExtension", manifestFile.getNameWithoutExtension());
-
-            // Open custom editor window which will load SA Report in browser attached to it.
-            saUtils.openCustomEditor(FileEditorManager.getInstance(event.getProject()), manifestDetails);
         } catch (Exception e) {
             logger.warn(e);
             Messages.showErrorDialog(event.getProject(),
@@ -109,7 +115,7 @@ public class SaAction extends AnAction {
         // Check if file where context menu is opened is type of supported extension.
         // If yes then show the action for SA in menu
         if (psiFile != null) {
-            event.getPresentation().setEnabledAndVisible(Platform.supportedManifestFiles
+            event.getPresentation().setEnabledAndVisible(supportedManifestFiles
                     .contains(psiFile.getName()));
         } else {
             event.getPresentation().setEnabledAndVisible(false);

@@ -16,11 +16,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
-import org.jboss.tools.intellij.analytics.Platform;
-import org.jboss.tools.intellij.analytics.PlatformDetectionException;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -28,27 +23,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.File;
 import java.io.Writer;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.util.zip.GZIPInputStream;
 
 public class SaUtils {
-
-    /**
-     * <p>Get Stack Analysis Report for given manifest file using CLI.</p>
-     *
-     * @param filePath Path to target manifest file
-     *
-     * @return A JSONObject having SA Report.
-     *
-     * @throws IOException In case of process failure
-     * @throws InterruptedException In case of process failure
-     */
-    public JsonObject getReport(String filePath) throws IOException, InterruptedException {
-        // Get the SA report using CLI and return JSON data
-        return new Gson().fromJson(new SaProcessExecutor().performStackAnalysis(filePath), JsonObject.class);
-    }
-
 
     /**
      * <p>Open a custom editor window.</p>
@@ -67,7 +43,7 @@ public class SaUtils {
         manifestDetails = closeCustomEditor(instance, manifestDetails);
 
         // Create a temp file in which is registered with SaReportEditorProvider.
-        File reportFile = File.createTempFile("CRDA-", "_"+manifestDetails.get("manifestName").getAsString()+".sa");
+        File reportFile = File.createTempFile("exhort-", "_"+manifestDetails.get("manifestName").getAsString()+".sa");
 
         //Save the SA Report URL in file, which will be loaded in browser
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(reportFile)))) {
@@ -133,39 +109,5 @@ public class SaUtils {
             }
         }
         return manifestDetails;
-    }
-
-
-    /**
-     * <p>Extract given tar.gz file.</p>
-     *
-     * @param cliTarBallName Tar file to be extracted.
-     * @param cliBinaryName File which need to be extracted from tar
-     *
-     * @throws IOException In case of process failure
-     */
-    public void unTarBundle(final String cliTarBallName, final String cliBinaryName) throws IOException {
-        // Logic to extract downloaded file into a directory
-
-        // Get plugin directory to store extracted data
-        String sandBox = Platform.pluginDirectory;
-
-        // CLI Binary file
-        final File cliBinaryDest = new File(sandBox, cliBinaryName);
-
-        try (FileInputStream fileInputStream = new FileInputStream(sandBox + File.separator + cliTarBallName);
-             GZIPInputStream gzipInputStream = new GZIPInputStream(new BufferedInputStream(fileInputStream));
-             TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(gzipInputStream)) {
-
-            TarArchiveEntry tarEntry;
-            while ((tarEntry = tarArchiveInputStream.getNextTarEntry()) != null) {
-                File outputFile = new File(sandBox + File.separator + tarEntry.getName());
-                outputFile.getParentFile().mkdirs();
-                try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
-                    IOUtils.copy(tarArchiveInputStream, fileOutputStream);
-                }
-            }
-            cliBinaryDest.setExecutable(true);
-        }
     }
 }
