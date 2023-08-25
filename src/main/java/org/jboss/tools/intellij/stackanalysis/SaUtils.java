@@ -12,10 +12,12 @@ package org.jboss.tools.intellij.stackanalysis;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jboss.tools.intellij.exhort.ApiService;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -31,9 +33,8 @@ public class SaUtils {
      *
      * <p>The custom editor window will open a file which will have browser attached to it.</p>
      *
-     * @param instance An instance of FileEditorManager.
+     * @param instance        An instance of FileEditorManager.
      * @param manifestDetails Manifest file details.
-     *
      * @throws IOException In case of process failure
      */
     public void openCustomEditor(FileEditorManager instance, JsonObject manifestDetails) throws IOException {
@@ -43,7 +44,7 @@ public class SaUtils {
         manifestDetails = closeCustomEditor(instance, manifestDetails);
 
         // Create a temp file in which is registered with SaReportEditorProvider.
-        File reportFile = File.createTempFile("exhort-", "_"+manifestDetails.get("manifestName").getAsString()+".sa");
+        File reportFile = File.createTempFile("exhort-", "_" + manifestDetails.get("manifestName").getAsString() + ".sa");
 
         //Save the SA Report URL in file, which will be loaded in browser
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(reportFile)))) {
@@ -56,7 +57,7 @@ public class SaUtils {
         // Refresh the cached file from the physical file system.
         // if Virtual file is already opened in editor window from previous run then refresh file from physical file
         // else old web page will be shown in editor window.
-        if (virtualFile == null){
+        if (virtualFile == null) {
             throw new PlatformDetectionException("Dependency Analytics Report file is not created.");
         }
         virtualFile.refresh(false, true);
@@ -78,20 +79,20 @@ public class SaUtils {
             VirtualFile[] openFiles = instance.getOpenFiles();
 
             // iterate  through all files and if Report file is open then close it
-            for (VirtualFile openFile : openFiles){
+            for (VirtualFile openFile : openFiles) {
                 // Check if opened file extension is sa, and existing tab manifest file type is same as new (pom.xml, go.mod)
                 // if not then no need to close any existing tab, just create new tab.
                 if (openFile.getExtension().equals("sa")
                         && openFile.getNameWithoutExtension()
                         .replaceAll("^.*?_", "")
-                        .equals(manifestDetails.get("manifestName").getAsString())){
+                        .equals(manifestDetails.get("manifestName").getAsString())) {
 
                     // If existing tab manifest type is same as new (pom.xml == pom.xml), then check if existing tab ss for same file by comparing the paths
                     String existingFilePath = new Gson().fromJson(VfsUtilCore.loadText(openFile), JsonObject.class).get("manifestPath").getAsString();
                     String currentFilePath = manifestDetails.get("manifestPath").getAsString();
 
                     // If file path is same then close existing tab
-                    if (currentFilePath.equals(existingFilePath)){
+                    if (currentFilePath.equals(existingFilePath)) {
                         // Close the Report file in workspace,
                         // dispose method of SaReportEditor will delete file from filesystem as well.
                         instance.closeFile(openFile);
@@ -109,5 +110,45 @@ public class SaUtils {
             }
         }
         return manifestDetails;
+    }
+
+    public JsonObject performSA(VirtualFile manifestFile) {
+        // Get SA report for given manifest file.
+        String reportLink;
+        if ("pom.xml".equals(manifestFile.getName()) || "package.json".equals(manifestFile.getName())) {
+            ApiService apiService = ServiceManager.getService(ApiService.class);
+            reportLink = apiService.getStackAnalysis(
+                    determinePackageManagerName(manifestFile.getName()),
+                    manifestFile.getName(),
+                    manifestFile.getPath()
+            ).toUri().toString();
+
+            // Manifest file details to be saved in temp file which will be used while opening Report tab
+            JsonObject manifestDetails = new JsonObject();
+            manifestDetails.addProperty("showParent", false);
+            manifestDetails.addProperty("manifestName", manifestFile.getName());
+            manifestDetails.addProperty("manifestPath", manifestFile.getPath());
+            manifestDetails.addProperty("manifestFileParent", manifestFile.getParent().getName());
+            manifestDetails.addProperty("report_link", reportLink);
+            manifestDetails.addProperty("manifestNameWithoutExtension", manifestFile.getNameWithoutExtension());
+
+            return manifestDetails;
+        }
+        return null;
+    }
+
+    private String determinePackageManagerName(String name) {
+        String packageManager;
+        switch (name) {
+            case "pom.xml":
+                packageManager = "maven";
+                break;
+            case "package.json":
+                packageManager = "npm";
+                break;
+            default:
+                throw new IllegalArgumentException("package manager not implemented");
+        }
+        return packageManager;
     }
 }

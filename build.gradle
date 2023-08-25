@@ -29,7 +29,7 @@ targetCompatibility = '11'
 intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
-    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33']
+    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33', "org.jetbrains.idea.maven"]
     updateSinceUntilBuild = false
 }
 
@@ -51,6 +51,8 @@ dependencies {
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'com.redhat.exhort:exhort-java-api:0.0.1-SNAPSHOT'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
     testImplementation('junit:junit:4.13.1')
 }
 

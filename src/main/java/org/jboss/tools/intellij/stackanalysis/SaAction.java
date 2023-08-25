@@ -12,18 +12,15 @@ package org.jboss.tools.intellij.stackanalysis;
 
 
 import com.google.gson.JsonObject;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-
-import org.jboss.tools.intellij.exhort.ApiService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -56,27 +53,12 @@ public class SaAction extends AnAction {
             SaUtils saUtils = new SaUtils();
             VirtualFile manifestFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
 
-            // Get SA report for given manifest file.
-            String reportLink;
-            if ("pom.xml".equals(manifestFile.getName()) || "package.json".equals(manifestFile.getName()) ) {
-                ApiService apiService = ServiceManager.getService(ApiService.class);
-                reportLink = apiService.getStackAnalysis(
-                  determinePackageManagerName(manifestFile.getName()),
-                  manifestFile.getName(),
-                  manifestFile.getPath()
-                ).toUri().toString();
-
-                // Manifest file details to be saved in temp file which will be used while opening Report tab
-                JsonObject manifestDetails = new JsonObject();
-                manifestDetails.addProperty("showParent", false);
-                manifestDetails.addProperty("manifestName", manifestFile.getName());
-                manifestDetails.addProperty("manifestPath", manifestFile.getPath());
-                manifestDetails.addProperty("manifestFileParent", manifestFile.getParent().getName());
-                manifestDetails.addProperty("report_link", reportLink);
-                manifestDetails.addProperty("manifestNameWithoutExtension", manifestFile.getNameWithoutExtension());
-
-                // Open custom editor window which will load SA Report in browser attached to it.
-                saUtils.openCustomEditor(FileEditorManager.getInstance(event.getProject()), manifestDetails);
+            if (manifestFile != null) {
+                JsonObject manifestDetails = saUtils.performSA(manifestFile);
+                if (manifestDetails != null) {
+                    // Open custom editor window which will load SA Report in browser attached to it.
+                    saUtils.openCustomEditor(FileEditorManager.getInstance(event.getProject()), manifestDetails);
+                }
             }
         } catch (Exception e) {
             logger.warn(e);
@@ -85,23 +67,6 @@ public class SaAction extends AnAction {
                     "Error");
         }
     }
-
-    private String determinePackageManagerName(String name) {
-        String packageManager;
-        switch(name)
-        {
-            case "pom.xml":
-                packageManager = "maven";
-                break;
-            case "package.json":
-                packageManager =  "npm";
-                break;
-            default:
-                throw new IllegalArgumentException("package manager not implemented");
-        }
-        return packageManager;
-    }
-
 
     /**
      * <p>Updates the state of the action, Action is show if this method returns true.</p>
