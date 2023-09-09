@@ -51,8 +51,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
     @Override
     public @Nullable Map<Dependency, Result> doAnnotate(Info info) {
-        if (info != null && info.getFile() != null &&
-                info.getDependencies() != null && !info.getDependencies().isEmpty()) {
+        if (info != null && info.getFile() != null
+                && info.getDependencies() != null && !info.getDependencies().isEmpty()) {
             String path = info.getFile().getVirtualFile().getPath();
             Set<Dependency> dependencies = info.getDependencies().keySet();
 
@@ -136,8 +136,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
     private Map<Dependency, Result> matchDependencies(Map<Dependency, List<PsiElement>> dependencies,
                                                       Map<Dependency, DependencyReport> reports) {
-        if (dependencies != null && !dependencies.isEmpty() &&
-                reports != null && !reports.isEmpty()) {
+        if (dependencies != null && !dependencies.isEmpty()
+                && reports != null && !reports.isEmpty()) {
             return dependencies.entrySet()
                     .parallelStream()
                     .filter(e -> reports.containsKey(e.getKey()))

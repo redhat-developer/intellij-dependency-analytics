@@ -88,7 +88,8 @@ public class Dependency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Dependency that = (Dependency) o;
-        return Objects.equals(type, that.type) && Objects.equals(namespace, that.namespace) && Objects.equals(name, that.name) && Objects.equals(version, that.version);
+        return Objects.equals(type, that.type) && Objects.equals(namespace, that.namespace)
+                && Objects.equals(name, that.name) && Objects.equals(version, that.version);
     }
 
     @Override
