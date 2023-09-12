@@ -16,6 +16,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.impl.ExhortApi;
+import org.jboss.tools.intellij.settings.ApiSettingsState;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -56,6 +57,7 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
 
         try {
+            ApiSettingsState.getInstance().setApiOptions();
             var htmlContent = exhortApi.stackAnalysisHtml(manifestPath);
             var tmpFile = Files.createTempFile("exhort_", ".html");
             Files.write(tmpFile, htmlContent.get());
@@ -78,6 +80,7 @@ public final class ApiService {
 
         try {
             var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
+            ApiSettingsState.getInstance().setApiOptions();
             CompletableFuture<AnalysisReport> componentReport = exhortApi.componentAnalysis(manifestPath);
             AnalysisReport report = componentReport.get();
             telemetryMsg.send();

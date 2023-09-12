@@ -148,6 +148,12 @@
         <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
         <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider"
                                 order="first"/>
+
+        <applicationConfigurable
+                parentId="tools"
+                instance="org.jboss.tools.intellij.settings.ApiSettingsConfigurable"
+                id="org.jboss.tools.intellij.settings.ApiSettingsConfigurable"
+                displayName="Red Hat Dependency Analytics"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
