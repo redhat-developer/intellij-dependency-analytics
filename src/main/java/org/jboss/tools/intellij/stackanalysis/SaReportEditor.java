@@ -54,10 +54,13 @@ public class SaReportEditor extends UserDataHolderBase implements FileEditor, Du
     }
 
     @Override
-    public @NotNull String getName() { return ""; }
+    public @NotNull String getName() {
+        return "";
+    }
 
     @Override
-    public void setState(@NotNull FileEditorState state) { }
+    public void setState(@NotNull FileEditorState state) {
+    }
 
     @Override
     public boolean isModified() {
@@ -70,16 +73,20 @@ public class SaReportEditor extends UserDataHolderBase implements FileEditor, Du
     }
 
     @Override
-    public void selectNotify() {}
+    public void selectNotify() {
+    }
 
     @Override
-    public void deselectNotify() {}
+    public void deselectNotify() {
+    }
 
     @Override
-    public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {}
+    public void addPropertyChangeListener(@NotNull PropertyChangeListener listener) {
+    }
 
     @Override
-    public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {}
+    public void removePropertyChangeListener(@NotNull PropertyChangeListener listener) {
+    }
 
     @Nullable
     @Override
@@ -101,5 +108,7 @@ public class SaReportEditor extends UserDataHolderBase implements FileEditor, Du
 
     @NotNull
     @Override
-    public VirtualFile getFile() { return this.virtualFile; }
+    public VirtualFile getFile() {
+        return this.virtualFile;
+    }
 }

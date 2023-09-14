@@ -1,10 +1,10 @@
 <idea-plugin>
-  <id>org.jboss.tools.intellij.analytics</id>
-  <name>Dependency Analytics</name>
-  <version>1.0</version>
-  <vendor email="developers@redhat.com" url="https://www.redhat.com">Red-Hat</vendor>
+    <id>org.jboss.tools.intellij.analytics</id>
+    <name>Dependency Analytics</name>
+    <version>1.0</version>
+    <vendor email="developers@redhat.com" url="https://www.redhat.com">Red-Hat</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
       <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/trusted_content_icon.png" width="32" height="32"/>
 
       <h2>Overview</h2>
@@ -86,7 +86,7 @@
      </p>
   ]]></description>
 
-  <change-notes><![CDATA[
+    <change-notes><![CDATA[
   <p><b>0.6.0</b></p>
   <p>Various dependency bumps.</p>
   <p>Various maintenance resolutions.</p>
@@ -117,65 +117,58 @@
   <p><b>0.0.1</b></p>
   <p>Initial release</p>
   ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="211.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="211.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <depends>com.intellij.modules.lang</depends>
-  <depends>com.redhat.devtools.intellij.telemetry</depends>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.redhat.devtools.intellij.telemetry</depends>
+    <depends>org.jetbrains.idea.maven</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- register intellijLanguageClient as a Service -->
-    <applicationService serviceImplementation="org.wso2.lsp4intellij.IntellijLanguageClient"/>
-    <!-- register a listener on editor events, required for lsp file sync -->
-    <editorFactoryListener implementation="org.wso2.lsp4intellij.listeners.LSPEditorListener"/>
-    <fileDocumentManagerListener implementation="org.wso2.lsp4intellij.listeners.LSPFileDocumentManagerListener"/>
-    <!-- for displaying notifications by lsp -->
-     <notificationGroup id="lsp" displayType="STICKY_BALLOON"/>
-    <!-- for displaying the statusbar lsp icon -->
-    <statusBarWidgetFactory implementation="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"
-                            id="org.wso2.lsp4intellij.statusbar.LSPServerStatusWidgetFactory"
-                            order="first" />
-    <!-- needed for code diagnostics by lsp -->
-    <externalAnnotator id="LSPAnnotator-xml" language="XML" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
-    <externalAnnotator id="LSPAnnotator-json" language="JSON" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
-    <externalAnnotator id="LSPAnnotator-txt" language="TEXT" implementationClass="org.wso2.lsp4intellij.contributors.annotator.LSPAnnotator"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="pom" implementationClass="org.jboss.tools.intellij.componentanalysis.maven.POMFileType"
+                  fileNames="pom.xml"/>
+        <localInspection language="XML" shortName="MavenCAInspection" displayName="Exhort component analysis"
+                         groupName="Maven" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.maven.MavenCAInspection"/>
+        <externalAnnotator language="XML"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.maven.MavenCAAnnotator"/>
 
-    <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
-    <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider" order="first"/>
-  </extensions>
+        <fileType name="package" implementationClass="org.jboss.tools.intellij.componentanalysis.npm.PackageFileType"
+                  fileNames="package.json"/>
+        <localInspection language="JSON" shortName="NpmCAInspection" displayName="Exhort component analysis"
+                         groupPath="Javascript and Typescript" groupName="npm" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
+        <externalAnnotator language="JSON"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
 
-  <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
-  <actions>
-    <group>
-      <action id="saAnalysis" text="Dependency Analytics Report" class="org.jboss.tools.intellij.stackanalysis.SaAction"
-              icon="/images/report-icon.png"/>
+        <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
+        <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider"
+                                order="first"/>
 
-      <separator/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="org.jboss.tools.intellij.settings.ApiSettingsConfigurable"
+                id="org.jboss.tools.intellij.settings.ApiSettingsConfigurable"
+                displayName="Red Hat Dependency Analytics"/>
+    </extensions>
 
-      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-      <add-to-group group-id="NavBarToolBar" anchor="first"/>
-      <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
-    </group>
-  </actions>
+    <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
+    <actions>
+        <group>
+            <action id="saAnalysis" text="Dependency Analytics Report"
+                    class="org.jboss.tools.intellij.stackanalysis.SaAction"
+                    icon="/images/report-icon.png"/>
 
-  <applicationListeners>
-    <!-- required for lsp file sync -->
-    <listener class="org.wso2.lsp4intellij.listeners.VFSListener"
-              topic="com.intellij.openapi.vfs.VirtualFileListener"/>
-    <listener class="org.wso2.lsp4intellij.listeners.LSPProjectManagerListener"
-              topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    <!-- download the lsp executable, register, and run it-->
-    <listener class="org.jboss.tools.intellij.analytics.PreloadLanguageServer"
-              topic="com.intellij.ide.AppLifecycleListener"
-              activeInTestMode="false"/>
-    <!-- download the cli executable, extract it, and authenticate with it -->
-    <listener class="org.jboss.tools.intellij.stackanalysis.PreloadCli"
-              topic="com.intellij.ide.AppLifecycleListener"
-              activeInTestMode="false"/>
-  </applicationListeners>
+            <separator/>
+
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </group>
+    </actions>
 
 </idea-plugin>

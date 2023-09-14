@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 
-public class SaEditorTabTitleProvider implements EditorTabTitleProvider{
+public class SaEditorTabTitleProvider implements EditorTabTitleProvider {
     @Override
     public @NotNull String getEditorTabTitle(@NotNull Project project, @NotNull VirtualFile file) {
         // Check if file opened in Editor is SA report, if Yes then change the title of Custom Editor Tab
@@ -32,9 +32,9 @@ public class SaEditorTabTitleProvider implements EditorTabTitleProvider{
                 JsonObject manifestDetails = new Gson().fromJson(VfsUtilCore.loadText(file), JsonObject.class);
                 // If a tab is already opened for same manifest type then add parent directory to distinguish between tabs
                 if (manifestDetails.get("showParent").getAsBoolean()) {
-                    tabName = "Dependency Analytics Report for "+manifestDetails.get("manifestFileParent").getAsString()+"/"+manifestDetails.get("manifestName").getAsString();
+                    tabName = "Dependency Analytics Report for " + manifestDetails.get("manifestFileParent").getAsString() + "/" + manifestDetails.get("manifestName").getAsString();
                 } else {
-                    tabName = "Dependency Analytics Report for "+manifestDetails.get("manifestName").getAsString();
+                    tabName = "Dependency Analytics Report for " + manifestDetails.get("manifestName").getAsString();
                 }
             } catch (IOException e) {
                 tabName = "Dependency Analytics Report";
