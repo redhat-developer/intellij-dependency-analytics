@@ -21,7 +21,6 @@ import org.jboss.tools.intellij.settings.ApiSettingsState;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -79,7 +78,6 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
 
         try {
-            var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
             ApiSettingsState.getInstance().setApiOptions();
             CompletableFuture<AnalysisReport> componentReport = exhortApi.componentAnalysis(manifestPath);
             AnalysisReport report = componentReport.get();
