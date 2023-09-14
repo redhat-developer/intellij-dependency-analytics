@@ -79,6 +79,36 @@
 </ol>
 <p>
 
+<h2>Configuration</h2>
+<p>
+    The Red Hat Dependency Analytics plugin has some configurable parameters that allows you to customize its behavior according to your preferences.
+<p>
+    <b>Procedure</b>
+<ol>
+    <li>Open the IntelliJ IDEA application.</li>
+    <li>Click <b>Settings</b> from the menu, and click <b>Tools</b>.</li>
+    <li>Click the <b>Red Hat Dependency Analytics</b>.</li>
+</ol>
+    <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
+     alt="Red Hat Dependency Analytics plugin settings">
+<p>
+    <h3>Configurable parameters</h3>
+<p>
+    <b>Maven</b>:
+    <br>Path of the <code>mvn</code> executable allows Exhort to locate and execute the <code>mvn</code> commands to resolve dependencies forMaven projects.
+    <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
+    <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be used to locate the executables.
+<p>
+    <b>Npm</b>:
+    <br>Path of the <code>npm</code> executable allows Exhort to locate and execute <code>npm</code> commands to resolve dependencies for Node projects.
+    <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code> executable.
+    <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
+<p>
+    <b>Exhort Snyk Token</b>:
+    <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+    <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+<p>
+
 <h2>Features</h2>
 <p>
 <ul>

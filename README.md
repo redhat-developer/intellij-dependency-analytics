@@ -30,6 +30,7 @@ In future releases, Red Hat plans to support other programming languages.
 ##### Table of Contents
 
 - [Quick start](#quick-start)
+- [Configuration](#configuration)
 - [Features](#features)
 - [Know more about the Red Hat Dependency Analytics platform](#know-more-about-the-red-hat-dependency-analytics-platform)
 - [Data and telemetry](#data-and-telemetry)
@@ -62,6 +63,40 @@ In future releases, Red Hat plans to support other programming languages.
     3. Set the Snyk token as the value of your IDE's `EXHORT_SNYK_TOKEN` environment.
     4. After adding your Snyk token, the vulnerability report gives you detailed information about security
        vulnerabilities unique to Snyk, and vulnerabilities that have publicly known exploits.
+
+## Configuration
+
+The Red Hat Dependency Analytics plugin has some configurable parameters that allows you to customize its behavior
+according to your preferences.
+
+**Procedure**
+
+1. Open the IntelliJ IDEA application.
+2. From the menu, click **Settings** , and click **Tools**.
+3. Click **Red Hat Dependency Analytics**.
+
+   ![Red Hat Dependency Analytics plugin settings](src/main/resources/images/settings.png)
+
+### Configurable parameters
+
+**Maven** :
+<br >Path of the `mvn` executable allows Exhort to locate and execute the `mvn` commands to resolve dependencies for
+Maven projects.
+Path of the `JAVA_HOME` directory is required by the `mvn` executable.
+If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
+
+**Npm** :
+<br >Path of the `npm` executable allows Exhort to locate and execute `npm` commands to resolve dependencies for Node
+projects.
+Path of the directory containing the `node` executable is required by the `npm` executable.
+If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+
+**Exhort Snyk Token** :
+<br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+
+If you need a new Snyk token, you can generate a new
+token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).
 
 ## Features
 
