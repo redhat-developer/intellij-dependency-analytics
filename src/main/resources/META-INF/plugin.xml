@@ -254,8 +254,10 @@
 
     <change-notes><![CDATA[
   <p><b>0.7.0</b></p>
-  <p>Based on exhort-java-api 0.7.0.</p>
+  <p>Initial release for the new Red Hat Dependency Analytics service.</p>
+  <p>Based on exhort-java-api.</p>
   <p>Perform analysis with the new Red Hat Dependency Analytics backend.</p>
+  <p>Support for Python and Golang is temporarily disabled, and will be re-enabled later.</p>
   <p><b>0.6.0</b></p>
   <p>Various dependency bumps.</p>
   <p>Various maintenance resolutions.</p>
