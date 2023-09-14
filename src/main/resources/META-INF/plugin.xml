@@ -1,92 +1,263 @@
 <idea-plugin>
     <id>org.jboss.tools.intellij.analytics</id>
-    <name>Dependency Analytics</name>
-    <version>1.0</version>
+    <name>Red Hat Dependency Analytics</name>
+    <version>0.7.0</version>
     <vendor email="developers@redhat.com" url="https://www.redhat.com">Red-Hat</vendor>
 
     <description><![CDATA[
-      <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/trusted_content_icon.png" width="32" height="32"/>
+      <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/trusted_content_icon.png"
+     width="32" height="32"/>
 
-      <h2>Overview</h2>
-      <p>
-      'Dependency Analytics is powered by <a href="https://snyk.io/product/vulnerability-database/" rel="noopener noreferrer" target="_blank">Snyk Intel Vulnerability DB</a>, it is the most advanced and accurate open source vulnerability database in the industry. That adds value with the latest, fastest and more number of vulnerabilities derived from numerous sources.
-      <p>
-      <p>'Dependency Analytics Report' with Insights about your application dependencies:<p>
-      <ul>
-        <li>Flags a security vulnerability(CVE) and suggests a remedial version.</li>
-      </ul>
-      <ul>
-        <li>Shows Github popularity metrics along with latest version.</li>
-      </ul>
-      <ul>
-        <li>Suggests a project level license, check for conflicts between dependency licences.</li>
-      </ul>
-      <ul>
-        <li>AI based guidance for additional, alternative dependencies</li>
-      </ul>
-      <p>Disclaimer: Dependency Analytics does not analyse dev/test dependencies.<p>
-      <h2>Supported Languages</h2>
-      <p>
-      	'Dependency Analytics' extension supports projects using Maven, projects build on npm (Node ecosystem), projects using Python and projects using Golang. Extending support for other languages is currently under progress.
-      </p>
+<h2>Overview</h2>
+<p>
+    Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply
+    chain while you build your application.
+    <br>The Dependency Analytics plugin uses the Snyk REST API to query <a href="https://snyk.io/product/vulnerability-database/"
+                                                    rel="noopener noreferrer" target="_blank">Snyk's Vulnerability
+    Database</a> for the most up-to-date vulnerability information available.
+    <br>Snyk uses industry-leading security intelligence by pulling from many data sources to give you exact vulnerability information.
 
-      <h2>Prerequisites</h2>
-       <p>This plug-in assumes that you have installed all packages given in target manifest file which will be used to create transitive dependency for showing Stack Analysis, you also need to have following binaries on your IDE PATH:</p>
-      <ul>
-        <li><code>npm</code> (for analyzing Node applications and running the LSP server)</li>
-        <li><code>mvn</code> (for analyzing Java applications)</li>
-        <li><code>python</code> (for analyzing Python applications)</li>
-        <li><code>go</code> (for analyzing Golang applications)</li>
-      </ul>
-      <p>Note: In this plug-in mvn/npm/go/python commands are executed using <code>ProcessBuilder</code>, which requires that binaries for thse are found in your IDE Environment PATH.</p>
+<p>
+    <b>NOTE:</b>
+    <br>The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
+    <br>Dependency Analytics only accesses your manifest files to analyze your application dependencies before
+    displaying
+    the vulnerability report.
+<p>
+    <b>IMPORTANT:</b>
+    <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node ecosystems
+    (<code>npm</code>).
+    <br>In future releases, Red Hat plans to support other programming languages.
+<p>
 
-      <h2>Quick Start</h2>
-      <ul>
-        <li>Install the extension.</li>
-        <li>Opening or editing a manifest file (<code>pom.xml</code> / <code>package.json</code> / <code>requirements.txt</code> / <code>go.mod</code>) scans your application for security vulnerabilities.</li>
-        <li>Opening or editing a manifest file (pom.xml / package.json / requirements.txt / go.mod) scans your application for security vulnerabilities.</li>
-        <li>Click on icon from 'Navigation bar' or right click on a manifest file (pom.xml/package.json / requirements.txt / go.mod) in the 'File explorer' or 'File editor' to display 'Dependency Analytics Report' for your application.</li>
-      </ul>
+<h2>Quick Start</h2>
+<p>
+    <b>Prerequisites:</b>
+<ul>
+    <li>For Maven projects, analyzing a <code>pom.xml</code> file, you must have the <code>mvn</code> binary in your
+        IDE's <code>PATH</code> environment.
+    </li>
+    <li>For Node projects, analyzing a <code>package.json</code> file, you must have the <code>npm</code> binary in your
+        IDE's <code>PATH</code> environment.
+    </li>
+</ul>
+<p>
+    <b>Procedure</b>
+<ol>
+    <li>Install <a href="https://www.jetbrains.com/idea/download/" rel="noopener noreferrer" target="_blank">IntelliJ
+        IDEA</a> on your workstation.
+    </li>
+    <li>After the installation finishes, open the IntelliJ IDEA application.</li>
+    <li>From the menu, click <b>Settings</b>, and click <b>Plugins</b>.</li>
+    <li>Search the <b>Marketplace</b> for <i>Red Hat Dependency Analytics</i>.</li>
+    <li>Click the <b>INSTALL</b> button to install the plugin.</li>
+    <li>To start scanning your application for security vulnerabilities, and view the vulnerability report, you can do
+        one of the following:
+        <ul>
+            <li>Open a manifest file, hover over a dependency marked by the inline Component Analysis, indicated by the wavy-red
+                line under a dependency, and click <b>Detailed Vulnerability Report</b>.
+            </li>
+            <li>Right click on a manifest file in the <b>Project</b> window, and click <b>Dependency Analytics
+                Report</b>.
+            </li>
+        </ul>
+    </li>
+    <li>(OPTIONAL) You can link your Snyk account to Dependency Analytics by doing the following:
+        <ol>
+            <li>Log into your <a
+                    href="https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9"
+                    rel="noopener noreferrer" target="_blank">Snyk
+                account</a>.
+            </li>
+            <li>On the account landing page, you can find your Snyk Token, copy the token.</li>
+            <li>Set the Snyk token as the value of your IDE's <code>EXHORT_SNYK_TOKEN</code> environment.</li>
+            <li>After adding your Snyk token, the vulnerability report gives you detailed information about security
+                vulnerabilities unique to Snyk, and vulnerabilities that have publicly known exploits.
+            </li>
+        </ol>
+    </li>
+</ol>
+<p>
 
-      <h2>Features</h2>
-      <ul>
-        <li>Opening or editing a manifest file (`pom.xml` / `package.json` / `requirements.txt` / `go.mod`) scans your application for security vulnerabilities, flag them along with 'quick fixes'.</li>
-      </ul>
-      <p>
-        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/demo.gif" alt="Demo">
-      </p>
-      <ul>
-      	<li>Right click on a manifest file(`pom.xml` / `package.json` / `requirements.txt` / `go.mod`) and choose 'Dependency Analytics Report ...' OR click on <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/report-icon.png" alt="Icon"> icon in navigation bar to display 'Dependency Analytics' report as shown below. This report covers deeper insights into your application dependencies:
-      	<p>- Flags a security vulnerability(CVE) and suggests a remedial version</p>
-      	<p>- Shows Github popularity metrics along with latest version</p>
-      	<p>- Suggests a project level license, check for conflicts between dependency licences</p>
-      	<p>- AI based guidance for additional,alternative dependencies</p>
-     	</li>
-     </ul>
-     <p><img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/master/src/main/resources/images/stack-analysis.gif" alt="Stack Analysis"></p>
+<h2>Configuration</h2>
+<p>
+    The Red Hat Dependency Analytics plugin has some configurable parameters that allows you to customize its behavior according to your preferences.
+<p>
+    <b>Procedure</b>
+<ol>
+    <li>Open the IntelliJ IDEA application.</li>
+    <li>Click <b>Settings</b> from the menu, and click <b>Tools</b>.</li>
+    <li>Click the <b>Red Hat Dependency Analytics</b>.</li>
+</ol>
+    <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
+     alt="Red Hat Dependency Analytics plugin settings">
+<p>
+    <h3>Configurable parameters</h3>
+<p>
+    <b>Maven</b>:
+    <br>Path of the <code>mvn</code> executable allows Exhort to locate and execute the <code>mvn</code> commands to resolve dependencies forMaven projects.
+    <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
+    <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be used to locate the executables.
+<p>
+    <b>Npm</b>:
+    <br>Path of the <code>npm</code> executable allows Exhort to locate and execute <code>npm</code> commands to resolve dependencies for Node projects.
+    <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code> executable.
+    <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
+<p>
+    <b>Exhort Snyk Token</b>:
+    <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+    <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+<p>
 
-     <h2 id="user-content-know-more-about-dependency-analytics-platform" class="link-header">Know more about Dependency Analytics Platform</h2>
-     <p>
-       The mission of this project is to significantly enhance developer experience:
-       providing Insights (security, licenses, AI based guidance) for applications and helping developers, Enterprises.
-     </p>
-     <ul>
-       <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer" target="_blank">GitHub repository</a></li>
-     </ul>
+<h2>Features</h2>
+<p>
+<ul>
+    <li>
+        <b>Component analysis</b>
+        <br>Upon opening a manifest file, such as a <code>pom.xml</code> or <code>package.json</code> file, a scan
+        starts the analysis
+        process.
+        <br>The scan provides immediate inline feedback on detected security vulnerabilities for your application's
+        dependencies.
+        <br>Such dependencies are appropriately underlined in red, and hovering over it gives you a short summary of
+        the security concern.
+        <br>The summary has the full package name, version number, the amount of known security vulnerabilities, and the
+        highest severity status of said vulnerabilities.
+        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/component-analysis.gif"
+             alt="Animated screenshot showing the inline reporting feature of Dependency Analytics">
+    </li>
+    <li>
+        <b>Excluding dependencies with <code>exhortignore</code></b>
+        <br>You can exclude a package from analysis by marking the package for exclusion.
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>pom.xml</code> file, you must add <code>exhortignore</code>
+        as a comment against the dependency, group id, artifact id, or version scopes of that particular dependency in
+        the manifest file.
+        <br>For example:
+        <code>
+            <br>&lt;dependency&gt; &lt;!--exhortignore--&gt;
+            <br>&nbsp;&nbsp;&lt;groupId&gt;...&lt;/groupId&gt;
+            <br>&nbsp;&nbsp;&lt;artifactId&gt;...&lt;/artifactId&gt;
+            <br>&nbsp;&nbsp;&lt;version&gt;...&lt;/version&gt;
+            <br>&lt;/dependency&gt;
+        </code>
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>package.json</code> file, you must add
+        <code>exhortignore</code> as a attribute-value pair.
+        <br>If <code>exhortignore</code>is followed by a list of comma-separated Snyk vulnerability IDs, only the listed
+        vulnerabilities will be ignored during analysis.
+        <br>For example:
+        <code>
+            <br>{
+            <br>&nbsp;&nbsp;"name": "sample",
+            <br>&nbsp;&nbsp;"version": "1.0.0",
+            <br>&nbsp;&nbsp;"description": "",
+            <br>&nbsp;&nbsp;"main": "index.js",
+            <br>&nbsp;&nbsp;"keywords": [],
+            <br>&nbsp;&nbsp;"author": "",
+            <br>&nbsp;&nbsp;"license": "ISC",
+            <br>&nbsp;&nbsp;"dependencies": {
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"dotenv": "^8.2.0",
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"express": "^4.17.1",
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"jsonwebtoken": "^8.5.1",
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"mongoose": "^5.9.18"
+            <br>&nbsp;&nbsp;},
+            <br>&nbsp;&nbsp;"exhortignore": [
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"jsonwebtoken"
+            <br>&nbsp;&nbsp;]
+            <br>}
+        </code>
+    </li>
+    <li>
+        <b>Excluding developmental or test dependencies</b>
+        <br>Red Hat Dependency Analytics does not analyze dependencies marked as <code>dev</code> or <code>test</code>,
+        these dependencies are ignored.
+        <br>For example, setting <code>test</code> in the <code>scope</code> tag within a <code>pom.xml</code> file:
+        <code>
+            <br>&lt;dependency&gt;
+            <br>&nbsp;&nbsp;&lt;groupId&gt;...&lt;/groupId&gt;
+            <br>&nbsp;&nbsp;&lt;artifactId&gt;...&lt;/artifactId&gt;
+            <br>&nbsp;&nbsp;&lt;version&gt;...&lt;/version&gt;
+            <br>&nbsp;&nbsp;&lt;scope&gt;test&lt;/scope&gt;
+            <br>&lt;/dependency&gt;
+        </code>
+        <br>For example, setting <code>devDependencies</code> attributte in the <code>package.json</code> file:
+        <code>
+            <br>{
+            <br>&nbsp;&nbsp;"name": "sample",
+            <br>&nbsp;&nbsp;"version": "1.0.0",
+            <br>&nbsp;&nbsp;"description": "",
+            <br>&nbsp;&nbsp;"main": "index.js",
+            <br>&nbsp;&nbsp;"keywords": [],
+            <br>&nbsp;&nbsp;"author": "",
+            <br>&nbsp;&nbsp;"license": "ISC",
+            <br>&nbsp;&nbsp;"dependencies": {
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"dotenv": "^8.2.0",
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"express": "^4.17.1",
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"jsonwebtoken": "^8.5.1",
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"mongoose": "^5.9.18"
+            <br>&nbsp;&nbsp;},
+            <br>&nbsp;&nbsp;"devDependencies": {
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;"axios": "^0.19.0"
+            <br>&nbsp;&nbsp;}
+            <br>}
+        </code>
+    </li>
+    <li>
+        <b>Red Hat Dependency Analytics Report</b>
+        <br>The Red Hat Dependency Analytics Report is a temporary HTML file that exists if the <b>Red Hat Dependency
+        Analytics Report</b> tab remains open.
+        <br>Closing the tab removes the temporary HTML file.
+    </li>
+</ul>
+<p>
 
-     <h2 id="user-content-feedback-%26-questions" class="link-header">Feedback &amp; Questions</h2>
-     <ul>
-       <li>File a bug in <a href="https://github.com/redhat-developer/intellij-dependency-analytics/issues" rel="noopener noreferrer" target="_blank">GitHub Issues</a></li>
-     </ul>
+<h2>Know more about the Red Hat Dependency Analytics platform</h2>
+<p>
+    The goal of this project is to significantly enhance a developer's experience by providing helpful vulnerability
+    insights for their applications.
+<ul>
+    <li><a href="https://github.com/redhat-developer/intellij-dependency-analytics" rel="noopener noreferrer"
+           target="_blank">GitHub Repository</a></li>
+</ul>
+<p>
 
-     <h2 id="user-content-license" class="link-header">License</h2>
-     <p>
-       EPL-2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/master/LICENSE" rel="noopener noreferrer" target="_blank">LICENSE</a>
-       for more information.
-     </p>
+<h2>Data and telemetry</h2>
+<p>
+    The Red Hat Dependency Analytics plugin for IntellJ IDEA collects anonymous <a
+        href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/main/USAGE_DATA.md"
+        rel="noopener noreferrer" target="_blank">usage data</a> and sends it to Red Hat servers to help improve our
+    products and services.
+    <br>Read our <a href="https://developers.redhat.com/article/tool-data-collection"
+                    rel="noopener noreferrer" target="_blank">privacy statement</a> to learn more.
+    <br>This plugin respects the settings of the <code>Telemetry by Red Hat</code> plugin, which you can learn more
+    about <a href="https://plugins.jetbrains.com/plugin/16209-telemetry-by-red-hat"
+             rel="noopener noreferrer" target="_blank">here</a>.
+<p>
+
+<h2>Support, feedback & questions</h2>
+<p>
+    There are two ways you can contact us:
+<ul>
+    <li>You can reach out to us at <code>rhda-support@redhat.com</code> with any questions, feedback, and general
+        support.
+    </li>
+    <li>You can also file a <a href="https://github.com/redhat-developer/intellij-dependency-analytics/issues"
+                               rel="noopener noreferrer" target="_blank">GitHub Issue</a>.
+    </li>
+</ul>
+
+<h2>License</h2>
+<p>
+    EPL-2.0, See <a href="https://github.com/redhat-developer/intellij-dependency-analytics/blob/main/LICENSE"
+                    rel="noopener noreferrer" target="_blank">LICENSE</a> for more information.
+
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>0.7.0</b></p>
+  <p>Initial release for the new Red Hat Dependency Analytics service.</p>
+  <p>Based on exhort-java-api.</p>
+  <p>Perform analysis with the new Red Hat Dependency Analytics backend.</p>
+  <p>Support for Python and Golang is temporarily disabled, and will be re-enabled later.</p>
   <p><b>0.6.0</b></p>
   <p>Various dependency bumps.</p>
   <p>Various maintenance resolutions.</p>
