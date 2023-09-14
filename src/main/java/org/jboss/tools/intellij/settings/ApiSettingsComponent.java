@@ -32,7 +32,7 @@ public class ApiSettingsComponent {
     private final static String nodePathLabel = "<html>Node > Directory: <b>Path</b>"
             + "<br>Specifies absolute path of the <i>directory</i> containing <b>node</b> executable.</html>";
     private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
-            + "<br>Red Hat Dependency Analytics sever authentication token for Snky.</html>";
+            + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
 
     private final JPanel mainPanel;
 
