@@ -25,7 +25,7 @@ public class NpmCAInspection extends LocalInspectionTool {
     @Override
     @NotNull
     public String getGroupDisplayName() {
-        return "npm";
+        return "Node.js";
     }
 
     @Override

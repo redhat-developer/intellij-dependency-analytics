@@ -92,7 +92,7 @@
     <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
      alt="Red Hat Dependency Analytics plugin settings">
 <p>
-    <h3>Configurable parameters</h3>
+<h3>Configurable parameters</h3>
 <p>
     <b>Maven</b>:
     <br>Path of the <code>mvn</code> executable allows Exhort to locate and execute the <code>mvn</code> commands to resolve dependencies forMaven projects.
@@ -297,7 +297,6 @@
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
-    <depends>org.jetbrains.idea.maven</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="pom" implementationClass="org.jboss.tools.intellij.componentanalysis.maven.POMFileType"
@@ -311,7 +310,7 @@
         <fileType name="package" implementationClass="org.jboss.tools.intellij.componentanalysis.npm.PackageFileType"
                   fileNames="package.json"/>
         <localInspection language="JSON" shortName="NpmCAInspection" displayName="Exhort component analysis"
-                         groupPath="Javascript and Typescript" groupName="npm" enabledByDefault="true" level="ERROR"
+                         groupPath="Javascript and Typescript" groupName="Node.js" enabledByDefault="true" level="ERROR"
                          implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
         <externalAnnotator language="JSON"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>

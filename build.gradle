@@ -29,7 +29,7 @@ targetCompatibility = '11'
 intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
-    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33', "org.jetbrains.idea.maven"]
+    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33']
     updateSinceUntilBuild = false
 }
 
