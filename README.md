@@ -77,21 +77,21 @@ according to your preferences.
 
    ![Red Hat Dependency Analytics plugin settings](src/main/resources/images/settings.png)
 
-### Configurable parameters
+**Configurable parameters**
 
-**Maven** :
+- **Maven** :
 <br >Path of the `mvn` executable allows Exhort to locate and execute the `mvn` commands to resolve dependencies for
 Maven projects.
 Path of the `JAVA_HOME` directory is required by the `mvn` executable.
 If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
 
-**Npm** :
+- **Npm** :
 <br >Path of the `npm` executable allows Exhort to locate and execute `npm` commands to resolve dependencies for Node
 projects.
 Path of the directory containing the `node` executable is required by the `npm` executable.
 If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
-**Exhort Snyk Token** :
+- **Exhort Snyk Token** :
 <br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
 If a Snyk token is not provided, Snyk vulnerability information is not displayed.
 

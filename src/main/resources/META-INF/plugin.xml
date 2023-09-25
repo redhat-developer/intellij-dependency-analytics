@@ -92,21 +92,26 @@
     <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
      alt="Red Hat Dependency Analytics plugin settings">
 <p>
-    <h3>Configurable parameters</h3>
-<p>
-    <b>Maven</b>:
-    <br>Path of the <code>mvn</code> executable allows Exhort to locate and execute the <code>mvn</code> commands to resolve dependencies forMaven projects.
-    <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
-    <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be used to locate the executables.
-<p>
-    <b>Npm</b>:
-    <br>Path of the <code>npm</code> executable allows Exhort to locate and execute <code>npm</code> commands to resolve dependencies for Node projects.
-    <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code> executable.
-    <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
-<p>
-    <b>Exhort Snyk Token</b>:
-    <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-    <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+    <b>Configurable parameters</b>
+<ul>
+    <li>
+        <b>Maven</b>:
+        <br>Path of the <code>mvn</code> executable allows Exhort to locate and execute the <code>mvn</code> commands to resolve dependencies forMaven projects.
+        <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be used to locate the executables.
+    </li>
+    <li>
+        <b>Npm</b>:
+        <br>Path of the <code>npm</code> executable allows Exhort to locate and execute <code>npm</code> commands to resolve dependencies for Node projects.
+        <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code> executable.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
+    </li>
+    <li>
+        <b>Exhort Snyk Token</b>:
+        <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+        <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+    </li>
+</ul>
 <p>
 
 <h2>Features</h2>
@@ -297,25 +302,8 @@
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
-    <depends>org.jetbrains.idea.maven</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="pom" implementationClass="org.jboss.tools.intellij.componentanalysis.maven.POMFileType"
-                  fileNames="pom.xml"/>
-        <localInspection language="XML" shortName="MavenCAInspection" displayName="Exhort component analysis"
-                         groupName="Maven" enabledByDefault="true" level="ERROR"
-                         implementationClass="org.jboss.tools.intellij.componentanalysis.maven.MavenCAInspection"/>
-        <externalAnnotator language="XML"
-                           implementationClass="org.jboss.tools.intellij.componentanalysis.maven.MavenCAAnnotator"/>
-
-        <fileType name="package" implementationClass="org.jboss.tools.intellij.componentanalysis.npm.PackageFileType"
-                  fileNames="package.json"/>
-        <localInspection language="JSON" shortName="NpmCAInspection" displayName="Exhort component analysis"
-                         groupPath="Javascript and Typescript" groupName="npm" enabledByDefault="true" level="ERROR"
-                         implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
-        <externalAnnotator language="JSON"
-                           implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
-
         <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
         <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider"
                                 order="first"/>
@@ -325,6 +313,21 @@
                 instance="org.jboss.tools.intellij.settings.ApiSettingsConfigurable"
                 id="org.jboss.tools.intellij.settings.ApiSettingsConfigurable"
                 displayName="Red Hat Dependency Analytics"/>
+
+        <localInspection language="XML" shortName="MavenCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Maven" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.maven.MavenCAInspection"/>
+        <externalAnnotator language="XML"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.maven.MavenCAAnnotator"/>
+
+        <localInspection language="JSON" shortName="NpmCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupPath="JavaScript and TypeScript" groupName="Imports and dependencies"
+                         enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
+        <externalAnnotator language="JSON"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->

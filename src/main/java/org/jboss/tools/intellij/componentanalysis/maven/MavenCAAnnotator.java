@@ -14,12 +14,11 @@ package org.jboss.tools.intellij.componentanalysis.maven;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlComment;
-import com.intellij.psi.xml.XmlElement;
+import com.intellij.psi.xml.XmlDocument;
+import com.intellij.psi.xml.XmlTag;
+import com.intellij.psi.xml.XmlText;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
-import org.jetbrains.idea.maven.dom.MavenDomUtil;
-import org.jetbrains.idea.maven.dom.model.MavenDomDependency;
-import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,34 +32,80 @@ public class MavenCAAnnotator extends CAAnnotator {
 
     @Override
     protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file) {
-        MavenDomProjectModel projectModel = MavenDomUtil.getMavenDomModel(file, MavenDomProjectModel.class);
-        if (projectModel != null) {
-            List<MavenDomDependency> dependencies = projectModel.getDependencies().getDependencies();
-            dependencies = dependencies.stream()
-                    .filter(d -> {
-                        if ("test".equals(d.getScope().getStringValue())) {
-                            return false;
-                        }
-                        XmlElement element = d.getXmlElement();
-                        if (element != null) {
-                            return Arrays.stream(element.getChildren())
-                                    .noneMatch(c -> c instanceof XmlComment
-                                            && "exhortignore".equals(((XmlComment) c).getCommentText().trim()));
-                        }
-                        return false;
-                    }).collect(Collectors.toList());
-
+        if ("pom.xml".equals(file.getName())) {
             Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
-            dependencies.forEach(d -> {
-                Dependency dp = new Dependency(
-                        "maven",
-                        d.getGroupId().getStringValue(),
-                        d.getArtifactId().getStringValue(),
-                        d.getVersion().getStringValue());
-                resultMap.computeIfAbsent(dp, k -> new LinkedList<>()).add(d.getXmlElement());
-            });
+
+            Arrays.stream(file.getChildren())
+                    .filter(e -> e instanceof XmlDocument)
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof XmlTag && "project".equals(((XmlTag) e).getName()))
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof XmlTag && "dependencies".equals(((XmlTag) e).getName()))
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof XmlTag && "dependency".equals(((XmlTag) e).getName()))
+                    .filter(e -> Arrays.stream(e.getChildren())
+                            .noneMatch(c -> c instanceof XmlComment
+                                    && "exhortignore".equals(((XmlComment) c).getCommentText().trim())))
+                    .map(e -> (XmlTag) e)
+                    .forEach(d -> {
+                        List<XmlTag> elements = Arrays.stream(d.getChildren())
+                                .filter(c -> c instanceof XmlTag)
+                                .map(c -> (XmlTag) c)
+                                .collect(Collectors.toList());
+
+                        String groupId = null;
+                        String artifactId = null;
+                        String version = null;
+
+                        for (XmlTag e : elements) {
+                            if ("groupId".equals(e.getName())) {
+                                Optional<String> result = Arrays.stream(e.getValue().getChildren())
+                                        .filter(c -> c instanceof XmlText)
+                                        .map(PsiElement::getText)
+                                        .findAny();
+                                if (result.isPresent()) {
+                                    groupId = result.get();
+                                } else {
+                                    return;
+                                }
+                            } else if ("artifactId".equals(e.getName())) {
+                                Optional<String> result = Arrays.stream(e.getValue().getChildren())
+                                        .filter(c -> c instanceof XmlText)
+                                        .map(PsiElement::getText)
+                                        .findAny();
+                                if (result.isPresent()) {
+                                    artifactId = result.get();
+                                } else {
+                                    return;
+                                }
+                            } else if ("version".equals(e.getName())) {
+                                Optional<String> result = Arrays.stream(e.getValue().getChildren())
+                                        .filter(c -> c instanceof XmlText)
+                                        .map(PsiElement::getText)
+                                        .findAny();
+                                if (result.isPresent()) {
+                                    version = result.get();
+                                }
+                            } else if ("scope".equals(e.getName())) {
+                                Optional<String> result = Arrays.stream(e.getValue().getChildren())
+                                        .filter(c -> c instanceof XmlText)
+                                        .map(PsiElement::getText)
+                                        .findAny();
+                                if (result.isPresent() && "test".equals(result.get())) {
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (groupId != null && artifactId != null) {
+                            Dependency dp = new Dependency("maven", groupId, artifactId, version);
+                            resultMap.computeIfAbsent(dp, k -> new LinkedList<>()).add(d);
+                        }
+                    });
+
             return resultMap;
         }
+
         return Collections.emptyMap();
     }
 }

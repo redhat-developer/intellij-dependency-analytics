@@ -25,12 +25,12 @@ public class NpmCAInspection extends LocalInspectionTool {
     @Override
     @NotNull
     public String getGroupDisplayName() {
-        return "npm";
+        return "Imports and dependencies";
     }
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String @NotNull [] getGroupPath() {
-        return new String[]{"Javascript and Typescript"};
+        return new String[]{"JavaScript and TypeScript"};
     }
 
     @Override
