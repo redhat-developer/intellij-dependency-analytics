@@ -35,6 +35,7 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public String javaPath;
     public String npmPath;
     public String nodePath;
+    public String goPath;
     public String snykToken;
 
     @Override
@@ -67,6 +68,11 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
             System.setProperty("NODE_HOME", nodePath);
         } else {
             System.clearProperty("NODE_HOME");
+        }
+        if (goPath != null && !goPath.isBlank()) {
+            System.setProperty("EXHORT_GO_PATH", goPath);
+        } else {
+            System.clearProperty("EXHORT_GO_PATH");
         }
         if (snykToken != null && !snykToken.isBlank()) {
             System.setProperty("EXHORT_SNYK_TOKEN", snykToken);

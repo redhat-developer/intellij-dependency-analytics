@@ -115,7 +115,9 @@ public class SaUtils {
     public JsonObject performSA(VirtualFile manifestFile) {
         // Get SA report for given manifest file.
         String reportLink;
-        if ("pom.xml".equals(manifestFile.getName()) || "package.json".equals(manifestFile.getName())) {
+        if ("pom.xml".equals(manifestFile.getName())
+                || "package.json".equals(manifestFile.getName())
+                || "go.mod".equals(manifestFile.getName())) {
             ApiService apiService = ServiceManager.getService(ApiService.class);
             reportLink = apiService.getStackAnalysis(
                     determinePackageManagerName(manifestFile.getName()),
@@ -145,6 +147,9 @@ public class SaUtils {
                 break;
             case "package.json":
                 packageManager = "npm";
+                break;
+            case "go.mod":
+                packageManager = "go";
                 break;
             default:
                 throw new IllegalArgumentException("package manager not implemented");

@@ -43,6 +43,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getJavaPathText().equals(settings.javaPath);
         modified |= !settingsComponent.getNpmPathText().equals(settings.npmPath);
         modified |= !settingsComponent.getNodePathText().equals(settings.nodePath);
+        modified |= !settingsComponent.getGoPathText().equals(settings.goPath);
         modified |= !settingsComponent.getSnykTokenText().equals(settings.snykToken);
         return modified;
     }
@@ -54,17 +55,19 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.javaPath = settingsComponent.getJavaPathText();
         settings.npmPath = settingsComponent.getNpmPathText();
         settings.nodePath = settingsComponent.getNodePathText();
+        settings.goPath = settingsComponent.getGoPathText();
         settings.snykToken = settingsComponent.getSnykTokenText();
     }
 
     @Override
     public void reset() {
         ApiSettingsState settings = ApiSettingsState.getInstance();
-        settingsComponent.setMvnPathText(settings.mvnPath);
-        settingsComponent.setJavaPathText(settings.javaPath);
-        settingsComponent.setNpmPathText(settings.npmPath);
-        settingsComponent.setNodePathText(settings.nodePath);
-        settingsComponent.setSnykTokenText(settings.snykToken);
+        settingsComponent.setMvnPathText(settings.mvnPath != null ? settings.mvnPath : "");
+        settingsComponent.setJavaPathText(settings.javaPath != null ? settings.javaPath : "");
+        settingsComponent.setNpmPathText(settings.npmPath != null ? settings.npmPath : "");
+        settingsComponent.setNodePathText(settings.nodePath != null ? settings.nodePath : "");
+        settingsComponent.setGoPathText(settings.goPath != null ? settings.goPath : "");
+        settingsComponent.setSnykTokenText(settings.snykToken != null ? settings.snykToken : "");
     }
 
     @Override

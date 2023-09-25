@@ -183,6 +183,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                 return "maven";
             case "package.json":
                 return "npm";
+            case "go.mod":
+                return "go";
             default:
                 return null;
         }

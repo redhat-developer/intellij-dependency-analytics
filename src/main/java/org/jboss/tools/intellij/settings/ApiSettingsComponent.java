@@ -31,6 +31,8 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of <b>npm</b> executable.</html>";
     private final static String nodePathLabel = "<html>Node > Directory: <b>Path</b>"
             + "<br>Specifies absolute path of the <i>directory</i> containing <b>node</b> executable.</html>";
+    private final static String goPathLabel = "<html>Go > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>go</b> executable.</html>";
     private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
             + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
 
@@ -40,6 +42,7 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton javaPathText;
     private final TextFieldWithBrowseButton npmPathText;
     private final TextFieldWithBrowseButton nodePathText;
+    private final TextFieldWithBrowseButton goPathText;
     private final JBTextField snykTokenText;
 
     public ApiSettingsComponent() {
@@ -79,6 +82,15 @@ public class ApiSettingsComponent {
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
+        goPathText = new TextFieldWithBrowseButton();
+        goPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
         snykTokenText = new JBTextField();
 
         mainPanel = FormBuilder.createFormBuilder()
@@ -90,6 +102,9 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(npmPathLabel), npmPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(nodePathLabel), nodePathText, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(goPathLabel), goPathText, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
@@ -139,6 +154,15 @@ public class ApiSettingsComponent {
 
     public void setNodePathText(@NotNull String text) {
         nodePathText.setText(text);
+    }
+
+    @NotNull
+    public String getGoPathText() {
+        return goPathText.getText();
+    }
+
+    public void setGoPathText(@NotNull String text) {
+        goPathText.setText(text);
     }
 
     @NotNull
