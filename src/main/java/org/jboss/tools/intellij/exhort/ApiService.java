@@ -11,8 +11,12 @@
 
 package org.jboss.tools.intellij.exhort;
 
+import com.intellij.ide.plugins.PluginManagerCore;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.extensions.PluginDescriptor;
+import com.intellij.openapi.extensions.PluginId;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.impl.ExhortApi;
@@ -32,7 +36,7 @@ public final class ApiService {
     private static final Logger LOG = Logger.getInstance(ApiService.class);
 
     enum TelemetryKeys {
-        MANIFEST, ECOSYSTEM, PLATFORM;
+        MANIFEST, ECOSYSTEM, PLATFORM, RHDA_TOKEN;
 
         @Override
         public String toString() {
@@ -55,9 +59,10 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
         telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
         telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
+        telemetryMsg.property(TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
 
         try {
-            ApiSettingsState.getInstance().setApiOptions();
+            setRequestProperties();
             var htmlContent = exhortApi.stackAnalysisHtml(manifestPath);
             var tmpFile = Files.createTempFile("exhort_", ".html");
             Files.write(tmpFile, htmlContent.get());
@@ -77,9 +82,10 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
         telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
         telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
+        telemetryMsg.property(TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
 
         try {
-            ApiSettingsState.getInstance().setApiOptions();
+            setRequestProperties();
             CompletableFuture<AnalysisReport> componentReport;
             if ("go.mod".equals(manifestName) || "requirements.txt".equals(manifestName)) {
                 var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
@@ -104,5 +110,82 @@ public final class ApiService {
             LOG.warn("Invalid vulnerability report returned.", ex);
         }
         return null;
+    }
+
+    private void setRequestProperties() {
+        String ideName = ApplicationInfo.getInstance().getFullApplicationName();
+        PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
+        if (pluginDescriptor != null) {
+            String pluginName = pluginDescriptor.getName() + " " + pluginDescriptor.getVersion();
+            System.setProperty("RHDA_SOURCE", ideName + " / " + pluginName);
+        } else {
+            System.setProperty("RHDA_SOURCE", ideName);
+        }
+
+        ApiSettingsState settings = ApiSettingsState.getInstance();
+        System.setProperty("RHDA_TOKEN", settings.rhdaToken);
+
+        if (settings.mvnPath != null && !settings.mvnPath.isBlank()) {
+            System.setProperty("EXHORT_MVN_PATH", settings.mvnPath);
+        } else {
+            System.clearProperty("EXHORT_MVN_PATH");
+        }
+        if (settings.javaPath != null && !settings.javaPath.isBlank()) {
+            System.setProperty("JAVA_HOME", settings.javaPath);
+        } else {
+            System.clearProperty("JAVA_HOME");
+        }
+        if (settings.npmPath != null && !settings.npmPath.isBlank()) {
+            System.setProperty("EXHORT_NPM_PATH", settings.npmPath);
+        } else {
+            System.clearProperty("EXHORT_NPM_PATH");
+        }
+        if (settings.nodePath != null && !settings.nodePath.isBlank()) {
+            System.setProperty("NODE_HOME", settings.nodePath);
+        } else {
+            System.clearProperty("NODE_HOME");
+        }
+        if (settings.goPath != null && !settings.goPath.isBlank()) {
+            System.setProperty("EXHORT_GO_PATH", settings.goPath);
+        } else {
+            System.clearProperty("EXHORT_GO_PATH");
+        }
+        if (settings.usePython2) {
+            if (settings.pythonPath != null && !settings.pythonPath.isBlank()) {
+                System.setProperty("EXHORT_PYTHON_PATH", settings.pythonPath);
+            } else {
+                System.clearProperty("EXHORT_PYTHON_PATH");
+            }
+            if (settings.pipPath != null && !settings.pipPath.isBlank()) {
+                System.setProperty("EXHORT_PIP_PATH", settings.pipPath);
+            } else {
+                System.clearProperty("EXHORT_PIP_PATH");
+            }
+            System.clearProperty("EXHORT_PYTHON3_PATH");
+            System.clearProperty("EXHORT_PIP3_PATH");
+        } else {
+            if (settings.pythonPath != null && !settings.pythonPath.isBlank()) {
+                System.setProperty("EXHORT_PYTHON3_PATH", settings.pythonPath);
+            } else {
+                System.clearProperty("EXHORT_PYTHON3_PATH");
+            }
+            if (settings.pipPath != null && !settings.pipPath.isBlank()) {
+                System.setProperty("EXHORT_PIP3_PATH", settings.pipPath);
+            } else {
+                System.clearProperty("EXHORT_PIP3_PATH");
+            }
+            System.clearProperty("EXHORT_PYTHON_PATH");
+            System.clearProperty("EXHORT_PIP_PATH");
+        }
+        if (settings.usePythonVirtualEnv) {
+            System.setProperty("EXHORT_PYTHON_VIRTUAL_ENV", "true");
+        } else {
+            System.clearProperty("EXHORT_PYTHON_VIRTUAL_ENV");
+        }
+        if (settings.snykToken != null && !settings.snykToken.isBlank()) {
+            System.setProperty("EXHORT_SNYK_TOKEN", settings.snykToken);
+        } else {
+            System.clearProperty("EXHORT_SNYK_TOKEN");
+        }
     }
 }
