@@ -17,6 +17,8 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.UUID;
+
 @State(
         name = "org.jboss.tools.intellij.settings.ApiSettingsState",
         storages = @Storage(
@@ -28,9 +30,14 @@ import org.jetbrains.annotations.Nullable;
 public final class ApiSettingsState implements PersistentStateComponent<ApiSettingsState> {
 
     public static ApiSettingsState getInstance() {
-        return ApplicationManager.getApplication().getService(ApiSettingsState.class);
+        ApiSettingsState state = ApplicationManager.getApplication().getService(ApiSettingsState.class);
+        if (state.rhdaToken == null || state.rhdaToken.isBlank()) {
+            state.rhdaToken = UUID.randomUUID().toString();
+        }
+        return state;
     }
 
+    public String rhdaToken;
     public String mvnPath;
     public String javaPath;
     public String npmPath;
@@ -51,70 +58,5 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     @Override
     public void loadState(@NotNull ApiSettingsState state) {
         XmlSerializerUtil.copyBean(state, this);
-    }
-
-    public void setApiOptions() {
-        if (mvnPath != null && !mvnPath.isBlank()) {
-            System.setProperty("EXHORT_MVN_PATH", mvnPath);
-        } else {
-            System.clearProperty("EXHORT_MVN_PATH");
-        }
-        if (javaPath != null && !javaPath.isBlank()) {
-            System.setProperty("JAVA_HOME", javaPath);
-        } else {
-            System.clearProperty("JAVA_HOME");
-        }
-        if (npmPath != null && !npmPath.isBlank()) {
-            System.setProperty("EXHORT_NPM_PATH", npmPath);
-        } else {
-            System.clearProperty("EXHORT_NPM_PATH");
-        }
-        if (nodePath != null && !nodePath.isBlank()) {
-            System.setProperty("NODE_HOME", nodePath);
-        } else {
-            System.clearProperty("NODE_HOME");
-        }
-        if (goPath != null && !goPath.isBlank()) {
-            System.setProperty("EXHORT_GO_PATH", goPath);
-        } else {
-            System.clearProperty("EXHORT_GO_PATH");
-        }
-        if (usePython2) {
-            if (pythonPath != null && !pythonPath.isBlank()) {
-                System.setProperty("EXHORT_PYTHON_PATH", pythonPath);
-            } else {
-                System.clearProperty("EXHORT_PYTHON_PATH");
-            }
-            if (pipPath != null && !pipPath.isBlank()) {
-                System.setProperty("EXHORT_PIP_PATH", pipPath);
-            } else {
-                System.clearProperty("EXHORT_PIP_PATH");
-            }
-            System.clearProperty("EXHORT_PYTHON3_PATH");
-            System.clearProperty("EXHORT_PIP3_PATH");
-        } else {
-            if (pythonPath != null && !pythonPath.isBlank()) {
-                System.setProperty("EXHORT_PYTHON3_PATH", pythonPath);
-            } else {
-                System.clearProperty("EXHORT_PYTHON3_PATH");
-            }
-            if (pipPath != null && !pipPath.isBlank()) {
-                System.setProperty("EXHORT_PIP3_PATH", pipPath);
-            } else {
-                System.clearProperty("EXHORT_PIP3_PATH");
-            }
-            System.clearProperty("EXHORT_PYTHON_PATH");
-            System.clearProperty("EXHORT_PIP_PATH");
-        }
-        if (usePythonVirtualEnv) {
-            System.setProperty("EXHORT_PYTHON_VIRTUAL_ENV", "true");
-        } else {
-            System.clearProperty("EXHORT_PYTHON_VIRTUAL_ENV");
-        }
-        if (snykToken != null && !snykToken.isBlank()) {
-            System.setProperty("EXHORT_SNYK_TOKEN", snykToken);
-        } else {
-            System.clearProperty("EXHORT_SNYK_TOKEN");
-        }
     }
 }
