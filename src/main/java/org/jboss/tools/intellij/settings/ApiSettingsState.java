@@ -36,6 +36,11 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public String npmPath;
     public String nodePath;
     public String goPath;
+    public String pythonPath;
+    public String pipPath;
+    public boolean usePython2;
+    public boolean usePythonVirtualEnv;
+
     public String snykToken;
 
     @Override
@@ -73,6 +78,38 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
             System.setProperty("EXHORT_GO_PATH", goPath);
         } else {
             System.clearProperty("EXHORT_GO_PATH");
+        }
+        if (usePython2) {
+            if (pythonPath != null && !pythonPath.isBlank()) {
+                System.setProperty("EXHORT_PYTHON_PATH", pythonPath);
+            } else {
+                System.clearProperty("EXHORT_PYTHON_PATH");
+            }
+            if (pipPath != null && !pipPath.isBlank()) {
+                System.setProperty("EXHORT_PIP_PATH", pipPath);
+            } else {
+                System.clearProperty("EXHORT_PIP_PATH");
+            }
+            System.clearProperty("EXHORT_PYTHON3_PATH");
+            System.clearProperty("EXHORT_PIP3_PATH");
+        } else {
+            if (pythonPath != null && !pythonPath.isBlank()) {
+                System.setProperty("EXHORT_PYTHON3_PATH", pythonPath);
+            } else {
+                System.clearProperty("EXHORT_PYTHON3_PATH");
+            }
+            if (pipPath != null && !pipPath.isBlank()) {
+                System.setProperty("EXHORT_PIP3_PATH", pipPath);
+            } else {
+                System.clearProperty("EXHORT_PIP3_PATH");
+            }
+            System.clearProperty("EXHORT_PYTHON_PATH");
+            System.clearProperty("EXHORT_PIP_PATH");
+        }
+        if (usePythonVirtualEnv) {
+            System.setProperty("EXHORT_PYTHON_VIRTUAL_ENV", "true");
+        } else {
+            System.clearProperty("EXHORT_PYTHON_VIRTUAL_ENV");
         }
         if (snykToken != null && !snykToken.isBlank()) {
             System.setProperty("EXHORT_SNYK_TOKEN", snykToken);

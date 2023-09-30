@@ -44,6 +44,10 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getNpmPathText().equals(settings.npmPath);
         modified |= !settingsComponent.getNodePathText().equals(settings.nodePath);
         modified |= !settingsComponent.getGoPathText().equals(settings.goPath);
+        modified |= !settingsComponent.getPythonPathText().equals(settings.pythonPath);
+        modified |= !settingsComponent.getPipPathText().equals(settings.pipPath);
+        modified |= settingsComponent.getUsePython2Check() != settings.usePython2;
+        modified |= settingsComponent.getUsePythonVirtualEnvCheck() != settings.usePythonVirtualEnv;
         modified |= !settingsComponent.getSnykTokenText().equals(settings.snykToken);
         return modified;
     }
@@ -56,6 +60,10 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.npmPath = settingsComponent.getNpmPathText();
         settings.nodePath = settingsComponent.getNodePathText();
         settings.goPath = settingsComponent.getGoPathText();
+        settings.pythonPath = settingsComponent.getPythonPathText();
+        settings.pipPath = settingsComponent.getPipPathText();
+        settings.usePython2 = settingsComponent.getUsePython2Check();
+        settings.usePythonVirtualEnv = settingsComponent.getUsePythonVirtualEnvCheck();
         settings.snykToken = settingsComponent.getSnykTokenText();
     }
 
@@ -67,6 +75,10 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setNpmPathText(settings.npmPath != null ? settings.npmPath : "");
         settingsComponent.setNodePathText(settings.nodePath != null ? settings.nodePath : "");
         settingsComponent.setGoPathText(settings.goPath != null ? settings.goPath : "");
+        settingsComponent.setPythonPathText(settings.pythonPath != null ? settings.pythonPath : "");
+        settingsComponent.setPipPathText(settings.pipPath != null ? settings.pipPath : "");
+        settingsComponent.setUsePython2Check(settings.usePython2);
+        settingsComponent.setUsePythonVirtualEnvCheck(settings.usePythonVirtualEnv);
         settingsComponent.setSnykTokenText(settings.snykToken != null ? settings.snykToken : "");
     }
 

@@ -33,6 +33,12 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of the <i>directory</i> containing <b>node</b> executable.</html>";
     private final static String goPathLabel = "<html>Go > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>go</b> executable.</html>";
+    private final static String pythonPathLabel = "<html>Python > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>python</b> executable.</html>";
+    private final static String pipPathLabel = "<html>Pip > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>pip</b> executable.</html>";
+    private final static String usePython2Label = "<html>Python > Executable: <b>Version</b></html>";
+    private final static String usePythonVirtualEnvLabel = "<html>Python > Virtual Envrionment</html>";
     private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
             + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
 
@@ -43,6 +49,10 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton npmPathText;
     private final TextFieldWithBrowseButton nodePathText;
     private final TextFieldWithBrowseButton goPathText;
+    private final TextFieldWithBrowseButton pythonPathText;
+    private final TextFieldWithBrowseButton pipPathText;
+    private final JCheckBox usePython2Check;
+    private final JCheckBox usePythonVirtualEnvCheck;
     private final JBTextField snykTokenText;
 
     public ApiSettingsComponent() {
@@ -55,7 +65,7 @@ public class ApiSettingsComponent {
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
-        javaPathText= new TextFieldWithBrowseButton();
+        javaPathText = new TextFieldWithBrowseButton();
         javaPathText.addBrowseFolderListener(
                 null,
                 null,
@@ -91,6 +101,28 @@ public class ApiSettingsComponent {
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
+        pythonPathText = new TextFieldWithBrowseButton();
+        pythonPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        pipPathText = new TextFieldWithBrowseButton();
+        pipPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        usePython2Check = new JCheckBox("Use python 2.x");
+
+        usePythonVirtualEnvCheck = new JCheckBox("Use python virtual environment");
+
         snykTokenText = new JBTextField();
 
         mainPanel = FormBuilder.createFormBuilder()
@@ -105,6 +137,15 @@ public class ApiSettingsComponent {
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(goPathLabel), goPathText, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(pythonPathLabel), pythonPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(pipPathLabel), pipPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(usePython2Label), usePython2Check, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(usePythonVirtualEnvLabel), usePythonVirtualEnvCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
@@ -163,6 +204,40 @@ public class ApiSettingsComponent {
 
     public void setGoPathText(@NotNull String text) {
         goPathText.setText(text);
+    }
+
+    @NotNull
+    public String getPythonPathText() {
+        return pythonPathText.getText();
+    }
+
+    public void setPythonPathText(@NotNull String text) {
+        pythonPathText.setText(text);
+    }
+
+    @NotNull
+    public String getPipPathText() {
+        return pipPathText.getText();
+    }
+
+    public void setPipPathText(@NotNull String text) {
+        pipPathText.setText(text);
+    }
+
+    public boolean getUsePython2Check() {
+        return usePython2Check.isSelected();
+    }
+
+    public void setUsePython2Check(boolean selected) {
+        usePython2Check.setSelected(selected);
+    }
+
+    public boolean getUsePythonVirtualEnvCheck() {
+        return usePythonVirtualEnvCheck.isSelected();
+    }
+
+    public void setUsePythonVirtualEnvCheck(boolean selected) {
+        usePythonVirtualEnvCheck.setSelected(selected);
     }
 
     @NotNull

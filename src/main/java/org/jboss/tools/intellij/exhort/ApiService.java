@@ -81,7 +81,7 @@ public final class ApiService {
         try {
             ApiSettingsState.getInstance().setApiOptions();
             CompletableFuture<AnalysisReport> componentReport;
-            if ("go.mod".equals(manifestName)) {
+            if ("go.mod".equals(manifestName) || "requirements.txt".equals(manifestName)) {
                 var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
                 componentReport = exhortApi.componentAnalysis(manifestName, manifestContent);
             } else {
