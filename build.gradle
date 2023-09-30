@@ -18,6 +18,15 @@ repositories {
     }
 }
 
+// Include the generated files in the source set
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/gen")
+        }
+    }
+}
+
 apply plugin: 'idea'
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'

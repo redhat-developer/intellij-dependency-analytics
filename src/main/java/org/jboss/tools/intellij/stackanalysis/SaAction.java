@@ -32,9 +32,8 @@ public class SaAction extends AnAction {
     private static final List<String> supportedManifestFiles = Arrays.asList(
             "pom.xml",
             "package.json",
-            "go.mod"
-//            Disable support for go and python
-//             "requirements.txt", "requirements-dev.txt"
+            "go.mod",
+            "requirements.txt"
     );
 
     public SaAction() {

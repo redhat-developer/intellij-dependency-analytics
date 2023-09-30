@@ -185,6 +185,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                 return "npm";
             case "go.mod":
                 return "go";
+            case "requirements.txt":
+                return "python";
             default:
                 return null;
         }

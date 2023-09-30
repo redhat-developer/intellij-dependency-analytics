@@ -329,6 +329,20 @@
                          implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
         <externalAnnotator language="JSON"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
+
+        <fileType name="rhda-requirements"
+                  language="rhda-requirements"
+                  fileNames="requirements.txt"
+                  implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.requirements.filetype.RequirementsFileType"/>
+        <lang.parserDefinition language="rhda-requirements"
+                               implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.RequirementsParserDefinition"/>
+        <localInspection language="rhda-requirements" shortName="PipCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Python" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAInspection"/>
+        <externalAnnotator language="rhda-requirements"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAAnnotator"/>
+
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->

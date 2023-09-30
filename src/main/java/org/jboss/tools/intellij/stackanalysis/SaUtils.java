@@ -82,7 +82,7 @@ public class SaUtils {
             for (VirtualFile openFile : openFiles) {
                 // Check if opened file extension is sa, and existing tab manifest file type is same as new (pom.xml, go.mod)
                 // if not then no need to close any existing tab, just create new tab.
-                if (openFile.getExtension().equals("sa")
+                if ("sa".equals(openFile.getExtension())
                         && openFile.getNameWithoutExtension()
                         .replaceAll("^.*?_", "")
                         .equals(manifestDetails.get("manifestName").getAsString())) {
@@ -117,7 +117,8 @@ public class SaUtils {
         String reportLink;
         if ("pom.xml".equals(manifestFile.getName())
                 || "package.json".equals(manifestFile.getName())
-                || "go.mod".equals(manifestFile.getName())) {
+                || "go.mod".equals(manifestFile.getName())
+                || "requirements.txt".equals(manifestFile.getName())) {
             ApiService apiService = ServiceManager.getService(ApiService.class);
             reportLink = apiService.getStackAnalysis(
                     determinePackageManagerName(manifestFile.getName()),
@@ -150,6 +151,9 @@ public class SaUtils {
                 break;
             case "go.mod":
                 packageManager = "go";
+                break;
+            case "requirements.txt":
+                packageManager = "python";
                 break;
             default:
                 throw new IllegalArgumentException("package manager not implemented");
