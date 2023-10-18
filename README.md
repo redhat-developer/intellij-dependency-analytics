@@ -85,25 +85,28 @@ according to your preferences.
 **Configurable parameters**
 
 - **Maven** :
-<br >Path of the `mvn` executable allows Exhort to locate and execute the `mvn` command to resolve dependencies for
+<br >Set the full path of the Maven executable, which allows Exhort to locate and execute the `mvn` command to resolve
+dependencies for
 Maven projects.
 Path of the `JAVA_HOME` directory is required by the `mvn` executable.
 If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
 
-- **Npm** :
-<br >Path of the `npm` executable allows Exhort to locate and execute the `npm` command to resolve dependencies for Node
+- **Node** :
+<br >Set the full path of the Node executable, which allows Exhort to locate and execute the `npm` command to resolve
+dependencies for Node
 projects.
 Path of the directory containing the `node` executable is required by the `npm` executable.
 If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
 - **Golang** :
-<br >Path of the `go` executable allows Exhort to locate and execute the `go` command to resolve dependencies for Go
+<br >Set the full path of the Go executable, which allows Exhort to locate and execute the `go` command to resolve
+dependencies for Go
 projects.
 If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
 
 - **Python** :
-<br >Paths of the `python3` and `pip3` executables allow Exhort to locate and execute the `pip3` commands to resolve
-dependencies for Python projects.
+<br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
+and execute the `pip3` commands to resolve dependencies for Python projects.
 Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
 Python virtual environment can be applied, if the `Use python virtual environment` option is selected.
 If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
@@ -172,7 +175,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   If you wish to ignore vulnerabilities for a dependency in a `go.mod` file, you must add `exhortignore` as a comment
   against the dependency in the manifest file.
   For example:
-  ```
+  ```text
   require (
       golang.org/x/sys v1.6.7 // exhortignore
   )
@@ -181,7 +184,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   If you wish to ignore vulnerabilities for a dependency in a `requirements.txt` file, you must add `exhortignore` as a
   comment against the dependency in the manifest file.
   For example:
-  ```
+  ```text
   requests==2.28.1 # exhortignore
   ```
 
@@ -221,7 +224,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   ```
 
   For example, setting `exclude` attribute in the `go.mod` file:
-  ```
+  ```text
   exclude golang.org/x/sys v1.6.7
 
   exclude (
@@ -229,8 +232,8 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   )
   ```
 
-  For example, creating an alternative file to `requirements.txt`, like `requirements-dev.txt`
-  or `requirements-test.txt` and adding the dev or test dependencies there instead.
+  You can create an alternative file to `requirements.txt`, for example, a `requirements-dev.txt` or
+  a `requirements-test.txt` file where you can add the development or test dependencies there.
 
 - **Red Hat Dependency Analytics report**
   <br >The Red Hat Dependency Analytics report is a temporary HTML file that exist if the **Red Hat Dependency Analytics
