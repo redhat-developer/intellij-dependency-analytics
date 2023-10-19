@@ -60,10 +60,10 @@ public class SaUtils {
         if (virtualFile == null) {
             throw new PlatformDetectionException("Dependency Analytics Report file is not created.");
         }
-        virtualFile.refresh(false, true);
-
-        // Open the virtual file in editor window, which will show the SA report.
-        instance.openFile(virtualFile, true, false);
+        virtualFile.refresh(true, true, () -> {
+            // Open the virtual file in editor window, which will show the SA report.
+            instance.openFile(virtualFile, true, false);
+        });
     }
 
 
@@ -98,7 +98,7 @@ public class SaUtils {
                         instance.closeFile(openFile);
 
                         // Refresh the project from physical filesystem.
-                        openFile.refresh(false, true);
+                        openFile.refresh(true, true);
                         break;
                     } else {
                         // If paths are not same it means file types are same but they are in different locations
