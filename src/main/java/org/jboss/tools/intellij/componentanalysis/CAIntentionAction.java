@@ -44,7 +44,8 @@ public class CAIntentionAction implements IntentionAction {
         }
         return "pom.xml".equals(file.getName())
                 || "package.json".equals(file.getName())
-                || "go.mod".equals(file.getName());
+                || "go.mod".equals(file.getName())
+                || "requirements.txt".equals(file.getName());
     }
 
     @Override
