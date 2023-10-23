@@ -21,6 +21,7 @@ import org.jboss.tools.intellij.settings.ApiSettingsState;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -79,7 +80,13 @@ public final class ApiService {
 
         try {
             ApiSettingsState.getInstance().setApiOptions();
-            CompletableFuture<AnalysisReport> componentReport = exhortApi.componentAnalysis(manifestPath);
+            CompletableFuture<AnalysisReport> componentReport;
+            if ("go.mod".equals(manifestName)) {
+                var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
+                componentReport = exhortApi.componentAnalysis(manifestName, manifestContent);
+            } else {
+                componentReport = exhortApi.componentAnalysis(manifestPath);
+            }
             AnalysisReport report = componentReport.get();
             telemetryMsg.send();
             return report;

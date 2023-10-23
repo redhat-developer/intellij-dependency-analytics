@@ -15,7 +15,6 @@ import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.LocalInspectionTool;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.idea.maven.dom.MavenDomBundle;
 
 public class MavenCAInspection extends LocalInspectionTool {
 
@@ -25,7 +24,7 @@ public class MavenCAInspection extends LocalInspectionTool {
     @Override
     @NotNull
     public String getGroupDisplayName() {
-        return MavenDomBundle.message("inspection.group");
+        return "Maven";
     }
 
     @Override

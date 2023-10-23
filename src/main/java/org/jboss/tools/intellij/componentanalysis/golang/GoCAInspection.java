@@ -9,7 +9,7 @@
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.jboss.tools.intellij.componentanalysis.npm;
+package org.jboss.tools.intellij.componentanalysis.golang;
 
 import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.LocalInspectionTool;
@@ -17,31 +17,28 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-public class NpmCAInspection extends LocalInspectionTool {
+public class GoCAInspection extends LocalInspectionTool {
 
     @NonNls
-    public static final String SHORT_NAME = "NpmCAInspection";
+    public static final String SHORT_NAME = "GoCAInspection";
 
     @Override
-    @NotNull
-    public String getGroupDisplayName() {
-        return "Imports and dependencies";
+    public @Nls(capitalization = Nls.Capitalization.Sentence) @NotNull String getGroupDisplayName() {
+        return "General";
     }
 
     @Override
     public @Nls(capitalization = Nls.Capitalization.Sentence) String @NotNull [] getGroupPath() {
-        return new String[]{"JavaScript and TypeScript"};
+        return new String[]{"Go modules"};
     }
 
     @Override
-    @NotNull
-    public String getShortName() {
+    public @NonNls @NotNull String getShortName() {
         return SHORT_NAME;
     }
 
     @Override
-    @NotNull
-    public HighlightDisplayLevel getDefaultLevel() {
+    public @NotNull HighlightDisplayLevel getDefaultLevel() {
         return HighlightDisplayLevel.ERROR;
     }
 }

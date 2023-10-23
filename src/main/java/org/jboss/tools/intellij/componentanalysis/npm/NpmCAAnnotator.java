@@ -14,7 +14,6 @@ package org.jboss.tools.intellij.componentanalysis.npm;
 import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
 
@@ -31,39 +30,35 @@ public class NpmCAAnnotator extends CAAnnotator {
     @Override
     protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file) {
         if ("package.json".equals(file.getName())) {
-            Set<String> ignored = PsiTreeUtil.findChildrenOfType(file, JsonArray.class)
-                    .stream()
-                    .filter(c -> {
-                        PsiElement p = c.getParent();
-                        if (p != null) {
-                            return p instanceof JsonProperty && "exhortignore".equals(((JsonProperty) p).getName());
-                        }
-                        return false;
-                    })
-                    .flatMap(c -> Arrays.stream(c.getChildren()))
+            Set<String> ignored = Arrays.stream(file.getChildren())
+                    .filter(e -> e instanceof JsonObject)
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof JsonProperty && "exhortignore".equals(((JsonProperty) e).getName()))
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof JsonArray)
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
                     .filter(c -> c instanceof JsonStringLiteral)
                     .map(c -> ((JsonStringLiteral) c).getValue())
                     .collect(Collectors.toSet());
 
             Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
-            PsiTreeUtil.findChildrenOfType(file, JsonObject.class)
-                    .stream()
-                    .filter(c -> {
-                        PsiElement p = c.getParent();
-                        if (p != null) {
-                            return p instanceof JsonProperty && "dependencies".equals(((JsonProperty) p).getName());
-                        }
-                        return false;
-                    })
-                    .flatMap(c -> Arrays.stream(c.getChildren()))
+            Arrays.stream(file.getChildren())
+                    .filter(e -> e instanceof JsonObject)
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof JsonProperty && "dependencies".equals(((JsonProperty) e).getName()))
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
+                    .filter(e -> e instanceof JsonObject)
+                    .flatMap(e -> Arrays.stream(e.getChildren()))
                     .filter(c -> c instanceof JsonProperty && !ignored.contains(((JsonProperty) c).getName()))
                     .forEach(c -> {
                         String name = ((JsonProperty) c).getName();
-                        String[] parts = name.split("/", 2);
+                        int index = name.lastIndexOf("/");
                         String namespace = null;
-                        if (parts.length == 2) {
-                            namespace = parts[0];
-                            name = parts[1];
+                        if (index > 0) {
+                            namespace = name.substring(0, index);
+                            name = name.substring(index + 1);
+                        } else if (index == 0) {
+                            name = name.substring(index + 1);
                         }
                         JsonValue value = ((JsonProperty) c).getValue();
                         String version = value instanceof JsonStringLiteral

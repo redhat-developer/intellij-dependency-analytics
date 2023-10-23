@@ -1,0 +1,11 @@
+<idea-plugin>
+    <depends>com.intellij.modules.platform</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="vgo" shortName="GoCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupPath="Go modules" groupName="General" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.golang.GoCAInspection"/>
+        <externalAnnotator language="vgo"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.golang.GoCAAnnotator"/>
+    </extensions>
+</idea-plugin>
