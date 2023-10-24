@@ -37,7 +37,7 @@ node('rhel7'){
 
 		if(publishToMarketPlace.equals('true')){
 			timeout(time:5, unit:'DAYS') {
-				input message:'Approve deployment?', submitter: 'jmaury, tfigenbl, zgrinber, vbelouso, xieshenzh'
+				input message:'Approve deployment?', submitter: 'jmaury, tfigenbl, zgrinber, vbelouso, xiezhang'
 			}
 
 			def channel = isSnapshot?"nightly":"stable"
