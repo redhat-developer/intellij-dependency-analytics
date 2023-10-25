@@ -44,7 +44,7 @@ public class PipCAAnnotator extends CAAnnotator {
                                 return false;
                             }))
                     .forEach(r -> {
-                        String name = r.getPkgName().getText();
+                        String name = r.getPkgName().getText().toLowerCase();
                         String version = r.getVersionspec() != null ? r.getVersionspec().getText() : null;
                         Dependency dp = new Dependency("pypi", null, name, version);
                         resultMap.computeIfAbsent(dp, k -> new LinkedList<>()).add(r);
