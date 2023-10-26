@@ -303,6 +303,8 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
     <depends config-file="go.xml" optional="true">org.jetbrains.plugins.go</depends>
+    <depends config-file="pip-ce.xml" optional="true">PythonCore</depends>
+    <depends config-file="pip-pro.xml" optional="true">ru.meanmail.plugin.requirements</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
@@ -329,19 +331,6 @@
                          implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
         <externalAnnotator language="JSON"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
-
-        <fileType name="rhda-requirements"
-                  language="rhda-requirements"
-                  fileNames="requirements.txt"
-                  implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.requirements.filetype.RequirementsFileType"/>
-        <lang.parserDefinition language="rhda-requirements"
-                               implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.RequirementsParserDefinition"/>
-        <localInspection language="rhda-requirements" shortName="PipCAInspection"
-                         displayName="Red Hat Dependency Analytics component analysis"
-                         groupName="Python" enabledByDefault="true" level="ERROR"
-                         implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAInspection"/>
-        <externalAnnotator language="rhda-requirements"
-                           implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAAnnotator"/>
 
     </extensions>
 

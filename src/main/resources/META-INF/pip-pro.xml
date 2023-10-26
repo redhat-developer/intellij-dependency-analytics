@@ -1,0 +1,10 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <localInspection language="requirements.txt" shortName="PipCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Python" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAInspection"/>
+        <externalAnnotator language="requirements.txt"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.pro.PipCAAnnotator"/>
+    </extensions>
+</idea-plugin>

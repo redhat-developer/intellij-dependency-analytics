@@ -1,0 +1,39 @@
+{
+  parserClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.parser.RequirementsParser"
+  parserUtilClass="com.intellij.lang.parser.GeneratedParserUtilBase"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix=""
+  psiImplClassSuffix="Impl"
+  psiPackage="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi"
+  psiImplPackage="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.impl"
+
+  elementTypeHolderClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.RequirementsTypes"
+  elementTypeClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.RequirementsElementType"
+  tokenTypeClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.RequirementsTokenType"
+}
+
+file ::= line*
+
+private line ::= (spec | COMMENT | CRLF)
+private spec ::= (name_req | uri_req | other_spec)
+
+name_req ::= (pkg_name extras? (versionspec | AT)? (REQ_PART | BACKSLASH)* name_req_comment?) {pin=5}
+
+pkg_name ::= IDENTIFIER
+
+private extras ::= LSBRACE extras_list? RSBRACE {pin=1}
+extras_list ::= IDENTIFIER (COMMA IDENTIFIER)* {pin(".*")=1}
+
+versionspec ::= LPARENTHESIS version_many RPARENTHESIS | version_many
+private version_many ::= version_one (COMMA version_one)*
+version_one ::= version_cmp_value version_value
+version_cmp_value ::= VERSION_CMP
+version_value ::= VERSION
+
+name_req_comment ::= REQ_COMMENT
+
+uri_req ::= (pkg_name extras?)? URI_PART (URI_PART | BACKSLASH)* COMMENT? {pin=2}
+
+other_spec ::= OTHER_PART (OTHER_PART | BACKSLASH)* COMMENT? {pin=1}

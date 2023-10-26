@@ -1,0 +1,16 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="rhda-requirements"
+                  language="rhda-requirements"
+                  fileNames="requirements.txt"
+                  implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.filetype.RequirementsFileType"/>
+        <lang.parserDefinition language="rhda-requirements"
+                               implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.RequirementsParserDefinition"/>
+        <localInspection language="rhda-requirements" shortName="PipCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Python" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAInspection"/>
+        <externalAnnotator language="rhda-requirements"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.ce.PipCAAnnotator"/>
+    </extensions>
+</idea-plugin>
