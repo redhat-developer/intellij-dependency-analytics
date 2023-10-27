@@ -105,40 +105,42 @@
 <ul>
     <li>
         <b>Maven</b>:
-    <br>Set the full path of the Maven executable, which allows Exhort to locate and execute the <code>mvn</code>
-    command to resolve dependencies forMaven projects.
-    <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
-    <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be used
-    to locate the executables.
+        <br>Set the full path of the Maven executable, which allows Exhort to locate and execute the <code>mvn</code>
+        command to resolve dependencies forMaven projects.
+        <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be
+        used to locate the executables.
     </li>
     <li>
         <b>Node</b>:
-    <br>Set the full path of the Node executable, which allows Exhort to locate and execute <code>npm</code> command to
-    resolve dependencies for Node projects.
-    <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code>
-    executable.
-    <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
+        <br>Set the full path of the Node executable, which allows Exhort to locate and execute <code>npm</code> command
+        to resolve dependencies for Node projects.
+        <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code>
+        executable.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
+        executables.
     </li>
     <li>
         <b>Golang</b>:
-    <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code> command to
-    resolve dependencies for Go projects.
-    <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
+        <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code>
+        command to resolve dependencies for Go projects.
+        <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
     </li>
     <li>
         <b>Python</b>:
-    <br>Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
-    and execute the <code>pip3</code> commands to resolve dependencies for Python projects.
-    <br>Python 2 executables <code>python</code> and <code>pip</code> can be used instead, if the <code>Use python
-    2.x</code> option is selected.
-    <br>Python virtual environment can be applied, if the <code>Use python virtual environment</code> option is
-    selected.
-    <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
+        <br>Set the full paths of the Python and the package installer for Python executables, which allows Exhort to
+        locate and execute the <code>pip3</code> commands to resolve dependencies for Python projects.
+        <br>Python 2 executables <code>python</code> and <code>pip</code> can be used instead, if the <code>Use python
+        2.x</code> option is selected.
+        <br>Python virtual environment can be applied, if the <code>Use python virtual environment</code> option is
+        selected.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
+        executables.
     </li>
     <li>
         <b>Exhort Snyk Token</b>:
-    <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-    <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+        <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+        <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
     </li>
 </ul>
 <p>

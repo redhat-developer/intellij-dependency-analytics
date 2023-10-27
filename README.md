@@ -136,7 +136,6 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   If you wish to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
   against the dependency, group id, artifact id, or version scopes of that particular dependency in the manifest file.
   For example:
-
   ```xml
   <dependency> <!--exhortignore-->
       <groupId>...</groupId>
@@ -147,10 +146,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
 
   If you wish to ignore vulnerabilities for a dependency in a `package.json` file, you must add `exhortignore` as a
   attribute-value pair.
-  If `exhortignore` is followed by a list of comma-separated Snyk vulnerability IDs, only the listed vulnerabilities
-  will be ignored during analysis.
   For example:
-
   ```json
   {
       "name": "sample",
