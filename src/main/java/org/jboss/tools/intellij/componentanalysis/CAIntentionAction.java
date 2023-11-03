@@ -11,62 +11,73 @@
 
 package org.jboss.tools.intellij.componentanalysis;
 
-import com.google.gson.JsonObject;
+import com.intellij.codeInsight.intention.FileModifier;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
-import org.jboss.tools.intellij.stackanalysis.SaUtils;
+import com.redhat.exhort.api.DependencyReport;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+public abstract class CAIntentionAction implements IntentionAction {
 
-public class CAIntentionAction implements IntentionAction {
+    protected @SafeFieldForPreview PsiElement element;
+    protected @SafeFieldForPreview VulnerabilitySource source;
+    protected @SafeFieldForPreview DependencyReport report;
+
+    protected CAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
+        this.element = element;
+        this.source = source;
+        this.report = report;
+    }
+
     @Override
     public @IntentionName @NotNull String getText() {
-        return "Detailed Vulnerability Report";
+        return getQuickFixText(this.source, this.report);
     }
 
     @Override
     public @NotNull @IntentionFamilyName String getFamilyName() {
-        return "Maven";
-    }
-
-    @Override
-    public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        if (file == null) {
-            return false;
-        }
-        return "pom.xml".equals(file.getName())
-                || "package.json".equals(file.getName())
-                || "go.mod".equals(file.getName())
-                || "requirements.txt".equals(file.getName());
+        return "RHDA";
     }
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        SaUtils saUtils = new SaUtils();
-        VirtualFile vf = file.getVirtualFile();
-
-        if (vf != null) {
-            JsonObject manifestDetails = saUtils.performSA(vf);
-            if (manifestDetails != null) {
-                try {
-                    saUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
+        this.updateVersion(project, editor, file, getRecommendedVersion(this.report));
     }
 
     @Override
     public boolean startInWriteAction() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public @Nullable FileModifier getFileModifierForPreview(@NotNull PsiFile target) {
+        return this.createCAIntentionActionInCopy(PsiTreeUtil.findSameElementInCopy(this.element, target));
+    }
+
+    protected abstract void updateVersion(@NotNull Project project, Editor editor, PsiFile file, String version);
+
+    protected abstract @Nullable FileModifier createCAIntentionActionInCopy(PsiElement element);
+
+    //TODO
+    private static @NotNull String getRecommendedVersion(DependencyReport report) {
+        return "123";
+    }
+
+    //TODO
+    private static @NotNull String getQuickFixText(VulnerabilitySource source, DependencyReport report) {
+        return "test";
+    }
+
+    //TODO
+    static boolean isQuickFixAvailable(DependencyReport report) {
+        return true;
     }
 }

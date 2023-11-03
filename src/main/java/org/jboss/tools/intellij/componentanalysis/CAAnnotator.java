@@ -31,9 +31,7 @@ import com.redhat.exhort.api.DependencyReport;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Map<Dependency, CAAnnotator.Result>> {
@@ -82,7 +80,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
             }
 
             LOG.info("Get vulnerability report from cache");
-            Map<Dependency, DependencyReport> reports = CAService.getReports(path);
+            Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports = CAService.getReports(path);
             return this.matchDependencies(info.getDependencies(), reports);
         }
 
@@ -94,38 +92,79 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
         LOG.info("Annotate dependencies");
         annotationResult.forEach((key, value) -> {
             if (value != null) {
-                DependencyReport report = value.getReport();
+                Map<VulnerabilitySource, DependencyReport> reports = value.getReports();
                 List<PsiElement> elements = value.getElements();
-                if (report.getIssues() != null && !report.getIssues().isEmpty()
+                if (reports != null && !reports.isEmpty()
                         && elements != null && !elements.isEmpty()) {
-                    if (report.getRef() != null) {
-                        String d = getDependencyString(report.getRef().purl());
-                        int num = report.getIssues().size();
-                        String m = d + ", " + "Known security vulnerabilities: " + num + ", ";
-                        String t = "<html>" +
-                                "<p>" + d + "</p>" +
-                                "<p>Known security vulnerabilities: " + num + "</p>";
+                    Optional<DependencyReport> reportOptional = reports.values().stream()
+                            .filter(Objects::nonNull).findAny();
 
-                        if (report.getHighestVulnerability() != null && report.getHighestVulnerability().getSeverity() != null) {
-                            String severity = report.getHighestVulnerability().getSeverity().getValue();
-                            m += "Highest severity: " + severity + ", ";
-                            t += "<p>Highest severity: " + severity + "</p>";
-                        }
+                    if (reportOptional.isPresent() && reportOptional.get().getRef() != null) {
+                        String name = getDependencyString(reportOptional.get().getRef().purl());
 
-                        m += "Dependency Analytics Plugin [Powered by Snyk]";
-                        t += "<p>Dependency Analytics Plugin [Powered by <a href='https://snyk.io/'>Snyk</a>]</p>" +
-                                "</html>";
+                        StringBuilder messageBuilder = new StringBuilder(name);
+                        StringBuilder tooltipBuilder = new StringBuilder("<html>").append("<p>").append(name).append("</p>");
+                        Map<VulnerabilitySource, DependencyReport> quickfixes = new HashMap<>();
 
-                        String message = m;
-                        String tooltip = t;
+                        reports.forEach((source, report) -> {
+                            if (report.getIssues() != null && !report.getIssues().isEmpty()) {
+                                messageBuilder.append(System.lineSeparator());
+                                tooltipBuilder.append("<p/>");
+
+                                if (source.getProvider().equals(source.getSource())) {
+                                    messageBuilder.append(source.getProvider())
+                                            .append(" vulnerability info: ");
+                                    tooltipBuilder.append("<p>")
+                                            .append(source.getProvider())
+                                            .append(" vulnerability info:</p>");
+                                } else {
+                                    messageBuilder.append(source.getSource())
+                                            .append(" (")
+                                            .append(source.getProvider())
+                                            .append(") vulnerability info: ");
+                                    tooltipBuilder.append("<p>")
+                                            .append(source.getSource())
+                                            .append(" (")
+                                            .append(source.getProvider())
+                                            .append(") vulnerability info:</p>");
+                                }
+
+                                int num = report.getIssues().size();
+                                messageBuilder.append("Known security vulnerabilities: ")
+                                        .append(num);
+                                tooltipBuilder.append("<p>Known security vulnerabilities: ")
+                                        .append(num)
+                                        .append("</p>");
+
+                                if (report.getHighestVulnerability() != null && report.getHighestVulnerability().getSeverity() != null) {
+                                    String severity = report.getHighestVulnerability().getSeverity().getValue();
+                                    messageBuilder.append(", Highest severity: ")
+                                            .append(severity);
+                                    tooltipBuilder.append("<p>Highest severity: ")
+                                            .append(severity)
+                                            .append("</p>");
+                                }
+                            }
+
+                            if (CAIntentionAction.isQuickFixAvailable(report)) {
+                                quickfixes.put(source, report);
+                            }
+                        });
 
                         elements.forEach(e -> {
                             if (e != null) {
                                 AnnotationBuilder builder = holder
-                                        .newAnnotation(HighlightSeverity.ERROR, message)
-                                        .tooltip(tooltip)
-                                        .range(e)
-                                        .withFix(new CAIntentionAction());
+                                        .newAnnotation(HighlightSeverity.ERROR, messageBuilder.toString())
+                                        .tooltip(tooltipBuilder.toString())
+                                        .range(e);
+
+                                builder.withFix(new SAIntentionAction());
+
+                                if (!quickfixes.isEmpty() && this.isQuickFixApplicable(e)) {
+                                    quickfixes.forEach((source, report) ->
+                                            builder.withFix(this.createQuickFix(e, source, report)));
+                                }
+
                                 builder.create();
                             }
                         });
@@ -139,8 +178,12 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
     abstract protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file);
 
+    abstract protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report);
+
+    abstract protected boolean isQuickFixApplicable(PsiElement element);
+
     private Map<Dependency, Result> matchDependencies(Map<Dependency, List<PsiElement>> dependencies,
-                                                      Map<Dependency, DependencyReport> reports) {
+                                                      Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports) {
         if (dependencies != null && !dependencies.isEmpty()
                 && reports != null && !reports.isEmpty()) {
             return dependencies.entrySet()
@@ -217,19 +260,19 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
     public static class Result {
         List<PsiElement> elements;
-        DependencyReport report;
+        Map<VulnerabilitySource, DependencyReport> reports;
 
-        public Result(List<PsiElement> elements, DependencyReport report) {
+        public Result(List<PsiElement> elements, Map<VulnerabilitySource, DependencyReport> reports) {
             this.elements = elements;
-            this.report = report;
+            this.reports = reports;
         }
 
         public List<PsiElement> getElements() {
             return elements;
         }
 
-        public DependencyReport getReport() {
-            return report;
+        public Map<VulnerabilitySource, DependencyReport> getReports() {
+            return reports;
         }
     }
 }

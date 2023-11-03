@@ -63,7 +63,7 @@ dependencies {
 
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
-    implementation 'com.redhat.exhort:exhort-java-api:0.0.3-SNAPSHOT'
+    implementation 'com.redhat.exhort:exhort-java-api:1.0.0-SNAPSHOT'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
     testImplementation('junit:junit:4.13.1')

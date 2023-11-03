@@ -18,8 +18,11 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.redhat.exhort.api.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
+import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 
 import java.util.*;
 
@@ -63,6 +66,7 @@ public class GoCAAnnotator extends CAAnnotator {
                         })
                         .map(r -> r.getTarget())
                         .filter(Objects::nonNull)
+                        .filter(t -> t.getModuleVersion() != null)
                         .forEach(m -> resultMap.computeIfAbsent(createDependency(m), k -> new LinkedList<>()).add(m));
             }
 
@@ -70,6 +74,16 @@ public class GoCAAnnotator extends CAAnnotator {
         }
 
         return Collections.emptyMap();
+    }
+
+    @Override
+    protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report) {
+        return new GoCAIntentionAction(element, source, report);
+    }
+
+    @Override
+    protected boolean isQuickFixApplicable(PsiElement element) {
+        return element instanceof VgoModuleSpec && ((VgoModuleSpec) element).getModuleVersion() != null;
     }
 
     private static Dependency createDependency(final VgoModuleSpec m) {

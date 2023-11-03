@@ -46,6 +46,10 @@ public final class ApiService {
 
     private final Api exhortApi;
 
+    static {
+        System.setProperty("EXHORT_DEV_MODE","true");
+    }
+
     public ApiService() {
         this(new ExhortApi());
     }
