@@ -62,7 +62,7 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
 
         try {
-            setRequestProperties();
+            setRequestProperties(manifestName);
             var htmlContent = exhortApi.stackAnalysisHtml(manifestPath);
             var tmpFile = Files.createTempFile("exhort_", ".html");
             Files.write(tmpFile, htmlContent.get());
@@ -85,7 +85,7 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
 
         try {
-            setRequestProperties();
+            setRequestProperties(manifestName);
             CompletableFuture<AnalysisReport> componentReport;
             if ("go.mod".equals(manifestName) || "requirements.txt".equals(manifestName)) {
                 var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
@@ -112,7 +112,7 @@ public final class ApiService {
         return null;
     }
 
-    private void setRequestProperties() {
+    private void setRequestProperties(final String manifestName) {
         String ideName = ApplicationInfo.getInstance().getFullApplicationName();
         PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
         if (pluginDescriptor != null) {
@@ -150,6 +150,13 @@ public final class ApiService {
         } else {
             System.clearProperty("EXHORT_GO_PATH");
         }
+        if ("go.mod".equals(manifestName)) {
+            if (settings.goMatchManifestVersions) {
+                System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
+            } else {
+                System.clearProperty("MATCH_MANIFEST_VERSIONS");
+            }
+        }
         if (settings.usePython2) {
             if (settings.pythonPath != null && !settings.pythonPath.isBlank()) {
                 System.setProperty("EXHORT_PYTHON_PATH", settings.pythonPath);
@@ -179,8 +186,24 @@ public final class ApiService {
         }
         if (settings.usePythonVirtualEnv) {
             System.setProperty("EXHORT_PYTHON_VIRTUAL_ENV", "true");
+            if (settings.pythonInstallBestEfforts) {
+                System.setProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS", "true");
+            } else {
+                System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
+            }
         } else {
             System.clearProperty("EXHORT_PYTHON_VIRTUAL_ENV");
+            System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
+        }
+        if ("requirements.txt".equals(manifestName)) {
+            if (settings.pythonMatchManifestVersions) {
+                System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
+            } else {
+                System.clearProperty("MATCH_MANIFEST_VERSIONS");
+            }
+        }
+        if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
+            System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
         if (settings.snykToken != null && !settings.snykToken.isBlank()) {
             System.setProperty("EXHORT_SNYK_TOKEN", settings.snykToken);

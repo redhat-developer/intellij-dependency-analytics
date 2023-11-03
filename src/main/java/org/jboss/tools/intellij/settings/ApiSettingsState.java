@@ -43,10 +43,13 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public String npmPath;
     public String nodePath;
     public String goPath;
+    public boolean goMatchManifestVersions;
     public String pythonPath;
     public String pipPath;
     public boolean usePython2;
     public boolean usePythonVirtualEnv;
+    public boolean pythonMatchManifestVersions;
+    public boolean pythonInstallBestEfforts;
 
     public String snykToken;
 

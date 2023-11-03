@@ -33,12 +33,20 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of the <i>directory</i> containing <b>node</b> executable.</html>";
     private final static String goPathLabel = "<html>Go > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>go</b> executable.</html>";
+    private final static String goMatchManifestVersionsLabel = "<html>Go > Match package version" +
+            "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
     private final static String pythonPathLabel = "<html>Python > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>python</b> executable.</html>";
     private final static String pipPathLabel = "<html>Pip > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>pip</b> executable.</html>";
-    private final static String usePython2Label = "<html>Python > Executable: <b>Version</b></html>";
-    private final static String usePythonVirtualEnvLabel = "<html>Python > Virtual Envrionment</html>";
+    private final static String usePython2Label = "<html>Python > Executable: <b>Version</b>"
+            + "<br>Specifies if using python 2.x.</html>";
+    private final static String usePythonVirtualEnvLabel = "<html>Python > Virtual Environment"
+            + "<br>Specifies if using virtual environment.</html>";
+    private final static String pythonInstallBestEffortsLabel = "<html>Python > Virtual Environment: alternate package version"
+            + "<br>Specifies if allowing to use alternate package versions in virtual environment.</html>";
+    private final static String pythonMatchManifestVersionsLabel = "<html>Python > Match package version"
+            + "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
     private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
             + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
 
@@ -49,10 +57,13 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton npmPathText;
     private final TextFieldWithBrowseButton nodePathText;
     private final TextFieldWithBrowseButton goPathText;
+    private final JCheckBox goMatchManifestVersionsCheck;
     private final TextFieldWithBrowseButton pythonPathText;
     private final TextFieldWithBrowseButton pipPathText;
     private final JCheckBox usePython2Check;
     private final JCheckBox usePythonVirtualEnvCheck;
+    private final JCheckBox pythonInstallBestEffortsCheck;
+    private final JCheckBox pythonMatchManifestVersionsCheck;
     private final JBTextField snykTokenText;
 
     public ApiSettingsComponent() {
@@ -101,6 +112,8 @@ public class ApiSettingsComponent {
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
+        goMatchManifestVersionsCheck = new JCheckBox("Strictly match package version");
+
         pythonPathText = new TextFieldWithBrowseButton();
         pythonPathText.addBrowseFolderListener(
                 null,
@@ -123,6 +136,10 @@ public class ApiSettingsComponent {
 
         usePythonVirtualEnvCheck = new JCheckBox("Use python virtual environment");
 
+        pythonInstallBestEffortsCheck = new JCheckBox("Allow alternate package version");
+
+        pythonMatchManifestVersionsCheck = new JCheckBox("Strictly match package version");
+
         snykTokenText = new JBTextField();
 
         mainPanel = FormBuilder.createFormBuilder()
@@ -137,6 +154,8 @@ public class ApiSettingsComponent {
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(goPathLabel), goPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(goMatchManifestVersionsLabel), goMatchManifestVersionsCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(pythonPathLabel), pythonPathText, 1, true)
@@ -146,6 +165,10 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(usePython2Label), usePython2Check, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(usePythonVirtualEnvLabel), usePythonVirtualEnvCheck, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(pythonInstallBestEffortsLabel), pythonInstallBestEffortsCheck, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(pythonMatchManifestVersionsLabel), pythonMatchManifestVersionsCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
@@ -206,6 +229,14 @@ public class ApiSettingsComponent {
         goPathText.setText(text);
     }
 
+    public boolean getGoMatchManifestVersionsCheck() {
+        return goMatchManifestVersionsCheck.isSelected();
+    }
+
+    public void setGoMatchManifestVersionsCheck(boolean selected) {
+        goMatchManifestVersionsCheck.setSelected(selected);
+    }
+
     @NotNull
     public String getPythonPathText() {
         return pythonPathText.getText();
@@ -238,6 +269,22 @@ public class ApiSettingsComponent {
 
     public void setUsePythonVirtualEnvCheck(boolean selected) {
         usePythonVirtualEnvCheck.setSelected(selected);
+    }
+
+    public boolean getPythonInstallBestEffortsCheck() {
+        return pythonInstallBestEffortsCheck.isSelected();
+    }
+
+    public void setPythonInstallBestEffortsCheck(boolean selected) {
+        pythonInstallBestEffortsCheck.setSelected(selected);
+    }
+
+    public boolean getPythonMatchManifestVersionsCheck() {
+        return pythonMatchManifestVersionsCheck.isSelected();
+    }
+
+    public void setPythonMatchManifestVersionsCheck(boolean selected) {
+        pythonMatchManifestVersionsCheck.setSelected(selected);
     }
 
     @NotNull
