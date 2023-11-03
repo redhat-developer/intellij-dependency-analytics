@@ -85,35 +85,39 @@ according to your preferences.
 **Configurable parameters**
 
 - **Maven** :
-<br >Set the full path of the Maven executable, which allows Exhort to locate and execute the `mvn` command to resolve
-dependencies for
-Maven projects.
-Path of the `JAVA_HOME` directory is required by the `mvn` executable.
-If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
+  <br >Set the full path of the Maven executable, which allows Exhort to locate and execute the `mvn` command to resolve
+  dependencies for Maven projects.
+  Path of the `JAVA_HOME` directory is required by the `mvn` executable.
+  If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
 
 - **Node** :
-<br >Set the full path of the Node executable, which allows Exhort to locate and execute the `npm` command to resolve
-dependencies for Node
-projects.
-Path of the directory containing the `node` executable is required by the `npm` executable.
-If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  <br >Set the full path of the Node executable, which allows Exhort to locate and execute the `npm` command to resolve
+  dependencies for Node projects.
+  Path of the directory containing the `node` executable is required by the `npm` executable.
+  If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
 - **Golang** :
-<br >Set the full path of the Go executable, which allows Exhort to locate and execute the `go` command to resolve
-dependencies for Go
-projects.
-If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
+  <br >Set the full path of the Go executable, which allows Exhort to locate and execute the `go` command to resolve
+  dependencies for Go projects.
+  If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
+  When option `Strictly match package version` is selected, the resolved dependency versions will be compared to the
+  versions specified in the manifest file, and users will be alerted if any mismatch is detected.
 
 - **Python** :
-<br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
-and execute the `pip3` commands to resolve dependencies for Python projects.
-Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
-Python virtual environment can be applied, if the `Use python virtual environment` option is selected.
-If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
+  and execute the `pip3` commands to resolve dependencies for Python projects.
+  Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
+  If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  When option `Strictly match package version` is selected, the resolved dependency versions will be compared to the
+  versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+  Python virtual environment can be applied, when selecting the `Use python virtual environment` option.
+  If selecting option `Allow alternate package version` while using virtual environment, the dependency versions
+  specified in the manifest file will be ignored, and dependency versions will be resolved dynamically instead (this
+  feature cannot be enabled when `Strictly match package version` is selected).
 
 - **Exhort Snyk Token** :
-<br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+  <br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+  If a Snyk token is not provided, Snyk vulnerability information is not displayed.
 
 If you need a new Snyk token, you can generate a new
 token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).

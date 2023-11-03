@@ -125,6 +125,8 @@
         <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code>
         command to resolve dependencies for Go projects.
         <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
+        <br>When option `Strictly match package version` is selected, the resolved dependency versions will be compared
+        to the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
     </li>
     <li>
         <b>Python</b>:
@@ -132,10 +134,17 @@
         locate and execute the <code>pip3</code> commands to resolve dependencies for Python projects.
         <br>Python 2 executables <code>python</code> and <code>pip</code> can be used instead, if the <code>Use python
         2.x</code> option is selected.
-        <br>Python virtual environment can be applied, if the <code>Use python virtual environment</code> option is
-        selected.
         <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
         executables.
+        <br>When option <code>Strictly match package version</code> is selected, the resolved dependency versions will
+        be compared to the versions specified in the manifest file, and users will be alerted if any mismatch is
+        detected.
+        <br>Python virtual environment can be applied, when selecting the <code>Use python virtual environment</code>
+        option.
+        <br>If selecting option <code>Allow alternate package version</code> while using virtual environment, the
+        dependency versions specified in the manifest file will be ignored, and dependency versions will be resolved
+        dynamically instead. This feature cannot be enabled when <code>Strictly match package version</code> is
+        selected.
     </li>
     <li>
         <b>Exhort Snyk Token</b>:
