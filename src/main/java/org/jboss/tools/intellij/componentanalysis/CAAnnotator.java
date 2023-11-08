@@ -46,6 +46,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
         if (inspection == null) {
             return null;
         }
+        LOG.info("Get dependencies");
         return new Info(file, this.getDependencies(file));
     }
 
@@ -57,6 +58,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
             Set<Dependency> dependencies = info.getDependencies().keySet();
 
             if (CAService.dependenciesModified(path, dependencies)) {
+                LOG.info("Generate vulnerability report");
                 Project project = info.getFile().getProject();
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     boolean updated = CAService.performAnalysis(
@@ -67,6 +69,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
                     ApplicationManager.getApplication().runReadAction(() -> {
                         if (updated) {
+                            LOG.info("Refresh dependencies");
                             try {
                                 DaemonCodeAnalyzer.getInstance(project).restart();
                             } catch (AlreadyDisposedException ex) {
@@ -78,6 +81,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                 });
             }
 
+            LOG.info("Get vulnerability report from cache");
             Map<Dependency, DependencyReport> reports = CAService.getReports(path);
             return this.matchDependencies(info.getDependencies(), reports);
         }
@@ -87,6 +91,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
     @Override
     public void apply(@NotNull PsiFile file, Map<Dependency, Result> annotationResult, @NotNull AnnotationHolder holder) {
+        LOG.info("Annotate dependencies");
         annotationResult.forEach((key, value) -> {
             if (value != null) {
                 DependencyReport report = value.getReport();

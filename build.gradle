@@ -39,7 +39,10 @@ intellij {
     type = "IC"
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
-    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33', "org.jetbrains.plugins.go:211.6693.111"]
+    plugins = ['com.redhat.devtools.intellij.telemetry:0.0.3.33',
+               "org.jetbrains.plugins.go:211.6693.111",
+               "PythonCore:211.6693.111",
+               "ru.meanmail.plugin.requirements:2021.4-211"]
     updateSinceUntilBuild = false
 }
 
@@ -60,7 +63,7 @@ dependencies {
 
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
-    implementation 'com.redhat.exhort:exhort-java-api:0.0.2-SNAPSHOT'
+    implementation 'com.redhat.exhort:exhort-java-api:0.0.3-SNAPSHOT'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
     testImplementation('junit:junit:4.13.1')
