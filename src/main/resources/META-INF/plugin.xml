@@ -12,10 +12,12 @@
 <p>
     Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply
     chain while you build your application.
-    <br>The Dependency Analytics plugin uses the Snyk REST API to query <a href="https://snyk.io/product/vulnerability-database/"
-                                                    rel="noopener noreferrer" target="_blank">Snyk's Vulnerability
+    <br>The Dependency Analytics plugin uses the Snyk REST API to query <a
+        href="https://snyk.io/product/vulnerability-database/"
+        rel="noopener noreferrer" target="_blank">Snyk's Vulnerability
     Database</a> for the most up-to-date vulnerability information available.
-    <br>Snyk uses industry-leading security intelligence by pulling from many data sources to give you exact vulnerability information.
+    <br>Snyk uses industry-leading security intelligence by pulling from many data sources to give you exact
+    vulnerability information.
 
 <p>
     <b>NOTE:</b>
@@ -25,8 +27,8 @@
     the vulnerability report.
 <p>
     <b>IMPORTANT:</b>
-    <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node ecosystems
-    (<code>npm</code>).
+    <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node
+    (<code>npm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems.
     <br>In future releases, Red Hat plans to support other programming languages.
 <p>
 
@@ -37,8 +39,14 @@
     <li>For Maven projects, analyzing a <code>pom.xml</code> file, you must have the <code>mvn</code> binary in your
         IDE's <code>PATH</code> environment.
     </li>
-    <li>For Node projects, analyzing a <code>package.json</code> file, you must have the <code>npm</code> binary in your
+    <li>For Node projects, analyzing a <code>package.json</code> file, you must have the <code>npm</code> and
+        <code>node</code> binaries in your IDE's <code>PATH</code> environment.
+    </li>
+    <li>For Golang projects, analyzing a <code>go.mod</code> file, you must have the <code>go</code> binary in your
         IDE's <code>PATH</code> environment.
+    </li>
+    <li>For Python projects, analyzing a <code>requirements.txt</code> file, you must have the <code>python3</code> and
+        <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
     </li>
 </ul>
 <p>
@@ -54,8 +62,8 @@
     <li>To start scanning your application for security vulnerabilities, and view the vulnerability report, you can do
         one of the following:
         <ul>
-            <li>Open a manifest file, hover over a dependency marked by the inline Component Analysis, indicated by the wavy-red
-                line under a dependency, and click <b>Detailed Vulnerability Report</b>.
+            <li>Open a manifest file, hover over a dependency marked by the inline Component Analysis, indicated by the
+                wavy-red line under a dependency, and click <b>Detailed Vulnerability Report</b>.
             </li>
             <li>Right click on a manifest file in the <b>Project</b> window, and click <b>Dependency Analytics
                 Report</b>.
@@ -81,7 +89,8 @@
 
 <h2>Configuration</h2>
 <p>
-    The Red Hat Dependency Analytics plugin has some configurable parameters that allows you to customize its behavior according to your preferences.
+    The Red Hat Dependency Analytics plugin has some configurable parameters that allows you to customize its behavior
+    according to your preferences.
 <p>
     <b>Procedure</b>
 <ol>
@@ -89,22 +98,53 @@
     <li>Click <b>Settings</b> from the menu, and click <b>Tools</b>.</li>
     <li>Click the <b>Red Hat Dependency Analytics</b>.</li>
 </ol>
-    <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
+<img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
      alt="Red Hat Dependency Analytics plugin settings">
 <p>
     <b>Configurable parameters</b>
 <ul>
     <li>
         <b>Maven</b>:
-        <br>Path of the <code>mvn</code> executable allows Exhort to locate and execute the <code>mvn</code> commands to resolve dependencies forMaven projects.
+        <br>Set the full path of the Maven executable, which allows Exhort to locate and execute the <code>mvn</code>
+        command to resolve dependencies forMaven projects.
         <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
-        <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be used to locate the executables.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be
+        used to locate the executables.
     </li>
     <li>
-        <b>Npm</b>:
-        <br>Path of the <code>npm</code> executable allows Exhort to locate and execute <code>npm</code> commands to resolve dependencies for Node projects.
-        <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code> executable.
-        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the executables.
+        <b>Node</b>:
+        <br>Set the full path of the Node executable, which allows Exhort to locate and execute <code>npm</code> command
+        to resolve dependencies for Node projects.
+        <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code>
+        executable.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
+        executables.
+    </li>
+    <li>
+        <b>Golang</b>:
+        <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code>
+        command to resolve dependencies for Go projects.
+        <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
+        <br>When option `Strictly match package version` is selected, the resolved dependency versions will be compared
+        to the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+    </li>
+    <li>
+        <b>Python</b>:
+        <br>Set the full paths of the Python and the package installer for Python executables, which allows Exhort to
+        locate and execute the <code>pip3</code> commands to resolve dependencies for Python projects.
+        <br>Python 2 executables <code>python</code> and <code>pip</code> can be used instead, if the <code>Use python
+        2.x</code> option is selected.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
+        executables.
+        <br>When option <code>Strictly match package version</code> is selected, the resolved dependency versions will
+        be compared to the versions specified in the manifest file, and users will be alerted if any mismatch is
+        detected.
+        <br>Python virtual environment can be applied, when selecting the <code>Use python virtual environment</code>
+        option.
+        <br>If selecting option <code>Allow alternate package version</code> while using virtual environment, the
+        dependency versions specified in the manifest file will be ignored, and dependency versions will be resolved
+        dynamically instead. This feature cannot be enabled when <code>Strictly match package version</code> is
+        selected.
     </li>
     <li>
         <b>Exhort Snyk Token</b>:
@@ -134,6 +174,7 @@
     <li>
         <b>Excluding dependencies with <code>exhortignore</code></b>
         <br>You can exclude a package from analysis by marking the package for exclusion.
+        <br>
         <br>If you wish to ignore vulnerabilities for a dependency in a <code>pom.xml</code> file, you must add <code>exhortignore</code>
         as a comment against the dependency, group id, artifact id, or version scopes of that particular dependency in
         the manifest file.
@@ -145,10 +186,9 @@
             <br>&nbsp;&nbsp;&lt;version&gt;...&lt;/version&gt;
             <br>&lt;/dependency&gt;
         </code>
+        <br>
         <br>If you wish to ignore vulnerabilities for a dependency in a <code>package.json</code> file, you must add
         <code>exhortignore</code> as a attribute-value pair.
-        <br>If <code>exhortignore</code>is followed by a list of comma-separated Snyk vulnerability IDs, only the listed
-        vulnerabilities will be ignored during analysis.
         <br>For example:
         <code>
             <br>{
@@ -170,11 +210,28 @@
             <br>&nbsp;&nbsp;]
             <br>}
         </code>
+        <br>
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>go.mod</code> file, you must add
+        <code>exhortignore</code> as a comment against the dependency in the manifest file.
+        <br>For example:
+        <code>
+            <br>require (
+            <br>&nbsp;&nbsp;golang.org/x/sys v1.6.7 // exhortignore
+            <br>)
+        </code>
+        <br>
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>requirements.txt</code> file, you must add
+        <code>exhortignore</code> as a comment against the dependency in the manifest file.
+        <br>For example:
+        <code>
+            <br>requests==2.28.1 # exhortignore
+        </code>
     </li>
     <li>
         <b>Excluding developmental or test dependencies</b>
         <br>Red Hat Dependency Analytics does not analyze dependencies marked as <code>dev</code> or <code>test</code>,
         these dependencies are ignored.
+        <br>
         <br>For example, setting <code>test</code> in the <code>scope</code> tag within a <code>pom.xml</code> file:
         <code>
             <br>&lt;dependency&gt;
@@ -184,6 +241,7 @@
             <br>&nbsp;&nbsp;&lt;scope&gt;test&lt;/scope&gt;
             <br>&lt;/dependency&gt;
         </code>
+        <br>
         <br>For example, setting <code>devDependencies</code> attributte in the <code>package.json</code> file:
         <code>
             <br>{
@@ -205,6 +263,17 @@
             <br>&nbsp;&nbsp;}
             <br>}
         </code>
+        <br>
+        <br>For example, setting <code>exclude</code> attribute in the <code>go.mod</code> file:
+        <code>
+            <br>exclude golang.org/x/sys v1.6.7
+            <br>exclude (
+            <br>&nbsp;&nbsp;golang.org/x/sys v1.6.7
+            <br>)
+        </code>
+        <br>
+        <br>You can create an alternative file to <code>requirements.txt</code>, for example, a <code>requirements-dev.txt</code>
+        or a <code>requirements-test.txt</code> file where you can add the development or test dependencies there.
     </li>
     <li>
         <b>Red Hat Dependency Analytics Report</b>
@@ -258,6 +327,8 @@
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>0.7.1</b></p>
+  <p>Enable component analysis for Golang (<code>go mod</code>) and Python (<code>pip</code>).</p>
   <p><b>0.7.0</b></p>
   <p>Initial release for the new Red Hat Dependency Analytics service.</p>
   <p>Based on exhort-java-api.</p>

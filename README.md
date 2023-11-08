@@ -24,7 +24,8 @@ Dependency Analytics only accesses your manifest files to analyze your applicati
 vulnerability report.
 
 **IMPORTANT:**
-<br >Currently, Dependency Analytics only supports projects that use Maven (`mvn`), and Node ecosystems (`npm`).
+<br >Currently, Dependency Analytics only supports projects that use Maven (`mvn`), Node (`npm`), Golang (`go mod`) and
+Python (`pip`) ecosystems.
 In future releases, Red Hat plans to support other programming languages.
 
 ##### Table of Contents
@@ -42,7 +43,11 @@ In future releases, Red Hat plans to support other programming languages.
 **Prerequisites**
 
 - For Maven projects, analyzing a `pom.xml` file, you must have the `mvn` binary in your IDE's `PATH` environment.
-- For Node projects, analyzing a `package.json` file, you must have the `npm` binary in your IDE's `PATH` environment.
+- For Node projects, analyzing a `package.json` file, you must have the `npm` and `node` binaries in your IDE's `PATH`
+  environment.
+- For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment.
+- For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
+  IDE's `PATH` environment.
 
 **Procedure**
 
@@ -80,20 +85,39 @@ according to your preferences.
 **Configurable parameters**
 
 - **Maven** :
-<br >Path of the `mvn` executable allows Exhort to locate and execute the `mvn` commands to resolve dependencies for
-Maven projects.
-Path of the `JAVA_HOME` directory is required by the `mvn` executable.
-If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
+  <br >Set the full path of the Maven executable, which allows Exhort to locate and execute the `mvn` command to resolve
+  dependencies for Maven projects.
+  Path of the `JAVA_HOME` directory is required by the `mvn` executable.
+  If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
 
-- **Npm** :
-<br >Path of the `npm` executable allows Exhort to locate and execute `npm` commands to resolve dependencies for Node
-projects.
-Path of the directory containing the `node` executable is required by the `npm` executable.
-If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+- **Node** :
+  <br >Set the full path of the Node executable, which allows Exhort to locate and execute the `npm` command to resolve
+  dependencies for Node projects.
+  Path of the directory containing the `node` executable is required by the `npm` executable.
+  If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+
+- **Golang** :
+  <br >Set the full path of the Go executable, which allows Exhort to locate and execute the `go` command to resolve
+  dependencies for Go projects.
+  If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
+  When option `Strictly match package version` is selected, the resolved dependency versions will be compared to the
+  versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+
+- **Python** :
+  <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
+  and execute the `pip3` commands to resolve dependencies for Python projects.
+  Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
+  If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  When option `Strictly match package version` is selected, the resolved dependency versions will be compared to the
+  versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+  Python virtual environment can be applied, when selecting the `Use python virtual environment` option.
+  If selecting option `Allow alternate package version` while using virtual environment, the dependency versions
+  specified in the manifest file will be ignored, and dependency versions will be resolved dynamically instead (this
+  feature cannot be enabled when `Strictly match package version` is selected).
 
 - **Exhort Snyk Token** :
-<br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+  <br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
+  If a Snyk token is not provided, Snyk vulnerability information is not displayed.
 
 If you need a new Snyk token, you can generate a new
 token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).
@@ -101,7 +125,8 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
 ## Features
 
 - **Component analysis**
-  <br >Upon opening a manifest file, such as a `pom.xml` or `package.json` file, a scan starts the analysis process.
+  <br >Upon opening a manifest file, such as a `pom.xml`, `package.json`, `go.mod` or `requirements.txt` file, a scan
+  starts the analysis process.
   The scan provides immediate inline feedback on detected security vulnerabilities for your application's dependencies.
   Such dependencies are appropriately underlined in red, and hovering over it gives you a short summary of the security
   concern.
@@ -115,7 +140,6 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   If you wish to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
   against the dependency, group id, artifact id, or version scopes of that particular dependency in the manifest file.
   For example:
-
   ```xml
   <dependency> <!--exhortignore-->
       <groupId>...</groupId>
@@ -126,10 +150,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
 
   If you wish to ignore vulnerabilities for a dependency in a `package.json` file, you must add `exhortignore` as a
   attribute-value pair.
-  If `exhortignore` is followed by a list of comma-separated Snyk vulnerability IDs, only the listed vulnerabilities
-  will be ignored during analysis.
   For example:
-
   ```json
   {
       "name": "sample",
@@ -151,11 +172,26 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   }
   ```
 
+  If you wish to ignore vulnerabilities for a dependency in a `go.mod` file, you must add `exhortignore` as a comment
+  against the dependency in the manifest file.
+  For example:
+  ```text
+  require (
+      golang.org/x/sys v1.6.7 // exhortignore
+  )
+  ```
+
+  If you wish to ignore vulnerabilities for a dependency in a `requirements.txt` file, you must add `exhortignore` as a
+  comment against the dependency in the manifest file.
+  For example:
+  ```text
+  requests==2.28.1 # exhortignore
+  ```
+
 - **Excluding developmental or test dependencies**
   <br >Red Hat Dependency Analytics does not analyze dependencies marked as `dev` or `test`, these dependencies are
   ignored.
   For example, setting `test` in the `scope` tag within a `pom.xml` file:
-
   ```xml
   <dependency>
       <groupId>...</groupId>
@@ -163,10 +199,9 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
       <version>...</version>
       <scope>test</scope>
   </dependency>
-  ```	
+  ```
 
   For example, setting `devDependencies` attributte in the `package.json` file:
-  
   ```json
   {
       "name": "sample",
@@ -187,6 +222,18 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
       }
   }
   ```
+
+  For example, setting `exclude` attribute in the `go.mod` file:
+  ```text
+  exclude golang.org/x/sys v1.6.7
+
+  exclude (
+      golang.org/x/sys v1.6.7
+  )
+  ```
+
+  You can create an alternative file to `requirements.txt`, for example, a `requirements-dev.txt` or
+  a `requirements-test.txt` file where you can add the development or test dependencies there.
 
 - **Red Hat Dependency Analytics report**
   <br >The Red Hat Dependency Analytics report is a temporary HTML file that exist if the **Red Hat Dependency Analytics
