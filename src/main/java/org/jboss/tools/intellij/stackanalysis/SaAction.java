@@ -16,8 +16,10 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -49,22 +51,45 @@ public class SaAction extends AnAction {
      */
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
-        try {
-            SaUtils saUtils = new SaUtils();
-            VirtualFile manifestFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
+        Project project = event.getProject();
+        if (project != null) {
+            ApplicationManager.getApplication().executeOnPooledThread(() -> {
+                SaUtils saUtils = new SaUtils();
+                VirtualFile manifestFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
 
-            if (manifestFile != null) {
-                JsonObject manifestDetails = saUtils.performSA(manifestFile);
-                if (manifestDetails != null) {
-                    // Open custom editor window which will load SA Report in browser attached to it.
-                    saUtils.openCustomEditor(FileEditorManager.getInstance(event.getProject()), manifestDetails);
+                if (manifestFile != null) {
+                    JsonObject manifestDetails;
+                    try {
+                        manifestDetails = saUtils.performSA(manifestFile);
+                    } catch (RuntimeException ex) {
+                        logger.error(ex);
+                        ApplicationManager.getApplication().invokeLater(() ->
+                                Messages.showErrorDialog(event.getProject(),
+                                        "Report generation failed: " + ex.getLocalizedMessage(),
+                                        "Error"));
+                        return;
+                    }
+
+                    if (manifestDetails != null) {
+                        ApplicationManager.getApplication().invokeLater(() -> {
+                            try {
+                                // Open custom editor window which will load SA Report in browser attached to it.
+                                saUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                            } catch (Exception e) {
+                                logger.error(e);
+                                Messages.showErrorDialog(event.getProject(),
+                                        "Can't open report: " + e.getLocalizedMessage(),
+                                        "Error");
+                            }
+                        });
+                    } else {
+                        ApplicationManager.getApplication().invokeLater(() ->
+                                Messages.showErrorDialog(event.getProject(),
+                                        "Report generation failed",
+                                        "Error"));
+                    }
                 }
-            }
-        } catch (Exception e) {
-            logger.warn(e);
-            Messages.showErrorDialog(event.getProject(),
-                    "Can't run report generation " + e.getLocalizedMessage(),
-                    "Error");
+            });
         }
     }
 
