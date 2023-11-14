@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    backstage.io/kubernetes-id: intellij-dependency-analytics
+    github.com/project-slug: RHEcosystemAppEng/intellij-dependency-analytics
+    github.com/project-readme-path: README.md
+    backstage.io/view-url: https://github.com/RHEcosystemAppEng/intellij-dependency-analytics/blob/main/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/RHEcosystemAppEng/intellij-dependency-analytics/blob/main/catalog-info.yaml
+    backstage.io/source-location: url:https://github.com/RHEcosystemAppEng/intellij-dependency-analytics
+    backstage.io/techdocs-ref: dir:README.md
+  name: intellij-dependency-analytics
+spec:
+  lifecycle: production
+  owner: ecosystem-appeng
+  type: service
