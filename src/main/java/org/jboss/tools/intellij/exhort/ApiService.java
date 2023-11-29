@@ -214,5 +214,16 @@ public final class ApiService {
         } else {
             System.clearProperty("EXHORT_SNYK_TOKEN");
         }
+        if (settings.ossIndexUser != null && !settings.ossIndexUser.isBlank()) {
+            System.setProperty("EXHORT_OSS_INDEX_USER", settings.ossIndexUser);
+        } else {
+            System.clearProperty("EXHORT_OSS_INDEX_USER");
+        }
+        if (settings.ossIndexToken != null && !settings.ossIndexToken.isBlank()) {
+            System.setProperty("EXHORT_OSS_INDEX_TOKEN", settings.ossIndexToken);
+        } else {
+            System.clearProperty("EXHORT_OSS_INDEX_TOKEN");
+        }
+
     }
 }

@@ -53,6 +53,9 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
 
     public String snykToken;
 
+    public String ossIndexUser;
+    public String ossIndexToken;
+
     @Override
     public @Nullable ApiSettingsState getState() {
         return this;

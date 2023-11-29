@@ -49,6 +49,10 @@ public class ApiSettingsComponent {
             + "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
     private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
             + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
+    private final static String ossIndexUserLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Oss Index User</b>"
+            + "<br>Red Hat Dependency Analytics sever User for Oss Index.</html>";
+    private final static String ossIndexTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Oss Index Token</b>"
+            + "<br>Red Hat Dependency Analytics sever authentication token for Oss Index.</html>";
 
     private final JPanel mainPanel;
 
@@ -65,6 +69,9 @@ public class ApiSettingsComponent {
     private final JCheckBox pythonInstallBestEffortsCheck;
     private final JCheckBox pythonMatchManifestVersionsCheck;
     private final JBTextField snykTokenText;
+
+    private final JBTextField ossIndexUserText;
+    private final JBTextField ossIndexTokenText;
 
     public ApiSettingsComponent() {
         mvnPathText = new TextFieldWithBrowseButton();
@@ -141,6 +148,8 @@ public class ApiSettingsComponent {
         pythonMatchManifestVersionsCheck = new JCheckBox("Strictly match package version");
 
         snykTokenText = new JBTextField();
+        ossIndexUserText = new JBTextField();
+        ossIndexTokenText = new JBTextField();
 
         mainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(mvnPathLabel), mvnPathText, 1, true)
@@ -173,6 +182,10 @@ public class ApiSettingsComponent {
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
                 .addComponentFillVertically(new JPanel(), 0)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(ossIndexUserLabel), ossIndexUserText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(ossIndexTokenLabel), ossIndexTokenText, 1, true)
                 .getPanel();
     }
 
@@ -292,7 +305,18 @@ public class ApiSettingsComponent {
         return snykTokenText.getText();
     }
 
+    public String getOssIndexTokenText() {
+        return ossIndexTokenText.getText();
+    }
+    public String getOssIndexUserText() {
+        return ossIndexUserText.getText();
+    }
+
     public void setSnykTokenText(@NotNull String text) {
         snykTokenText.setText(text);
     }
+        public void setOssIndexTokenText(@NotNull String text) {
+        ossIndexTokenText.setText(text);
+    }
+
 }

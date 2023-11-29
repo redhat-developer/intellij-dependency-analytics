@@ -52,6 +52,9 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= settingsComponent.getPythonInstallBestEffortsCheck() != settings.pythonInstallBestEfforts;
         modified |= settingsComponent.getPythonMatchManifestVersionsCheck() != settings.pythonMatchManifestVersions;
         modified |= !settingsComponent.getSnykTokenText().equals(settings.snykToken);
+        modified |= !settingsComponent.getOssIndexTokenText().equals(settings.ossIndexToken);
+        modified |= !settingsComponent.getOssIndexUserText().equals(settings.ossIndexUser);
+
         return modified;
     }
 
@@ -71,6 +74,8 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.pythonInstallBestEfforts = settingsComponent.getPythonInstallBestEffortsCheck();
         settings.pythonMatchManifestVersions = settingsComponent.getPythonMatchManifestVersionsCheck();
         settings.snykToken = settingsComponent.getSnykTokenText();
+        settings.ossIndexToken = settingsComponent.getOssIndexTokenText();
+        settings.ossIndexUser = settingsComponent.getOssIndexUserText();
     }
 
     @Override
@@ -89,6 +94,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setPythonInstallBestEffortsCheck(settings.pythonInstallBestEfforts);
         settingsComponent.setPythonMatchManifestVersionsCheck(settings.pythonMatchManifestVersions);
         settingsComponent.setSnykTokenText(settings.snykToken != null ? settings.snykToken : "");
+        settingsComponent.setOssIndexTokenText(settings.ossIndexToken != null ? settings.ossIndexToken : "");
     }
 
     @Override
