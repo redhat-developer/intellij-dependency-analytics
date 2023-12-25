@@ -22,8 +22,11 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.Issue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public abstract class CAIntentionAction implements IntentionAction {
 
@@ -52,6 +55,27 @@ public abstract class CAIntentionAction implements IntentionAction {
         this.updateVersion(project, editor, file, getRecommendedVersion(this.report));
     }
 
+    private String getRecommendationsRepo(DependencyReport dependency) {
+        String repo=null;
+        if(thereAreNoIssues(dependency))
+        {
+            if(thereIsRecommendation(dependency))
+                repo = dependency.getRecommendation().purl().getQualifiers().get("repository_url");
+        }
+        else
+        {
+            Optional<Issue> issue = dependency.getIssues().stream().findFirst();
+            if(issue.isPresent())
+            {
+                if(thereIsTcRemediation(dependency)) {
+                    repo =  issue.get().getRemediation().getTrustedContent().getRef().version();
+                }
+            }
+
+        }
+        return repo;
+    }
+
     @Override
     public boolean startInWriteAction() {
         return true;
@@ -67,17 +91,80 @@ public abstract class CAIntentionAction implements IntentionAction {
     protected abstract @Nullable FileModifier createCAIntentionActionInCopy(PsiElement element);
 
     //TODO
-    private static @NotNull String getRecommendedVersion(DependencyReport report) {
-        return "123";
+    private static @NotNull String getRecommendedVersion(DependencyReport dependency) {
+        String version=null;
+        if(thereAreNoIssues(dependency))
+        {
+            if(thereIsRecommendation(dependency))
+            version = dependency.getRecommendation().version();
+        }
+        else
+        {
+            Optional<Issue> issue = dependency.getIssues().stream().findFirst();
+            if(issue.isPresent())
+            {
+                if(thereIsTcRemediation(dependency)) {
+                   version =  issue.get().getRemediation().getTrustedContent().getRef().version();
+                }
+            }
+
+        }
+       return version;
+    }
+
+    private static boolean thereIsTcRemediation(DependencyReport dependency) {
+        Optional<Issue> issue = dependency.getIssues().stream().filter(iss -> iss.getRemediation().getTrustedContent() != null).findFirst();
+        if(issue.isPresent()) {
+            return issue.get().getRemediation().getTrustedContent() != null;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private static boolean thereIsRecommendation(DependencyReport dependency) {
+        return dependency.getRecommendation() != null && !dependency.getRecommendation().version().trim().equals("");
+    }
+
+    private static boolean thereAreNoIssues(DependencyReport dependency) {
+        return dependency.getIssues() == null || dependency.getIssues().size() == 0;
     }
 
     //TODO
-    private static @NotNull String getQuickFixText(VulnerabilitySource source, DependencyReport report) {
-        return "test";
+    private static @NotNull String getQuickFixText(VulnerabilitySource source, DependencyReport dependency) {
+        String text="";
+        if(thereAreNoIssues(dependency) && thereIsRecommendation(dependency))
+        {
+            text = "Quick-Fix suggestion - apply redhat Recommended version";
+        }
+        else
+        {
+            if(thereIsTcRemediation(dependency))
+            {
+                text = "Quick-Fix suggestion - apply redhat remediation version";
+            }
+        }
+        return text;
     }
 
     //TODO
-    static boolean isQuickFixAvailable(DependencyReport report) {
-        return true;
+    static boolean isQuickFixAvailable(DependencyReport dependency) {
+        boolean result=false;
+        if(thereAreNoIssues(dependency))
+        {
+            if(thereIsRecommendation(dependency))
+            {
+                result = true;
+            }
+        }
+        else
+        {
+            if(thereIsTcRemediation(dependency))
+            {
+                result = true;
+            }
+        }
+     return result;
     }
 }
