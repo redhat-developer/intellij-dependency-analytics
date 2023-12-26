@@ -153,25 +153,37 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
                         elements.forEach(e -> {
                             if (e != null) {
-                                AnnotationBuilder builder = holder
-                                        .newAnnotation(HighlightSeverity.ERROR, messageBuilder.toString())
-                                        .tooltip(tooltipBuilder.toString())
-                                        .range(e);
-
-                                builder.withFix(new SAIntentionAction());
-
                                 if (!quickfixes.isEmpty() && this.isQuickFixApplicable(e)) {
-                                    quickfixes.forEach((source, report) ->
-                                            builder.withFix(this.createQuickFix(e, source, report)));
+                                    quickfixes.forEach((source, report) ->{
+                                        AnnotationBuilder builder = holder
+                                                .newAnnotation(getHighlightSeverity(report), messageBuilder.toString())
+                                                .tooltip(tooltipBuilder.toString())
+                                                .range(e);
+                                        builder.withFix(new SAIntentionAction());
+                                            builder.withFix(this.createQuickFix(e, source, report));
+                                            builder.create();
+                                      }
+                                    );
                                 }
-
-                                builder.create();
                             }
                         });
                     }
                 }
             }
         });
+    }
+
+    @NotNull
+    private static HighlightSeverity getHighlightSeverity(DependencyReport report) {
+        if(CAIntentionAction.thereAreNoIssues(report) && CAIntentionAction.thereIsRecommendation(report))
+        {
+            return HighlightSeverity.WEAK_WARNING;
+        }
+        else
+        {
+            return HighlightSeverity.ERROR;
+        }
+
     }
 
     abstract protected String getInspectionShortName();

@@ -123,11 +123,11 @@ public abstract class CAIntentionAction implements IntentionAction {
         }
     }
 
-    private static boolean thereIsRecommendation(DependencyReport dependency) {
+    static boolean thereIsRecommendation(DependencyReport dependency) {
         return dependency.getRecommendation() != null && !dependency.getRecommendation().version().trim().equals("");
     }
 
-    private static boolean thereAreNoIssues(DependencyReport dependency) {
+    static boolean thereAreNoIssues(DependencyReport dependency) {
         return dependency.getIssues() == null || dependency.getIssues().size() == 0;
     }
 
