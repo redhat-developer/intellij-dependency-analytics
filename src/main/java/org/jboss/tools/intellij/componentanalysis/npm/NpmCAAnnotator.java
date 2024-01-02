@@ -14,8 +14,11 @@ package org.jboss.tools.intellij.componentanalysis.npm;
 import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.redhat.exhort.api.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
+import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,5 +73,15 @@ public class NpmCAAnnotator extends CAAnnotator {
             return resultMap;
         }
         return Collections.emptyMap();
+    }
+
+    @Override
+    protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report) {
+        return new NpmCAIntentionAction(element, source, report);
+    }
+
+    @Override
+    protected boolean isQuickFixApplicable(PsiElement element) {
+        return element instanceof JsonProperty && ((JsonProperty) element).getValue() instanceof JsonStringLiteral;
     }
 }
