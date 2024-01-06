@@ -14,12 +14,15 @@ package org.jboss.tools.intellij.settings;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class ApiSettingsComponent {
 
@@ -47,6 +50,20 @@ public class ApiSettingsComponent {
             + "<br>Specifies if allowing to use alternate package versions in virtual environment.</html>";
     private final static String pythonMatchManifestVersionsLabel = "<html>Python > Match package version"
             + "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
+    private final static String syftPathLabel = "<html>Syft > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of the <b>syft</b> executable.</html>";
+    private final static String syftConfigPathLabel = "<html>Syft > Configuration File: <b>Path</b>"
+            + "<br>Specifies absolute path of the <b>syft</b> configuration file.</html>";
+    private final static String skopeoPathLabel = "<html>Skopeo > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of the <b>skopeo</b> executable.</html>";
+    private final static String skopeoConfigPathLabel = "<html>Skopeo > Authentication File: <b>Path</b>"
+            + "<br>Specifies absolute path of the <b>skopeo</b> authentication file.</html>";
+    private final static String dockerPathLabel = "<html>Docker > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of the <b>docker</b> executable.</html>";
+    private final static String podmanPathLabel = "<html>Podman > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>podman</b> executable.</html>";
+     private final static String imagePlatformLabel = "<html>Image > Build: <b>Platform</b>"
+            + "<br>Specifies the platform of the images, e.g. <b>linux/amd64</b> or <b>linux/arm64</b>.</html>";
     private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
             + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
 
@@ -57,13 +74,22 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton npmPathText;
     private final TextFieldWithBrowseButton nodePathText;
     private final TextFieldWithBrowseButton goPathText;
-    private final JCheckBox goMatchManifestVersionsCheck;
+    private final JBCheckBox goMatchManifestVersionsCheck;
     private final TextFieldWithBrowseButton pythonPathText;
     private final TextFieldWithBrowseButton pipPathText;
-    private final JCheckBox usePython2Check;
-    private final JCheckBox usePythonVirtualEnvCheck;
-    private final JCheckBox pythonInstallBestEffortsCheck;
-    private final JCheckBox pythonMatchManifestVersionsCheck;
+    private final JBCheckBox usePython2Check;
+    private final JBCheckBox usePythonVirtualEnvCheck;
+    private final JBCheckBox pythonInstallBestEffortsCheck;
+    private final JBCheckBox pythonMatchManifestVersionsCheck;
+    private final TextFieldWithBrowseButton syftPathText;
+    private final TextFieldWithBrowseButton syftConfigPathText;
+
+    private final TextFieldWithBrowseButton skopeoPathText;
+    private final TextFieldWithBrowseButton skopeoConfigPathText;
+    private final TextFieldWithBrowseButton dockerPathText;
+    private final TextFieldWithBrowseButton podmanPathText;
+    private final JBTextField imagePlatformText;
+
     private final JBTextField snykTokenText;
 
     public ApiSettingsComponent() {
@@ -112,7 +138,7 @@ public class ApiSettingsComponent {
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
-        goMatchManifestVersionsCheck = new JCheckBox("Strictly match package version");
+        goMatchManifestVersionsCheck = new JBCheckBox("Strictly match package version");
 
         pythonPathText = new TextFieldWithBrowseButton();
         pythonPathText.addBrowseFolderListener(
@@ -132,13 +158,69 @@ public class ApiSettingsComponent {
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
-        usePython2Check = new JCheckBox("Use python 2.x");
+        usePython2Check = new JBCheckBox("Use python 2.x");
 
-        usePythonVirtualEnvCheck = new JCheckBox("Use python virtual environment");
+        usePythonVirtualEnvCheck = new JBCheckBox("Use python virtual environment");
 
-        pythonInstallBestEffortsCheck = new JCheckBox("Allow alternate package version");
+        pythonInstallBestEffortsCheck = new JBCheckBox("Allow alternate package version");
 
-        pythonMatchManifestVersionsCheck = new JCheckBox("Strictly match package version");
+        pythonMatchManifestVersionsCheck = new JBCheckBox("Strictly match package version");
+
+        syftPathText = new TextFieldWithBrowseButton();
+        syftPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        syftConfigPathText = new TextFieldWithBrowseButton();
+        syftConfigPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        skopeoPathText = new TextFieldWithBrowseButton();
+        skopeoPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        skopeoConfigPathText = new TextFieldWithBrowseButton();
+        skopeoConfigPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        dockerPathText = new TextFieldWithBrowseButton();
+        dockerPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        podmanPathText = new TextFieldWithBrowseButton();
+        podmanPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        imagePlatformText = new JBTextField();
 
         snykTokenText = new JBTextField();
 
@@ -169,6 +251,21 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(pythonInstallBestEffortsLabel), pythonInstallBestEffortsCheck, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(pythonMatchManifestVersionsLabel), pythonMatchManifestVersionsCheck, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(syftPathLabel), syftPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(syftConfigPathLabel), syftConfigPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(skopeoPathLabel), skopeoPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(skopeoConfigPathLabel), skopeoConfigPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(dockerPathLabel), dockerPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(podmanPathLabel), podmanPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(imagePlatformLabel), imagePlatformText, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
@@ -285,6 +382,69 @@ public class ApiSettingsComponent {
 
     public void setPythonMatchManifestVersionsCheck(boolean selected) {
         pythonMatchManifestVersionsCheck.setSelected(selected);
+    }
+
+    @NotNull
+    public String getSyftPathText() {
+        return syftPathText.getText();
+    }
+
+    public void setSyftPathText(@NotNull String text) {
+        syftPathText.setText(text);
+    }
+
+    @NotNull
+    public String getSyftConfigPathText() {
+        return syftConfigPathText.getText();
+    }
+
+    public void setSyftConfigPathText(@NotNull String text) {
+        syftConfigPathText.setText(text);
+    }
+
+    @NotNull
+    public String getSkopeoPathText() {
+        return skopeoPathText.getText();
+    }
+
+    public void setSkopeoPathText(@NotNull String text) {
+        skopeoPathText.setText(text);
+    }
+
+    @NotNull
+    public String getSkopeoConfigPathText() {
+        return skopeoConfigPathText.getText();
+    }
+
+    public void setSkopeoConfigPathText(@NotNull String text) {
+        skopeoConfigPathText.setText(text);
+    }
+
+    @NotNull
+    public String getDockerPathText() {
+        return dockerPathText.getText();
+    }
+
+    public void setDockerPathText(@NotNull String text) {
+        dockerPathText.setText(text);
+    }
+
+    @NotNull
+    public String getPodmanPathText() {
+        return podmanPathText.getText();
+    }
+
+    public void setPodmanPathText(@NotNull String text) {
+        podmanPathText.setText(text);
+    }
+
+    @NotNull
+    public String getImagePlatformText() {
+        return imagePlatformText.getText();
+    }
+
+    public void setImagePlatformText(@NotNull String text) {
+        imagePlatformText.setText(text);
     }
 
     @NotNull

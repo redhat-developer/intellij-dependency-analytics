@@ -23,6 +23,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import org.jboss.tools.intellij.report.AnalyticsReportUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -73,8 +74,9 @@ public class SaAction extends AnAction {
                     if (manifestDetails != null) {
                         ApplicationManager.getApplication().invokeLater(() -> {
                             try {
+                                AnalyticsReportUtils analyticsReportUtils = new AnalyticsReportUtils();
                                 // Open custom editor window which will load SA Report in browser attached to it.
-                                saUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                                analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
                             } catch (Exception e) {
                                 logger.error(e);
                                 Messages.showErrorDialog(event.getProject(),

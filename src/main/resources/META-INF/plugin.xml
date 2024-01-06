@@ -380,11 +380,12 @@
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
+    <depends>Docker</depends>
     <depends config-file="go.xml" optional="true">org.jetbrains.plugins.go</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
-        <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider"
+        <fileEditorProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorProvider"/>
+        <editorTabTitleProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorTabTitleProvider"
                                 order="first"/>
 
         <applicationConfigurable
@@ -421,6 +422,12 @@
         <externalAnnotator language="rhda-requirements"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAAnnotator"/>
 
+        <localInspection language="Dockerfile" shortName="DockerfileInspection"
+                         displayName="Red Hat Dependency Analytics dockerfile analysis"
+                         groupName="Dockerfile" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.image.DockerfileInspection"/>
+        <externalAnnotator language="Dockerfile"
+                           implementationClass="org.jboss.tools.intellij.image.DockerfileAnnotator"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
@@ -430,6 +437,17 @@
                     class="org.jboss.tools.intellij.stackanalysis.SaAction"
                     icon="/images/report-icon.png"/>
 
+            <separator/>
+
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </group>
+
+        <group>
+            <action id="imageAnalysis" text="Image Analytics Report"
+                    class="org.jboss.tools.intellij.image.ImageReportAction"
+                    icon="/images/report-icon.png"/>
             <separator/>
 
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>

@@ -51,6 +51,13 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= settingsComponent.getUsePythonVirtualEnvCheck() != settings.usePythonVirtualEnv;
         modified |= settingsComponent.getPythonInstallBestEffortsCheck() != settings.pythonInstallBestEfforts;
         modified |= settingsComponent.getPythonMatchManifestVersionsCheck() != settings.pythonMatchManifestVersions;
+        modified |= !settingsComponent.getSyftPathText().equals(settings.syftPath);
+        modified |= !settingsComponent.getSyftConfigPathText().equals(settings.syftConfigPath);
+        modified |= !settingsComponent.getSkopeoPathText().equals(settings.skopeoPath);
+        modified |= !settingsComponent.getSkopeoConfigPathText().equals(settings.skopeoConfigPath);
+        modified |= !settingsComponent.getDockerPathText().equals(settings.dockerPath);
+        modified |= !settingsComponent.getPodmanPathText().equals(settings.podmanPath);
+        modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
         modified |= !settingsComponent.getSnykTokenText().equals(settings.snykToken);
         return modified;
     }
@@ -70,6 +77,13 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.usePythonVirtualEnv = settingsComponent.getUsePythonVirtualEnvCheck();
         settings.pythonInstallBestEfforts = settingsComponent.getPythonInstallBestEffortsCheck();
         settings.pythonMatchManifestVersions = settingsComponent.getPythonMatchManifestVersionsCheck();
+        settings.syftPath = settingsComponent.getSyftPathText();
+        settings.syftConfigPath = settingsComponent.getSyftConfigPathText();
+        settings.skopeoPath = settingsComponent.getSkopeoPathText();
+        settings.skopeoConfigPath = settingsComponent.getSkopeoConfigPathText();
+        settings.dockerPath = settingsComponent.getDockerPathText();
+        settings.podmanPath = settingsComponent.getPodmanPathText();
+        settings.imagePlatform = settingsComponent.getImagePlatformText();
         settings.snykToken = settingsComponent.getSnykTokenText();
     }
 
@@ -88,6 +102,13 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setUsePythonVirtualEnvCheck(settings.usePythonVirtualEnv);
         settingsComponent.setPythonInstallBestEffortsCheck(settings.pythonInstallBestEfforts);
         settingsComponent.setPythonMatchManifestVersionsCheck(settings.pythonMatchManifestVersions);
+        settingsComponent.setSyftPathText(settings.syftPath);
+        settingsComponent.setSyftConfigPathText(settings.syftConfigPath);
+        settingsComponent.setSkopeoPathText(settings.skopeoPath);
+        settingsComponent.setSkopeoConfigPathText(settings.skopeoConfigPath);
+        settingsComponent.setDockerPathText(settings.dockerPath);
+        settingsComponent.setPodmanPathText(settings.podmanPath);
+        settingsComponent.setImagePlatformText(settings.imagePlatform);
         settingsComponent.setSnykTokenText(settings.snykToken != null ? settings.snykToken : "");
     }
 

@@ -8,7 +8,7 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.intellij.stackanalysis;
+package org.jboss.tools.intellij.report;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -29,23 +29,23 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class SaReportEditor extends UserDataHolderBase implements FileEditor, DumbAware {
-    private final SaReport saReport;
+public class AnalyticsReportEditor extends UserDataHolderBase implements FileEditor, DumbAware {
+    private final AnalyticsReport analyticsReport;
     private final VirtualFile virtualFile;
 
-    public SaReportEditor(VirtualFile virtualFile) throws IOException {
-        // Virtual file having SA Report attached.
+    public AnalyticsReportEditor(VirtualFile virtualFile) throws IOException {
+        // Virtual file having Analytics Report attached.
         this.virtualFile = virtualFile;
 
-        // SA Report (JCEF Browser)
-        this.saReport = new SaReport(new Gson()
+        // Analytics Report (JCEF Browser)
+        this.analyticsReport = new AnalyticsReport(new Gson()
                 .fromJson(VfsUtilCore.loadText(virtualFile), JsonObject.class)
                 .get("report_link").getAsString());
     }
 
     @Override
     public @NotNull JComponent getComponent() {
-        return this.saReport.getContent();
+        return this.analyticsReport.getContent();
     }
 
     @Override
