@@ -159,9 +159,11 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                                 .newAnnotation(getHighlightSeverity(report), messageBuilder.toString())
                                                 .tooltip(tooltipBuilder.toString())
                                                 .range(e);
+                                        CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
                                         builder.withFix(new SAIntentionAction());
                                             builder.withFix(this.createQuickFix(e, source, report));
-                                            builder.create();
+                                            builder.withFix(patchManifest);
+                                        builder.create();
                                       }
                                     );
                                 }
@@ -191,7 +193,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
     abstract protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file);
 
     abstract protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report);
-
+    abstract protected CAUpdateManifestIntentionAction patchManifest(PsiElement element, DependencyReport report);
     abstract protected boolean isQuickFixApplicable(PsiElement element);
 
     private Map<Dependency, Result> matchDependencies(Map<Dependency, List<PsiElement>> dependencies,

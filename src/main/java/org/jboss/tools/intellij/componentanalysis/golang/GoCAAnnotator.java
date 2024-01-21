@@ -19,10 +19,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.redhat.exhort.api.DependencyReport;
-import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
-import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
-import org.jboss.tools.intellij.componentanalysis.Dependency;
-import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jboss.tools.intellij.componentanalysis.*;
 
 import java.util.*;
 
@@ -79,6 +76,11 @@ public class GoCAAnnotator extends CAAnnotator {
     @Override
     protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         return new GoCAIntentionAction(element, source, report);
+    }
+
+    @Override
+    protected CAUpdateManifestIntentionAction patchManifest(PsiElement element, DependencyReport report) {
+        return null;
     }
 
     @Override
