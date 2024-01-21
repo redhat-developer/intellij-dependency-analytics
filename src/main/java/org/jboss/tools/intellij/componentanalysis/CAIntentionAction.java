@@ -87,10 +87,9 @@ public abstract class CAIntentionAction implements IntentionAction {
     }
 
     protected abstract void updateVersion(@NotNull Project project, Editor editor, PsiFile file, String version);
-
     protected abstract @Nullable FileModifier createCAIntentionActionInCopy(PsiElement element);
 
-    //TODO
+
     private static @NotNull String getRecommendedVersion(DependencyReport dependency) {
         String version=null;
         if(thereAreNoIssues(dependency))

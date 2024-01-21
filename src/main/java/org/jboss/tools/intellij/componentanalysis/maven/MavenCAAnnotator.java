@@ -18,10 +18,7 @@ import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
 import com.redhat.exhort.api.DependencyReport;
-import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
-import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
-import org.jboss.tools.intellij.componentanalysis.Dependency;
-import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jboss.tools.intellij.componentanalysis.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,6 +112,11 @@ public class MavenCAAnnotator extends CAAnnotator {
     @Override
     protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         return new MavenCAIntentionAction(element, source, report);
+    }
+
+    @Override
+    protected CAUpdateManifestIntentionAction patchManifest(PsiElement element, DependencyReport dependency) {
+        return new MavenCAUpdateManifestIntentionAction(element,dependency);
     }
 
     @Override

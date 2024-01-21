@@ -14,10 +14,7 @@ package org.jboss.tools.intellij.componentanalysis.pypi.ce;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.redhat.exhort.api.DependencyReport;
-import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
-import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
-import org.jboss.tools.intellij.componentanalysis.Dependency;
-import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jboss.tools.intellij.componentanalysis.*;
 import org.jboss.tools.intellij.componentanalysis.pypi.PipCAInspection;
 import org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.NameReq;
 import org.jboss.tools.intellij.componentanalysis.pypi.ce.requirements.psi.NameReqComment;
@@ -61,6 +58,11 @@ public class PipCAAnnotator extends CAAnnotator {
     @Override
     protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         return new PipCAIntentionAction(element, source, report);
+    }
+
+    @Override
+    protected CAUpdateManifestIntentionAction patchManifest(PsiElement element, DependencyReport report) {
+        return null;
     }
 
     @Override
