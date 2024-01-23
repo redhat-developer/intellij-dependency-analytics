@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.jboss.tools.intellij.analytics</id>
     <name>Red Hat Dependency Analytics</name>
-    <version>0.7.0</version>
+    <version>0.9.0</version>
     <vendor email="developers@redhat.com" url="https://www.redhat.com">Red-Hat</vendor>
 
     <description><![CDATA[
@@ -327,8 +327,9 @@
   ]]></description>
 
     <change-notes><![CDATA[
-  <p><b>0.7.1</b></p>
+  <p><b>0.9.0</b></p>
   <p>Enable component analysis for Golang (<code>go mod</code>) and Python (<code>pip</code>).</p>
+  <p>Added version quick-fix for Vulnerable artifacts in component analysis( Currently only for Maven pom.xml).</p>      
   <p><b>0.7.0</b></p>
   <p>Initial release for the new Red Hat Dependency Analytics service.</p>
   <p>Based on exhort-java-api.</p>
