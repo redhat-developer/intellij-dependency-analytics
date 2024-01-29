@@ -40,9 +40,7 @@ intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
     plugins = ['com.redhat.devtools.intellij.telemetry:1.1.0.52',
-               "org.jetbrains.plugins.go:211.6693.111",
-               "PythonCore:211.6693.111",
-               "ru.meanmail.plugin.requirements:2021.4-211"]
+               "org.jetbrains.plugins.go:211.6693.111"]
     updateSinceUntilBuild = false
 }
 
