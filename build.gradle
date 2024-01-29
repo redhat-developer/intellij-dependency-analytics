@@ -65,6 +65,9 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'com.redhat.exhort:exhort-java-api:0.0.5-SNAPSHOT'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    // https://mvnrepository.com/artifact/com.github.package-url/packageurl-java
+    implementation group: 'com.github.package-url', name: 'packageurl-java', version: '1.4.1'
+
 
     testImplementation('junit:junit:4.13.1')
 }
