@@ -199,7 +199,7 @@ public final class ApiService {
             if (settings.pythonMatchManifestVersions) {
                 System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
             } else {
-                System.clearProperty("MATCH_MANIFEST_VERSIONS");
+                System.setProperty("MATCH_MANIFEST_VERSIONS","false");
             }
         }
         if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
