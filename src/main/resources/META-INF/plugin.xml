@@ -329,7 +329,7 @@
     <change-notes><![CDATA[
   <p><b>0.9.2</b></p>
   <p>Added support for Python, Golang, and Node manifest files.</p>
-  <p>Python and Golang projects can only be analyzed with IntelliJ Ultimate Edition.</p>
+  <p>Golang projects can only be analyzed with IntelliJ Ultimate Edition.</p>
   <p>Fixed an issue with Python and Golang manifest files where packages did not have underlining for inline recommendations and remediations.</p>
   <p>Fixed an issue with the ignore flags for dependencies which was causing an invalid Dependency Analytics report.</p>
   <p>Added a vulnerability severity alert level setting for the user to receive inline notifications for errors or warnings.</p>
