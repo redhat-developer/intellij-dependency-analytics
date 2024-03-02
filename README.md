@@ -30,13 +30,15 @@ In future releases, Red Hat plans to support other programming languages.
 
 ##### Table of Contents
 
-- [Quick start](#quick-start)
-- [Configuration](#configuration)
-- [Features](#features)
-- [Know more about the Red Hat Dependency Analytics platform](#know-more-about-the-red-hat-dependency-analytics-platform)
-- [Data and telemetry](#data-and-telemetry)
-- [Support, feedback \& questions](#support-feedback--questions)
-- [License](#license)
+- [Red Hat Dependency Analytics](#red-hat-dependency-analytics)
+        - [Table of Contents](#table-of-contents)
+  - [Quick start](#quick-start)
+  - [Configuration](#configuration)
+  - [Features](#features)
+  - [Know more about the Red Hat Dependency Analytics platform](#know-more-about-the-red-hat-dependency-analytics-platform)
+  - [Data and telemetry](#data-and-telemetry)
+  - [Support, feedback \& questions](#support-feedback--questions)
+  - [License](#license)
 
 ## Quick start
 
@@ -119,8 +121,10 @@ according to your preferences.
   <br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
   If a Snyk token is not provided, Snyk vulnerability information is not displayed.
 
-If you need a new Snyk token, you can generate a new
-token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).
+  <br >If you need a new Snyk token, you can generate a new token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).
+
+- **Inline Vulnerability Severity Alerts** :
+<br >You can set the vulnerability severity alert level to `Error` or `Warning` for inline notifications of detected vulnerabilities.
 
 ## Features
 
@@ -137,7 +141,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
 
 - **Excluding dependencies with `exhortignore`**
   <br >You can exclude a package from analysis by marking the package for exclusion.
-  If you wish to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
+  If you want to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
   against the dependency, group id, artifact id, or version scopes of that particular dependency in the manifest file.
   For example:
   ```xml
@@ -148,7 +152,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   </dependency>
   ```
 
-  If you wish to ignore vulnerabilities for a dependency in a `package.json` file, you must add `exhortignore` as a
+  If you want to ignore vulnerabilities for a dependency in a `package.json` file, you must add `exhortignore` as a
   attribute-value pair.
   For example:
   ```json
@@ -172,7 +176,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   }
   ```
 
-  If you wish to ignore vulnerabilities for a dependency in a `go.mod` file, you must add `exhortignore` as a comment
+  If you want to ignore vulnerabilities for a dependency in a `go.mod` file, you must add `exhortignore` as a comment
   against the dependency in the manifest file.
   For example:
   ```text
@@ -181,7 +185,7 @@ token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&ut
   )
   ```
 
-  If you wish to ignore vulnerabilities for a dependency in a `requirements.txt` file, you must add `exhortignore` as a
+  If you want to ignore vulnerabilities for a dependency in a `requirements.txt` file, you must add `exhortignore` as a
   comment against the dependency in the manifest file.
   For example:
   ```text
