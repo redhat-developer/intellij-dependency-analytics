@@ -146,7 +146,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                 }
                             }
 
-                            if (CAIntentionAction.isQuickFixAvailable(report)) {
+                            if (CAIntentionAction.isQuickFixAvailable(report) || !CAIntentionAction.thereAreNoIssues(report)) {
                                 quickfixes.put(source, report);
                             }
                         });
@@ -159,10 +159,12 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                                 .newAnnotation(getHighlightSeverity(report), messageBuilder.toString())
                                                 .tooltip(tooltipBuilder.toString())
                                                 .range(e);
-                                        CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
-                                        builder.withFix(new SAIntentionAction());
+                                        if(CAIntentionAction.isQuickFixAvailable(report)) {
+                                            CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
                                             builder.withFix(this.createQuickFix(e, source, report));
                                             builder.withFix(patchManifest);
+                                        }
+                                        builder.withFix(new SAIntentionAction());
                                         builder.create();
                                       }
                                     );
