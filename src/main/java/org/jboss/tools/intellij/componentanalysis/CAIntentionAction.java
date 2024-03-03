@@ -130,7 +130,6 @@ public abstract class CAIntentionAction implements IntentionAction {
         return dependency.getIssues() == null || dependency.getIssues().size() == 0;
     }
 
-    //TODO
     private static @NotNull String getQuickFixText(VulnerabilitySource source, DependencyReport dependency) {
         String text="";
         if(thereAreNoIssues(dependency) && thereIsRecommendation(dependency))
@@ -147,7 +146,6 @@ public abstract class CAIntentionAction implements IntentionAction {
         return text;
     }
 
-    //TODO
     static boolean isQuickFixAvailable(DependencyReport dependency) {
         boolean result=false;
         if(thereAreNoIssues(dependency))
