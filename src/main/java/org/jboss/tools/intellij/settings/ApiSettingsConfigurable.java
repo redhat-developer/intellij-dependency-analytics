@@ -51,7 +51,6 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= settingsComponent.getUsePythonVirtualEnvCheck() != settings.usePythonVirtualEnv;
         modified |= settingsComponent.getPythonInstallBestEffortsCheck() != settings.pythonInstallBestEfforts;
         modified |= settingsComponent.getPythonMatchManifestVersionsCheck() != settings.pythonMatchManifestVersions;
-        modified |= !settingsComponent.getSnykTokenText().equals(settings.snykToken);
         return modified;
     }
 
@@ -70,7 +69,6 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.usePythonVirtualEnv = settingsComponent.getUsePythonVirtualEnvCheck();
         settings.pythonInstallBestEfforts = settingsComponent.getPythonInstallBestEffortsCheck();
         settings.pythonMatchManifestVersions = settingsComponent.getPythonMatchManifestVersionsCheck();
-        settings.snykToken = settingsComponent.getSnykTokenText();
     }
 
     @Override
@@ -88,7 +86,6 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setUsePythonVirtualEnvCheck(settings.usePythonVirtualEnv);
         settingsComponent.setPythonInstallBestEffortsCheck(settings.pythonInstallBestEfforts);
         settingsComponent.setPythonMatchManifestVersionsCheck(settings.pythonMatchManifestVersions);
-        settingsComponent.setSnykTokenText(settings.snykToken != null ? settings.snykToken : "");
     }
 
     @Override
