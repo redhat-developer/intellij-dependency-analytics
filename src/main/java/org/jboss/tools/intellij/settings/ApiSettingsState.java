@@ -51,8 +51,6 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public boolean pythonMatchManifestVersions;
     public boolean pythonInstallBestEfforts;
 
-    public String snykToken;
-
     @Override
     public @Nullable ApiSettingsState getState() {
         return this;

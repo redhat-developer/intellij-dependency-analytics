@@ -47,9 +47,6 @@ public class ApiSettingsComponent {
             + "<br>Specifies if allowing to use alternate package versions in virtual environment.</html>";
     private final static String pythonMatchManifestVersionsLabel = "<html>Python > Match package version"
             + "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
-    private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
-            + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
-
     private final JPanel mainPanel;
 
     private final TextFieldWithBrowseButton mvnPathText;
@@ -64,7 +61,6 @@ public class ApiSettingsComponent {
     private final JCheckBox usePythonVirtualEnvCheck;
     private final JCheckBox pythonInstallBestEffortsCheck;
     private final JCheckBox pythonMatchManifestVersionsCheck;
-    private final JBTextField snykTokenText;
 
     public ApiSettingsComponent() {
         mvnPathText = new TextFieldWithBrowseButton();
@@ -140,7 +136,7 @@ public class ApiSettingsComponent {
 
         pythonMatchManifestVersionsCheck = new JCheckBox("Strictly match package version");
 
-        snykTokenText = new JBTextField();
+
 
         mainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(mvnPathLabel), mvnPathText, 1, true)
@@ -169,9 +165,6 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(pythonInstallBestEffortsLabel), pythonInstallBestEffortsCheck, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(pythonMatchManifestVersionsLabel), pythonMatchManifestVersionsCheck, 1, true)
-                .addSeparator(10)
-                .addVerticalGap(10)
-                .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -287,12 +280,4 @@ public class ApiSettingsComponent {
         pythonMatchManifestVersionsCheck.setSelected(selected);
     }
 
-    @NotNull
-    public String getSnykTokenText() {
-        return snykTokenText.getText();
-    }
-
-    public void setSnykTokenText(@NotNull String text) {
-        snykTokenText.setText(text);
-    }
 }
