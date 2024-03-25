@@ -12,11 +12,6 @@
 
 Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply chain
 while you build your application.
-The Dependency Analytics plugin uses the Snyk REST API to
-query [Snyk's Vulnerability Database](https://snyk.io/product/vulnerability-database/) for the most up-to-date
-vulnerability information available.
-Snyk uses industry-leading security intelligence by pulling from many data sources to give you exact vulnerability
-information.
 
 **NOTE:**
 <br >The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
@@ -63,13 +58,6 @@ In future releases, Red Hat plans to support other programming languages.
     - Open a manifest file, hover over a dependency marked by the inline Component Analysis, indicated by the wavy-red
       line under a dependency, and click **Detailed Vulnerability Report**.
     - Right click on a manifest file in the **Project** window, and click **Dependency Analytics Report**.
-7. (OPTIONAL) You can link your Snyk account to Dependency Analytics by doing the following:
-    1. Log into
-       your [Snyk account](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).
-    2. On the account landing page, you can find your Snyk Token, copy the token.
-    3. Set the Snyk token as the value of your IDE's `EXHORT_SNYK_TOKEN` environment.
-    4. After adding your Snyk token, the vulnerability report gives you detailed information about security
-       vulnerabilities unique to Snyk, and vulnerabilities that have publicly known exploits.
 
 ## Configuration
 
@@ -116,12 +104,6 @@ according to your preferences.
   If selecting option `Allow alternate package version` while using virtual environment, the dependency versions
   specified in the manifest file will be ignored, and dependency versions will be resolved dynamically instead (this
   feature cannot be enabled when `Strictly match package version` is selected).
-
-- **Exhort Snyk Token** :
-  <br >The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-  If a Snyk token is not provided, Snyk vulnerability information is not displayed.
-
-  <br >If you need a new Snyk token, you can generate a new token [here](https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9).
 
 - **Inline Vulnerability Severity Alerts** :
 <br >You can set the vulnerability severity alert level to `Error` or `Warning` for inline notifications of detected vulnerabilities.
