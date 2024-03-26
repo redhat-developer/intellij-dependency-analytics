@@ -64,8 +64,6 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of <b>podman</b> executable.</html>";
      private final static String imagePlatformLabel = "<html>Image > Build: <b>Platform</b>"
             + "<br>Specifies the platform of the images, e.g. <b>linux/amd64</b> or <b>linux/arm64</b>.</html>";
-    private final static String snykTokenLabel = "<html>Red Hat Dependency Analytics: <b>Exhort Snyk Token</b>"
-            + "<br>Red Hat Dependency Analytics sever authentication token for Snyk.</html>";
 
     private final JPanel mainPanel;
 
@@ -89,8 +87,6 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton dockerPathText;
     private final TextFieldWithBrowseButton podmanPathText;
     private final JBTextField imagePlatformText;
-
-    private final JBTextField snykTokenText;
 
     public ApiSettingsComponent() {
         mvnPathText = new TextFieldWithBrowseButton();
@@ -222,8 +218,6 @@ public class ApiSettingsComponent {
 
         imagePlatformText = new JBTextField();
 
-        snykTokenText = new JBTextField();
-
         mainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(mvnPathLabel), mvnPathText, 1, true)
                 .addVerticalGap(10)
@@ -266,9 +260,6 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(podmanPathLabel), podmanPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(imagePlatformLabel), imagePlatformText, 1, true)
-                .addSeparator(10)
-                .addVerticalGap(10)
-                .addLabeledComponent(new JBLabel(snykTokenLabel), snykTokenText, 1, true)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -445,14 +436,5 @@ public class ApiSettingsComponent {
 
     public void setImagePlatformText(@NotNull String text) {
         imagePlatformText.setText(text);
-    }
-
-    @NotNull
-    public String getSnykTokenText() {
-        return snykTokenText.getText();
-    }
-
-    public void setSnykTokenText(@NotNull String text) {
-        snykTokenText.setText(text);
     }
 }

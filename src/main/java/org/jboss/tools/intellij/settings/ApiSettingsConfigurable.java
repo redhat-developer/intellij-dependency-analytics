@@ -58,7 +58,6 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getDockerPathText().equals(settings.dockerPath);
         modified |= !settingsComponent.getPodmanPathText().equals(settings.podmanPath);
         modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
-        modified |= !settingsComponent.getSnykTokenText().equals(settings.snykToken);
         return modified;
     }
 
@@ -84,7 +83,6 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.dockerPath = settingsComponent.getDockerPathText();
         settings.podmanPath = settingsComponent.getPodmanPathText();
         settings.imagePlatform = settingsComponent.getImagePlatformText();
-        settings.snykToken = settingsComponent.getSnykTokenText();
     }
 
     @Override
@@ -109,7 +107,6 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setDockerPathText(settings.dockerPath);
         settingsComponent.setPodmanPathText(settings.podmanPath);
         settingsComponent.setImagePlatformText(settings.imagePlatform);
-        settingsComponent.setSnykTokenText(settings.snykToken != null ? settings.snykToken : "");
     }
 
     @Override

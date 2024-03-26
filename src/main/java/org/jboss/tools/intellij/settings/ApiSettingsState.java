@@ -34,7 +34,6 @@ import java.util.UUID;
 public final class ApiSettingsState implements PersistentStateComponent<ApiSettingsState> {
 
     public String rhdaToken;
-    public String snykToken;
 
     public String mvnPath;
     public String javaPath;

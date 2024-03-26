@@ -12,12 +12,6 @@
 <p>
     Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply
     chain while you build your application.
-    <br>The Dependency Analytics plugin uses the Snyk REST API to query <a
-        href="https://snyk.io/product/vulnerability-database/"
-        rel="noopener noreferrer" target="_blank">Snyk's Vulnerability
-    Database</a> for the most up-to-date vulnerability information available.
-    <br>Snyk uses industry-leading security intelligence by pulling from many data sources to give you exact
-    vulnerability information.
 
 <p>
     <b>NOTE:</b>
@@ -69,20 +63,6 @@
                 Report</b>.
             </li>
         </ul>
-    </li>
-    <li>(OPTIONAL) You can link your Snyk account to Dependency Analytics by doing the following:
-        <ol>
-            <li>Log into your <a
-                    href="https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9"
-                    rel="noopener noreferrer" target="_blank">Snyk
-                account</a>.
-            </li>
-            <li>On the account landing page, you can find your Snyk Token, copy the token.</li>
-            <li>Set the Snyk token as the value of your IDE's <code>EXHORT_SNYK_TOKEN</code> environment.</li>
-            <li>After adding your Snyk token, the vulnerability report gives you detailed information about security
-                vulnerabilities unique to Snyk, and vulnerabilities that have publicly known exploits.
-            </li>
-        </ol>
     </li>
 </ol>
 <p>
@@ -145,11 +125,6 @@
         dependency versions specified in the manifest file will be ignored, and dependency versions will be resolved
         dynamically instead. This feature cannot be enabled when <code>Strictly match package version</code> is
         selected.
-    </li>
-    <li>
-        <b>Exhort Snyk Token</b>:
-        <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-        <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
     </li>
 </ul>
 <p>

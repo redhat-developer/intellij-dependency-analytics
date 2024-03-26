@@ -163,11 +163,5 @@ public final class ApiService {
         } else {
             System.clearProperty("EXHORT_IMAGE_PLATFORM");
         }
-
-        if (settings.snykToken != null && !settings.snykToken.isBlank()) {
-            System.setProperty("EXHORT_SNYK_TOKEN", settings.snykToken);
-        } else {
-            System.clearProperty("EXHORT_SNYK_TOKEN");
-        }
     }
 }
