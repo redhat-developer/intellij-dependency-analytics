@@ -17,12 +17,12 @@
     <b>NOTE:</b>
     <br>The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
     <br>Dependency Analytics only accesses your manifest files to analyze your application dependencies before
-    displaying
-    the vulnerability report.
+    displaying the vulnerability report.
 <p>
     <b>IMPORTANT:</b>
     <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node
-    (<code>npm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems.
+    (<code>npm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems, and base images in
+    <code>Dockerfile</code>.
     <br>In future releases, Red Hat plans to support other programming languages.
 <p>
 
@@ -41,6 +41,12 @@
     </li>
     <li>For Python projects, analyzing a <code>requirements.txt</code> file, you must have the <code>python3</code> and
         <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
+    </li>
+    <li>For base images, analyzing a <code>Dockerfile</code>, you must have the <code><a
+            href="https://github.com/anchore/syft?tab=readme-ov-file#installation" rel="noopener noreferrer"
+            target="_blank">syft</a></code> and
+        <code><a href="https://github.com/containers/skopeo/blob/main/install.md" rel="noopener noreferrer"
+                 target="_blank">skopeo</a></code> binaries in your IDE's <code>PATH</code> environment.
     </li>
 </ul>
 <p>
@@ -105,8 +111,9 @@
         <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code>
         command to resolve dependencies for Go projects.
         <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
-        <br>When option `Strictly match package version` is selected, the resolved dependency versions will be compared
-        to the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+        <br>When option <code>Strictly match package version</code> is selected, the resolved dependency versions will
+        be compared to the versions specified in the manifest file, and users will be alerted if any mismatch is
+        detected.
     </li>
     <li>
         <b>Python</b>:
@@ -125,6 +132,34 @@
         dependency versions specified in the manifest file will be ignored, and dependency versions will be resolved
         dynamically instead. This feature cannot be enabled when <code>Strictly match package version</code> is
         selected.
+    </li>
+    <li>
+        <b>Image</b>:
+        <br>Set the full path of the Syft executable, which allows Exhort to locate and execute the <code>syft</code>
+        command to generate Software Bill of Materials for the base images.
+        <br>Optionally, set the full path of the Docker or Podman executable. Syft will attempt to find the images in
+        the Docker or Podman daemon with the executable. Otherwise, Syft will try direct remote registry access.
+        <br>Set the full path of the Skopeo executable, which allows Exhort to locate and execute the
+        <code>skopeo</code> command to determine the image digests.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
+        executables.
+        <br>If a Syft configuration file is used and not at the default <a
+            href="https://github.com/anchore/syft/blob/469b4c13bbc52c43bc5216924b6ffd9d6d47bbd6/README.md#configuration"
+            rel="noopener noreferrer" target="_blank">paths</a>, set the full path to the configuration file in
+        configuration.
+        <br>If an <a
+            href="https://github.com/containers/skopeo/blob/3eacbe5ae2fe859f872a02bf28c16371fb1de7b8/docs/skopeo-inspect.1.md#options"
+            rel="noopener noreferrer" target="_blank">authentication file</a> is applied for <code>skopeo inspect</code>,
+        set the full path to the file in configuration.
+        <br>If platform is not specified in the <code>Dockerfile</code> for multi-platform images and a default platform
+        should be applied, set the default platform in the configuration. Otherwise, set the full path of the Docker or
+        Podman executable, then Exhort will use the executable to determine the image platform based on the OS and
+        architecture of the container runtime.
+    </li>
+    <li>
+        <b>Inline Vulnerability Severity Alerts</b>:
+        <br>You can set the vulnerability severity alert level to <code>Error</code> or <code>Warning</code> for inline
+        notifications of detected vulnerabilities.
     </li>
 </ul>
 <p>
@@ -145,6 +180,18 @@
         highest severity status of said vulnerabilities.
         <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/component-analysis.gif"
              alt="Animated screenshot showing the inline reporting feature of Dependency Analytics">
+    </li>
+    <li>
+        <b>Image analysis</b>
+        <br>Upon opening a <code>Dockerfile</code>, a scan starts the analysis process.
+        <br>The scan could take a few minutes, and provides inline feedback on detected security vulnerabilities for the
+        base images.
+        <br>Such images are appropriately underlined in red, and hovering over it gives you a short summary of the
+        security concern.
+        <br>The summary has the image name, the amount of known security vulnerabilities, and the highest severity
+        status of said vulnerabilities.
+        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/image-analysis.gif"
+             alt="Animated screenshot showing the inline reporting feature of Image Analysis">
     </li>
     <li>
         <b>Excluding dependencies with <code>exhortignore</code></b>
