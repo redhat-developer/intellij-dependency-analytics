@@ -8,20 +8,20 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.intellij.stackanalysis;
+package org.jboss.tools.intellij.report;
 
 import com.intellij.ui.jcef.JBCefBrowser;
 
 import javax.swing.JComponent;
 
 
-public class SaReport {
+public class AnalyticsReport {
     private final JBCefBrowser browser;
 
     /**
      * <p>Initialize JCEF Browser.</p>
      */
-    public SaReport(String url) {
+    public AnalyticsReport(String url) {
         // Open given url in JCEF browser
         browser = new JBCefBrowser();
         browser.loadURL(url);

@@ -8,7 +8,7 @@
  * Contributors:
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
-package org.jboss.tools.intellij.stackanalysis;
+package org.jboss.tools.intellij.report;
 
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
@@ -20,18 +20,18 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 
-public class SaReportEditorProvider implements FileEditorProvider, DumbAware {
+public class AnalyticsReportEditorProvider implements FileEditorProvider, DumbAware {
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         // If file name is matching with Report file name then allow it to open in custom editor.
-        return "sa".equals(virtualFile.getExtension());
+        return "ar".equals(virtualFile.getExtension());
     }
 
     @Override
     public @NotNull FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile virtualFile) {
         try {
             // Create custom editor having browser attached to it.
-            return new SaReportEditor(virtualFile);
+            return new AnalyticsReportEditor(virtualFile);
         } catch (Exception e) {
             throw new PlatformDetectionException("Can not open editor.");
         }

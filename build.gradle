@@ -40,7 +40,8 @@ intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
     plugins = ['com.redhat.devtools.intellij.telemetry:1.1.0.52',
-               "org.jetbrains.plugins.go:211.6693.111"]
+               "org.jetbrains.plugins.go:221.5080.9",
+               "Docker:221.5080.9"]
     updateSinceUntilBuild = false
 }
 
@@ -61,7 +62,7 @@ dependencies {
 
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
-    implementation 'com.redhat.exhort:exhort-java-api:0.0.6-SNAPSHOT'
+    implementation 'com.redhat.exhort:exhort-java-api:0.0.7-SNAPSHOT'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     // https://mvnrepository.com/artifact/com.github.package-url/packageurl-java
     implementation group: 'com.github.package-url', name: 'packageurl-java', version: '1.4.1'

@@ -9,7 +9,7 @@
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.jboss.tools.intellij.stackanalysis;
+package org.jboss.tools.intellij.report;
 
 public class PlatformDetectionException extends RuntimeException {
     public PlatformDetectionException(String ex) {
