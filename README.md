@@ -121,6 +121,14 @@ according to your preferences.
 
   ![ Animated screenshot showing the inline reporting feature of Dependency Analytics ](src/main/resources/images/component-analysis.gif)
 
+- **Docker scanning**
+    <br >Upon opening a Dockerfile, a vulnerability scan starts analyzing the images within the Dockerfile.
+    After the analysis finishes, you can view any recommendations and remediation by clicking the _Quick Fix..._ menu from the highlighted image name.
+	Any recommendations for an alternative image does not replace the current image.
+	By clicking _Switch to..._, you go to Red Hat's Ecosystem Catalog for the recommended image.
+
+	<br >You must have the [`syft`](https://github.com/anchore/syft#installation) and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to use the Docker scanning feature.
+  
 - **Excluding dependencies with `exhortignore`**
   <br >You can exclude a package from analysis by marking the package for exclusion.
   If you want to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
