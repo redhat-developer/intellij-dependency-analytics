@@ -146,15 +146,14 @@ according to your preferences.
 
   ![ Animated screenshot showing the inline reporting feature of Dependency Analytics ](src/main/resources/images/component-analysis.gif)
 
-- **Image analysis**
-  <br >Upon opening a `Dockerfile`, a scan starts the analysis process.
-  The scan could take a few minutes, and provides inline feedback on detected security vulnerabilities for the base
-  images.
-  Such images are appropriately underlined in red, and hovering over it gives you a short summary of the security
-  concern.
-  The summary has the image name, the amount of known security vulnerabilities, and the highest severity status of said
-  vulnerabilities.
+- **Docker scanning**
+  <br >Upon opening a Dockerfile, a vulnerability scan starts analyzing the images within the Dockerfile.
+  After the analysis finishes, you can view any recommendations and remediation by clicking the _Quick Fix..._ menu from the highlighted image name.
+  Any recommendations for an alternative image does not replace the current image.
+  By clicking _Switch to..._, you go to Red Hat's Ecosystem Catalog for the recommended image.
 
+  <br >You must have the [`syft`](https://github.com/anchore/syft#installation) and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to use the Docker scanning feature.
+  
   ![ Animated screenshot showing the inline reporting feature of Image Analysis ](src/main/resources/images/image-analysis.gif)
 
 - **Excluding dependencies with `exhortignore`**
