@@ -364,6 +364,8 @@
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>1.0.0</b></p>
+  <p>Added support for base image vulnerability scanning in Dockerfiles.</p>
   <p><b>0.9.2</b></p>
   <p>Added support for Python, Golang, and Node manifest files.</p>
   <p>Golang projects can only be analyzed with IntelliJ Ultimate Edition.</p>
