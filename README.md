@@ -128,6 +128,15 @@ according to your preferences.
 	By clicking _Switch to..._, you go to Red Hat's Ecosystem Catalog for the recommended image.
 
 	<br >You must have the [`syft`](https://github.com/anchore/syft#installation) and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to use the Docker scanning feature.
+  You can specify a specific path to these binaries, and others by settings the following parameters:
+
+  * `syft.executable.path` : Specify the absolute path of `syft` executable.
+  * `syft.config.path` : Specify the absolute path to the Syft configuration file.
+  * `skopeo.executable.path` : Specify the absolute path of `skopeo` executable.
+  * `skopeo.config.path` : Specify the absolute path to the authentication file used by the `skopeo inspect` command.
+  * `docker.executable.path` : Specify the absolute path of `docker` executable.
+  * `podman.executable.path` : Specify the absolute path of `podman` executable.
+  * `image.platform` : Specify the platform used for multi-arch images.
   
 - **Excluding dependencies with `exhortignore`**
   <br >You can exclude a package from analysis by marking the package for exclusion.
