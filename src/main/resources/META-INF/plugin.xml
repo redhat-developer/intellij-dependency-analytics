@@ -182,14 +182,29 @@
              alt="Animated screenshot showing the inline reporting feature of Dependency Analytics">
     </li>
     <li>
-        <b>Image analysis</b>
-        <br>Upon opening a <code>Dockerfile</code>, a scan starts the analysis process.
-        <br>The scan could take a few minutes, and provides inline feedback on detected security vulnerabilities for the
-        base images.
-        <br>Such images are appropriately underlined in red, and hovering over it gives you a short summary of the
-        security concern.
-        <br>The summary has the image name, the amount of known security vulnerabilities, and the highest severity
-        status of said vulnerabilities.
+        <b>Docker scanning</b>
+        <br>Upon opening a <code>Dockerfile</code>, a vulnerability scan starts analyzing the images within the
+        Dockerfile.
+        <br>After the analysis finishes, you can view any recommendations and remediation by clicking the <i>More
+        actions...</i> menu from the highlighted image name.
+        <br>Any recommendations for an alternative image does not replace the current image.
+        <br>By clicking <i>Switch to...</i>, you go to Red Hat's Ecosystem Catalog for the recommended image.
+        <br>
+        <br>You must have the <a href="https://github.com/anchore/syft#installation"
+        rel="noopener noreferrer" target="_blank">syft</a> and <a href="https://www.redhat.com/en/topics/containers/what-is-skopeo"
+        rel="noopener noreferrer" target="_blank">skopeo</a> binaries installed on your workstation to use the Docker
+        scanning feature.
+        <br> You can specify a specific path to these binaries, and others by settings the following parameters:
+        <ul>
+            <li><code>syft.executable.path</code> : Specify the absolute path of <code>syft</code> executable.</li>
+            <li><code>syft.config.path</code> : Specify the absolute path to the Syft configuration file.</li>
+            <li><code>skopeo.executable.path</code> : Specify the absolute path of <code>skopeo</code> executable.</li>
+            <li><code>skopeo.config.path</code> : Specify the absolute path to the authentication file used by the
+            <code>skopeo inspect</code> command.</li>
+            <li><code>docker.executable.path</code> : Specify the absolute path of <code>docker</code> executable.</li>
+            <li><code>podman.executable.path</code> : Specify the absolute path of <code>podman</code> executable.</li>
+            <li><code>image.platform</code> : Specify the platform used for multi-arch images.</li>
+        </ul>
         <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/image-analysis.gif"
              alt="Animated screenshot showing the inline reporting feature of Image Analysis">
     </li>
