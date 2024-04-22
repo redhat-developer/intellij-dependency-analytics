@@ -366,7 +366,7 @@
     <change-notes><![CDATA[
   <p><b>1.0.0</b></p>
   <p>Added support for base image vulnerability scanning in Dockerfiles.</p>
-  <p><b>0.9.2</b></p>
+  <p>Bumped Telemetry plugin to 1.1.0.</p>
   <p>Added support for Python, Golang, and Node manifest files.</p>
   <p>Golang projects can only be analyzed with IntelliJ Ultimate Edition.</p>
   <p>Fixed an issue with Python and Golang manifest files where packages did not have underlining for inline recommendations and remediations.</p>
