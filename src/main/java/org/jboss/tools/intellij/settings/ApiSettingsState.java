@@ -12,7 +12,11 @@
 package org.jboss.tools.intellij.settings;
 
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.*;
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.RoamingType;
+import com.intellij.openapi.components.Service;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,21 +33,17 @@ import java.util.UUID;
 @Service(Service.Level.APP)
 public final class ApiSettingsState implements PersistentStateComponent<ApiSettingsState> {
 
-    public static ApiSettingsState getInstance() {
-        ApiSettingsState state = ApplicationManager.getApplication().getService(ApiSettingsState.class);
-        if (state.rhdaToken == null || state.rhdaToken.isBlank()) {
-            state.rhdaToken = UUID.randomUUID().toString();
-        }
-        return state;
-    }
-
     public String rhdaToken;
+
     public String mvnPath;
     public String javaPath;
+
     public String npmPath;
     public String nodePath;
+
     public String goPath;
     public boolean goMatchManifestVersions;
+
     public String pythonPath;
     public String pipPath;
     public boolean usePython2;
@@ -51,7 +51,21 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public boolean pythonMatchManifestVersions;
     public boolean pythonInstallBestEfforts;
 
-    public String snykToken;
+    public String syftPath;
+    public String syftConfigPath;
+    public String skopeoPath;
+    public String skopeoConfigPath;
+    public String dockerPath;
+    public String podmanPath;
+    public String imagePlatform;
+
+    public static ApiSettingsState getInstance() {
+        ApiSettingsState state = ApplicationManager.getApplication().getService(ApiSettingsState.class);
+        if (state.rhdaToken == null || state.rhdaToken.isBlank()) {
+            state.rhdaToken = UUID.randomUUID().toString();
+        }
+        return state;
+    }
 
     @Override
     public @Nullable ApiSettingsState getState() {

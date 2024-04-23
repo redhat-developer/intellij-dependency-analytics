@@ -12,23 +12,17 @@
 <p>
     Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply
     chain while you build your application.
-    <br>The Dependency Analytics plugin uses the Snyk REST API to query <a
-        href="https://snyk.io/product/vulnerability-database/"
-        rel="noopener noreferrer" target="_blank">Snyk's Vulnerability
-    Database</a> for the most up-to-date vulnerability information available.
-    <br>Snyk uses industry-leading security intelligence by pulling from many data sources to give you exact
-    vulnerability information.
 
 <p>
     <b>NOTE:</b>
     <br>The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
     <br>Dependency Analytics only accesses your manifest files to analyze your application dependencies before
-    displaying
-    the vulnerability report.
+    displaying the vulnerability report.
 <p>
     <b>IMPORTANT:</b>
     <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node
-    (<code>npm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems.
+    (<code>npm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems, and base images in
+    <code>Dockerfile</code>.
     <br>In future releases, Red Hat plans to support other programming languages.
 <p>
 
@@ -47,6 +41,12 @@
     </li>
     <li>For Python projects, analyzing a <code>requirements.txt</code> file, you must have the <code>python3</code> and
         <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
+    </li>
+    <li>For base images, analyzing a <code>Dockerfile</code>, you must have the <code><a
+            href="https://github.com/anchore/syft?tab=readme-ov-file#installation" rel="noopener noreferrer"
+            target="_blank">syft</a></code> and
+        <code><a href="https://github.com/containers/skopeo/blob/main/install.md" rel="noopener noreferrer"
+                 target="_blank">skopeo</a></code> binaries in your IDE's <code>PATH</code> environment.
     </li>
 </ul>
 <p>
@@ -69,20 +69,6 @@
                 Report</b>.
             </li>
         </ul>
-    </li>
-    <li>(OPTIONAL) You can link your Snyk account to Dependency Analytics by doing the following:
-        <ol>
-            <li>Log into your <a
-                    href="https://app.snyk.io/login?utm_campaign=Code-Ready-Analytics-2020&utm_source=code_ready&code_ready=FF1B53D9-57BE-4613-96D7-1D06066C38C9"
-                    rel="noopener noreferrer" target="_blank">Snyk
-                account</a>.
-            </li>
-            <li>On the account landing page, you can find your Snyk Token, copy the token.</li>
-            <li>Set the Snyk token as the value of your IDE's <code>EXHORT_SNYK_TOKEN</code> environment.</li>
-            <li>After adding your Snyk token, the vulnerability report gives you detailed information about security
-                vulnerabilities unique to Snyk, and vulnerabilities that have publicly known exploits.
-            </li>
-        </ol>
     </li>
 </ol>
 <p>
@@ -125,8 +111,9 @@
         <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code>
         command to resolve dependencies for Go projects.
         <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
-        <br>When option `Strictly match package version` is selected, the resolved dependency versions will be compared
-        to the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+        <br>When option <code>Strictly match package version</code> is selected, the resolved dependency versions will
+        be compared to the versions specified in the manifest file, and users will be alerted if any mismatch is
+        detected.
     </li>
     <li>
         <b>Python</b>:
@@ -147,9 +134,32 @@
         selected.
     </li>
     <li>
-        <b>Exhort Snyk Token</b>:
-        <br>The Snyk token allows Exhort to authenticate with the Snyk Vulnerability Database.
-        <br>If a Snyk token is not provided, Snyk vulnerability information is not displayed.
+        <b>Image</b>:
+        <br>Set the full path of the Syft executable, which allows Exhort to locate and execute the <code>syft</code>
+        command to generate Software Bill of Materials for the base images.
+        <br>Optionally, set the full path of the Docker or Podman executable. Syft will attempt to find the images in
+        the Docker or Podman daemon with the executable. Otherwise, Syft will try direct remote registry access.
+        <br>Set the full path of the Skopeo executable, which allows Exhort to locate and execute the
+        <code>skopeo</code> command to determine the image digests.
+        <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
+        executables.
+        <br>If a Syft configuration file is used and not at the default <a
+            href="https://github.com/anchore/syft/blob/469b4c13bbc52c43bc5216924b6ffd9d6d47bbd6/README.md#configuration"
+            rel="noopener noreferrer" target="_blank">paths</a>, set the full path to the configuration file in
+        configuration.
+        <br>If an <a
+            href="https://github.com/containers/skopeo/blob/3eacbe5ae2fe859f872a02bf28c16371fb1de7b8/docs/skopeo-inspect.1.md#options"
+            rel="noopener noreferrer" target="_blank">authentication file</a> is applied for <code>skopeo inspect</code>,
+        set the full path to the file in configuration.
+        <br>If platform is not specified in the <code>Dockerfile</code> for multi-platform images and a default platform
+        should be applied, set the default platform in the configuration. Otherwise, set the full path of the Docker or
+        Podman executable, then Exhort will use the executable to determine the image platform based on the OS and
+        architecture of the container runtime.
+    </li>
+    <li>
+        <b>Inline Vulnerability Severity Alerts</b>:
+        <br>You can set the vulnerability severity alert level to <code>Error</code> or <code>Warning</code> for inline
+        notifications of detected vulnerabilities.
     </li>
 </ul>
 <p>
@@ -170,6 +180,33 @@
         highest severity status of said vulnerabilities.
         <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/component-analysis.gif"
              alt="Animated screenshot showing the inline reporting feature of Dependency Analytics">
+    </li>
+    <li>
+        <b>Docker scanning</b>
+        <br>Upon opening a <code>Dockerfile</code>, a vulnerability scan starts analyzing the images within the
+        Dockerfile.
+        <br>After the analysis finishes, you can view any recommendations and remediation by clicking the <i>More
+        actions...</i> menu from the highlighted image name.
+        <br>Any recommendations for an alternative image does not replace the current image.
+        <br>By clicking <i>Switch to...</i>, you go to Red Hat's Ecosystem Catalog for the recommended image.
+        <br>
+        <br>You must have the <a href="https://github.com/anchore/syft#installation"
+        rel="noopener noreferrer" target="_blank">syft</a> and <a href="https://www.redhat.com/en/topics/containers/what-is-skopeo"
+        rel="noopener noreferrer" target="_blank">skopeo</a> binaries installed on your workstation to use the Docker
+        scanning feature.
+        <br> You can specify a specific path to these binaries, and others by settings the following parameters:
+        <ul>
+            <li><code>syft.executable.path</code> : Specify the absolute path of <code>syft</code> executable.</li>
+            <li><code>syft.config.path</code> : Specify the absolute path to the Syft configuration file.</li>
+            <li><code>skopeo.executable.path</code> : Specify the absolute path of <code>skopeo</code> executable.</li>
+            <li><code>skopeo.config.path</code> : Specify the absolute path to the authentication file used by the
+            <code>skopeo inspect</code> command.</li>
+            <li><code>docker.executable.path</code> : Specify the absolute path of <code>docker</code> executable.</li>
+            <li><code>podman.executable.path</code> : Specify the absolute path of <code>podman</code> executable.</li>
+            <li><code>image.platform</code> : Specify the platform used for multi-arch images.</li>
+        </ul>
+        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/image-analysis.gif"
+             alt="Animated screenshot showing the inline reporting feature of Image Analysis">
     </li>
     <li>
         <b>Excluding dependencies with <code>exhortignore</code></b>
@@ -327,7 +364,9 @@
   ]]></description>
 
     <change-notes><![CDATA[
-  <p><b>0.9.2</b></p>
+  <p><b>1.0.0</b></p>
+  <p>Added support for base image vulnerability scanning in Dockerfiles.</p>
+  <p>Bumped Telemetry plugin to 1.1.0.</p>
   <p>Added support for Python, Golang, and Node manifest files.</p>
   <p>Golang projects can only be analyzed with IntelliJ Ultimate Edition.</p>
   <p>Fixed an issue with Python and Golang manifest files where packages did not have underlining for inline recommendations and remediations.</p>
@@ -380,11 +419,12 @@
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
+    <depends>Docker</depends>
     <depends config-file="go.xml" optional="true">org.jetbrains.plugins.go</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileEditorProvider implementation="org.jboss.tools.intellij.stackanalysis.SaReportEditorProvider"/>
-        <editorTabTitleProvider implementation="org.jboss.tools.intellij.stackanalysis.SaEditorTabTitleProvider"
+        <fileEditorProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorProvider"/>
+        <editorTabTitleProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorTabTitleProvider"
                                 order="first"/>
 
         <applicationConfigurable
@@ -421,6 +461,12 @@
         <externalAnnotator language="rhda-requirements"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAAnnotator"/>
 
+        <localInspection language="Dockerfile" shortName="DockerfileInspection"
+                         displayName="Red Hat Dependency Analytics dockerfile analysis"
+                         groupName="Dockerfile" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.image.DockerfileInspection"/>
+        <externalAnnotator language="Dockerfile"
+                           implementationClass="org.jboss.tools.intellij.image.DockerfileAnnotator"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
@@ -430,6 +476,17 @@
                     class="org.jboss.tools.intellij.stackanalysis.SaAction"
                     icon="/images/report-icon.png"/>
 
+            <separator/>
+
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </group>
+
+        <group>
+            <action id="imageAnalysis" text="Image Analytics Report"
+                    class="org.jboss.tools.intellij.image.ImageReportAction"
+                    icon="/images/report-icon.png"/>
             <separator/>
 
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>

@@ -21,6 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
+import org.jboss.tools.intellij.report.AnalyticsReportUtils;
 import org.jboss.tools.intellij.stackanalysis.SaUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +58,8 @@ public class SAIntentionAction implements IntentionAction {
             JsonObject manifestDetails = saUtils.performSA(vf);
             if (manifestDetails != null) {
                 try {
-                    saUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                    AnalyticsReportUtils analyticsReportUtils = new AnalyticsReportUtils();
+                    analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }

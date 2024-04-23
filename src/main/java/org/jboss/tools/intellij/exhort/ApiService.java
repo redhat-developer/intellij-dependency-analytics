@@ -205,10 +205,5 @@ public final class ApiService {
         if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
             System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
-        if (settings.snykToken != null && !settings.snykToken.isBlank()) {
-            System.setProperty("EXHORT_SNYK_TOKEN", settings.snykToken);
-        } else {
-            System.clearProperty("EXHORT_SNYK_TOKEN");
-        }
     }
 }

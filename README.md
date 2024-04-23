@@ -20,7 +20,7 @@ vulnerability report.
 
 **IMPORTANT:**
 <br >Currently, Dependency Analytics only supports projects that use Maven (`mvn`), Node (`npm`), Golang (`go mod`) and
-Python (`pip`) ecosystems.
+Python (`pip`) ecosystems, and base images in `Dockerfile`.
 In future releases, Red Hat plans to support other programming languages.
 
 ##### Table of Contents
@@ -45,6 +45,10 @@ In future releases, Red Hat plans to support other programming languages.
 - For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment.
 - For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
   IDE's `PATH` environment.
+- For base images, analyzing a `Dockerfile`, you must have
+  the [`syft`](https://github.com/anchore/syft?tab=readme-ov-file#installation)
+  and [`skopeo`](https://github.com/containers/skopeo/blob/main/install.md) binaries in your IDE's `PATH`
+  environment.
 
 **Procedure**
 
@@ -77,36 +81,57 @@ according to your preferences.
 - **Maven** :
   <br >Set the full path of the Maven executable, which allows Exhort to locate and execute the `mvn` command to resolve
   dependencies for Maven projects.
-  Path of the `JAVA_HOME` directory is required by the `mvn` executable.
-  If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the executables.
+  <br >Path of the `JAVA_HOME` directory is required by the `mvn` executable.
+  <br >If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the
+  executables.
 
 - **Node** :
   <br >Set the full path of the Node executable, which allows Exhort to locate and execute the `npm` command to resolve
   dependencies for Node projects.
-  Path of the directory containing the `node` executable is required by the `npm` executable.
-  If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  <br >Path of the directory containing the `node` executable is required by the `npm` executable.
+  <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
 - **Golang** :
   <br >Set the full path of the Go executable, which allows Exhort to locate and execute the `go` command to resolve
   dependencies for Go projects.
-  If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
-  When option `Strictly match package version` is selected, the resolved dependency versions will be compared to the
-  versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+  <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
+  <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
+  the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
 
 - **Python** :
   <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
   and execute the `pip3` commands to resolve dependencies for Python projects.
-  Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
-  If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
-  When option `Strictly match package version` is selected, the resolved dependency versions will be compared to the
-  versions specified in the manifest file, and users will be alerted if any mismatch is detected.
-  Python virtual environment can be applied, when selecting the `Use python virtual environment` option.
-  If selecting option `Allow alternate package version` while using virtual environment, the dependency versions
+  <br >Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
+  <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
+  the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+  <br >Python virtual environment can be applied, when selecting the `Use python virtual environment` option.
+  <br >If selecting option `Allow alternate package version` while using virtual environment, the dependency versions
   specified in the manifest file will be ignored, and dependency versions will be resolved dynamically instead (this
   feature cannot be enabled when `Strictly match package version` is selected).
 
+- **Image** :
+  <br >Set the full path of the Syft executable, which allows Exhort to locate and execute the `syft` command to
+  generate Software Bill of Materials for the base images.
+  <br >Optionally, set the full path of the Docker or Podman executable. Syft will attempt to find the images in the
+  Docker or Podman daemon with the executable. Otherwise, Syft will try direct remote registry access.
+  <br >Set the full path of the Skopeo executable, which allows Exhort to locate and execute the `skopeo` command to
+  determine the image digests.
+  <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
+  <br >If a Syft configuration file is used and not at the
+  default [paths](https://github.com/anchore/syft/blob/469b4c13bbc52c43bc5216924b6ffd9d6d47bbd6/README.md#configuration),
+  set the full path to the configuration file in configuration.
+  <br >If
+  an [authentication file](https://github.com/containers/skopeo/blob/3eacbe5ae2fe859f872a02bf28c16371fb1de7b8/docs/skopeo-inspect.1.md#options)
+  is applied for `skopeo inspect`, set the full path to the file in configuration.
+  <br >If platform is not specified in the `Dockerfile` for multi-platform images and a default platform should be
+  applied, set the default platform in the configuration. Otherwise, set the full path of the Docker or Podman
+  executable, then Exhort will use the executable to determine the image platform based on the OS and architecture of
+  the container runtime.
+
 - **Inline Vulnerability Severity Alerts** :
-<br >You can set the vulnerability severity alert level to `Error` or `Warning` for inline notifications of detected vulnerabilities.
+  <br >You can set the vulnerability severity alert level to `Error` or `Warning` for inline notifications of detected
+  vulnerabilities.
 
 ## Features
 
@@ -120,6 +145,28 @@ according to your preferences.
   severity status of said vulnerabilities.
 
   ![ Animated screenshot showing the inline reporting feature of Dependency Analytics ](src/main/resources/images/component-analysis.gif)
+
+- **Docker scanning**
+  <br >Upon opening a Dockerfile, a vulnerability scan starts analyzing the images within the Dockerfile.
+  After the analysis finishes, you can view any recommendations and remediation by clicking the _More actions..._ menu
+  from the highlighted image name.
+  Any recommendations for an alternative image does not replace the current image.
+  By clicking _Switch to..._, you go to Red Hat's Ecosystem Catalog for the recommended image.
+
+  <br >You must have the [`syft`](https://github.com/anchore/syft#installation)
+  and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to
+  use the Docker scanning feature.
+  You can specify a specific path to these binaries, and others by settings the following parameters:
+
+    * `syft.executable.path` : Specify the absolute path of `syft` executable.
+    * `syft.config.path` : Specify the absolute path to the Syft configuration file.
+    * `skopeo.executable.path` : Specify the absolute path of `skopeo` executable.
+    * `skopeo.config.path` : Specify the absolute path to the authentication file used by the `skopeo inspect` command.
+    * `docker.executable.path` : Specify the absolute path of `docker` executable.
+    * `podman.executable.path` : Specify the absolute path of `podman` executable.
+    * `image.platform` : Specify the platform used for multi-arch images.
+
+  ![ Animated screenshot showing the inline reporting feature of Image Analysis ](src/main/resources/images/image-analysis.gif)
 
 - **Excluding dependencies with `exhortignore`**
   <br >You can exclude a package from analysis by marking the package for exclusion.
