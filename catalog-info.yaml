@@ -8,8 +8,10 @@ metadata:
     backstage.io/view-url: https://github.com/redhat-developer/intellij-dependency-analytics/blob/main/catalog-info.yaml
     backstage.io/edit-url: https://github.com/redhat-developer/intellij-dependency-analytics/blob/main/catalog-info.yaml
     backstage.io/source-location: url:https://github.com/redhat-developer/intellij-dependency-analytics
-    backstage.io/techdocs-ref: dir:README.md
+    backstage.io/techdocs-ref: url:https://github.com/redhat-developer/intellij-dependency-analytics
   name: intellij-dependency-analytics
+  tags:
+    - rhda
 spec:
   lifecycle: production
   owner: ecosystem-appeng
