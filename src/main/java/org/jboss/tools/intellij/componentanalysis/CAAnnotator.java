@@ -241,7 +241,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
         return profile.getUnwrappedTool(inspectionShortName, context);
     }
 
-    private String getPackageManager(String file) {
+    public static String getPackageManager(String file) {
         switch (file) {
             case "pom.xml":
                 return "maven";
