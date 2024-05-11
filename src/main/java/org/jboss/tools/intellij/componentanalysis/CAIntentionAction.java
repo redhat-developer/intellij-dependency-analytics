@@ -23,6 +23,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.Issue;
+import org.jboss.tools.intellij.exhort.TelemetryService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,9 @@ public abstract class CAIntentionAction implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        this.updateVersion(project, editor, file, getRecommendedVersion(this.report));
+        String recommendedVersion = getRecommendedVersion(this.report);
+        this.updateVersion(project, editor, file, recommendedVersion);
+        TelemetryService.sendPackageUpdateEvent(file, recommendedVersion, this.report.getRef().name(), "recommendation-accepted");
     }
 
     private String getRecommendationsRepo(DependencyReport dependency) {
