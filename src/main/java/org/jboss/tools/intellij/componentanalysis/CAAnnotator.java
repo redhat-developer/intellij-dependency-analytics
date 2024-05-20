@@ -162,7 +162,9 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                         if(CAIntentionAction.isQuickFixAvailable(report)) {
                                             CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
                                             builder.withFix(this.createQuickFix(e, source, report));
-                                            builder.withFix(patchManifest);
+                                            if(Objects.nonNull(patchManifest)) {
+                                                builder.withFix(patchManifest);
+                                            }
                                         }
                                         builder.withFix(new SAIntentionAction());
                                         builder.create();
@@ -251,6 +253,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                 return "go";
             case "requirements.txt":
                 return "python";
+            case "build.gradle":
+                return "gradle";
             default:
                 return null;
         }

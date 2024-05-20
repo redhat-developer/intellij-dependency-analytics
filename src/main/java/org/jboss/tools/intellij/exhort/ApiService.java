@@ -130,6 +130,12 @@ public final class ApiService {
         } else {
             System.clearProperty("EXHORT_MVN_PATH");
         }
+                if (settings.gradlePath != null && !settings.gradlePath.isBlank()) {
+            System.setProperty("EXHORT_GRADLE_PATH", settings.gradlePath);
+        } else {
+            System.clearProperty("EXHORT_GRADLE_PATH");
+        }
+
         if (settings.javaPath != null && !settings.javaPath.isBlank()) {
             System.setProperty("JAVA_HOME", settings.javaPath);
         } else {

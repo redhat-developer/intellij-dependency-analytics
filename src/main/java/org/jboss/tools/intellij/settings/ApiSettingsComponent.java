@@ -38,6 +38,8 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of <b>go</b> executable.</html>";
     private final static String goMatchManifestVersionsLabel = "<html>Go > Match package version" +
             "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
+    private final static String gradlePathLabel = "<html>Gradle > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>gradle</b> executable.</html>";
     private final static String pythonPathLabel = "<html>Python > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>python</b> executable.</html>";
     private final static String pipPathLabel = "<html>Pip > Executable: <b>Path</b>"
@@ -79,6 +81,8 @@ public class ApiSettingsComponent {
     private final JBCheckBox usePythonVirtualEnvCheck;
     private final JBCheckBox pythonInstallBestEffortsCheck;
     private final JBCheckBox pythonMatchManifestVersionsCheck;
+
+    private final TextFieldWithBrowseButton gradlePathText;
     private final TextFieldWithBrowseButton syftPathText;
     private final TextFieldWithBrowseButton syftConfigPathText;
 
@@ -87,6 +91,7 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton dockerPathText;
     private final TextFieldWithBrowseButton podmanPathText;
     private final JBTextField imagePlatformText;
+
 
     public ApiSettingsComponent() {
         mvnPathText = new TextFieldWithBrowseButton();
@@ -162,6 +167,14 @@ public class ApiSettingsComponent {
 
         pythonMatchManifestVersionsCheck = new JBCheckBox("Strictly match package version");
 
+        gradlePathText = new TextFieldWithBrowseButton();
+        gradlePathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
         syftPathText = new TextFieldWithBrowseButton();
         syftPathText.addBrowseFolderListener(
                 null,
@@ -247,6 +260,9 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(pythonMatchManifestVersionsLabel), pythonMatchManifestVersionsCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(gradlePathLabel), gradlePathText, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(syftPathLabel), syftPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(syftConfigPathLabel), syftConfigPathText, 1, true)
@@ -289,6 +305,7 @@ public class ApiSettingsComponent {
     public void setJavaPathText(@NotNull String text) {
         javaPathText.setText(text);
     }
+
 
     @NotNull
     public String getNpmPathText() {
@@ -375,6 +392,7 @@ public class ApiSettingsComponent {
         pythonMatchManifestVersionsCheck.setSelected(selected);
     }
 
+
     @NotNull
     public String getSyftPathText() {
         return syftPathText.getText();
@@ -436,5 +454,13 @@ public class ApiSettingsComponent {
 
     public void setImagePlatformText(@NotNull String text) {
         imagePlatformText.setText(text);
+    }
+
+    public String getGradlePathText() {
+        return gradlePathText.getText();
+    }
+
+    public void setGradlePathText(@NotNull String text) {
+        gradlePathText.setText(text);
     }
 }

@@ -461,6 +461,20 @@
         <externalAnnotator language="rhda-requirements"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PipCAAnnotator"/>
 
+        <fileType name="rhda-build-gradle"
+                  language="rhda-build-gradle"
+                  fileNames="build.gradle"
+                  implementationClass="org.jboss.tools.intellij.componentanalysis.gradle.build.filetype.BuildGradleFileType"/>
+        <lang.parserDefinition language="rhda-build-gradle"
+                               implementationClass="org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildGradleParserDefinition"/>
+        <localInspection language="rhda-build-gradle" shortName="GradleCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Gradle" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.gradle.GradleCAInspection"/>
+        <externalAnnotator language="rhda-build-gradle"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.gradle.GradleCAAnnotator"/>
+
+
         <localInspection language="Dockerfile" shortName="DockerfileInspection"
                          displayName="Red Hat Dependency Analytics dockerfile analysis"
                          groupName="Dockerfile" enabledByDefault="true" level="ERROR"

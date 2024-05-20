@@ -24,7 +24,8 @@ public class SaUtils {
         if ("pom.xml".equals(manifestFile.getName())
                 || "package.json".equals(manifestFile.getName())
                 || "go.mod".equals(manifestFile.getName())
-                || "requirements.txt".equals(manifestFile.getName())) {
+                || "requirements.txt".equals(manifestFile.getName())
+                || "build.gradle".equals(manifestFile.getName())) {
             ApiService apiService = ServiceManager.getService(ApiService.class);
             reportLink = apiService.getStackAnalysis(
                     determinePackageManagerName(manifestFile.getName()),
@@ -61,6 +62,10 @@ public class SaUtils {
             case "requirements.txt":
                 packageManager = "python";
                 break;
+            case "build.gradle":
+                packageManager = "gradle";
+                break;
+
             default:
                 throw new IllegalArgumentException("package manager not implemented");
         }
