@@ -58,6 +58,7 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public String dockerPath;
     public String podmanPath;
     public String imagePlatform;
+    public String gradlePath;
 
     public static ApiSettingsState getInstance() {
         ApiSettingsState state = ApplicationManager.getApplication().getService(ApiSettingsState.class);

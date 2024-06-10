@@ -58,6 +58,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getDockerPathText().equals(settings.dockerPath);
         modified |= !settingsComponent.getPodmanPathText().equals(settings.podmanPath);
         modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
+        modified |= !settingsComponent.getGradlePathText().equals(settings.gradlePath);
         return modified;
     }
 
@@ -83,6 +84,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.dockerPath = settingsComponent.getDockerPathText();
         settings.podmanPath = settingsComponent.getPodmanPathText();
         settings.imagePlatform = settingsComponent.getImagePlatformText();
+        settings.gradlePath = settingsComponent.getGradlePathText();
     }
 
     @Override
@@ -107,6 +109,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setDockerPathText(settings.dockerPath);
         settingsComponent.setPodmanPathText(settings.podmanPath);
         settingsComponent.setImagePlatformText(settings.imagePlatform);
+        settingsComponent.setGradlePathText(settings.gradlePath != null ? settings.gradlePath : "");
     }
 
     @Override

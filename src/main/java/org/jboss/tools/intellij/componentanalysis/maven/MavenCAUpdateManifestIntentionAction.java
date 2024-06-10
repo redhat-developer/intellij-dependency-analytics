@@ -83,21 +83,6 @@ public final class MavenCAUpdateManifestIntentionAction extends CAUpdateManifest
         return rootProjectElement;
     }
 
-    private static String getRepositoryUrl(DependencyReport dependency) {
-        return getRepositoryUrlFromPurl(dependency);
-    }
-
-    private static String getRepositoryUrlFromPurl(DependencyReport dependency) {
-        AtomicReference<PackageRef> packageRef = new AtomicReference<>();
-        if(Objects.nonNull(dependency.getRecommendation()))
-        {
-            packageRef.set(dependency.getRecommendation());
-        }
-        else {
-            dependency.getIssues().stream().filter(issue -> Objects.nonNull(issue.getRemediation().getTrustedContent())).findFirst().ifPresent( value -> packageRef.set(value.getRemediation().getTrustedContent().getRef()));
-        }
-        return packageRef.get().purl().getQualifiers().get("repository_url");
-    }
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {

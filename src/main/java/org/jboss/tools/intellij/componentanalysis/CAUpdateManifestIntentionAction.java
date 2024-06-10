@@ -20,13 +20,33 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.PackageRef;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class CAUpdateManifestIntentionAction implements IntentionAction {
 
     protected @SafeFieldForPreview PsiElement element;
     protected @SafeFieldForPreview DependencyReport dependency;
 
+
+    protected static String getRepositoryUrl(DependencyReport dependency) {
+        return getRepositoryUrlFromPurl(dependency);
+    }
+
+    protected static String getRepositoryUrlFromPurl(DependencyReport dependency) {
+        AtomicReference<PackageRef> packageRef = new AtomicReference<>();
+        if(Objects.nonNull(dependency.getRecommendation()))
+        {
+            packageRef.set(dependency.getRecommendation());
+        }
+        else {
+            dependency.getIssues().stream().filter(issue -> Objects.nonNull(issue.getRemediation().getTrustedContent())).findFirst().ifPresent( value -> packageRef.set(value.getRemediation().getTrustedContent().getRef()));
+        }
+        return packageRef.get().purl().getQualifiers().get("repository_url");
+    }
 
     protected CAUpdateManifestIntentionAction(PsiElement element, DependencyReport dependency) {
         this.element = element;
@@ -49,6 +69,7 @@ public abstract class CAUpdateManifestIntentionAction implements IntentionAction
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         this.updateManifest(project, editor, file, this.dependency);
     }
+
 
     protected abstract void updateManifest(Project project, Editor editor, PsiFile file, DependencyReport dependency);
 

@@ -36,7 +36,8 @@ public class SaAction extends AnAction {
             "pom.xml",
             "package.json",
             "go.mod",
-            "requirements.txt"
+            "requirements.txt",
+            "build.gradle"
     );
 
     public SaAction() {
