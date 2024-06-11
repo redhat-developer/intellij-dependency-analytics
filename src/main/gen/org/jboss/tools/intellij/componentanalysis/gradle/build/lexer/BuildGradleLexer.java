@@ -124,10 +124,10 @@ public class BuildGradleLexer implements FlexLexer {
     "\1\45\14\0\1\50\1\0\3\45\1\0\1\51\6\0"+
     "\1\52\1\0\1\53\6\0\1\54\1\0\1\43\6\0"+
     "\1\55\3\0\1\56\10\0\1\57\1\0\1\60\7\0"+
-    "\1\61\10\0\1\62\1\0";
+    "\1\61\10\0\1\62\2\0";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[208];
+    int [] result = new int[209];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -177,10 +177,11 @@ public class BuildGradleLexer implements FlexLexer {
     "\0\u1815\0\u1842\0\u01ef\0\u186f\0\u189c\0\u18c9\0\u18f6\0\u1923"+
     "\0\u1950\0\u197d\0\u19aa\0\u01ef\0\u19d7\0\u01ef\0\u1a04\0\u1a31"+
     "\0\u1a5e\0\u1a8b\0\u1ab8\0\u1ae5\0\u1b12\0\u01ef\0\u1b3f\0\u1b6c"+
-    "\0\u1b99\0\u1bc6\0\u1bf3\0\u1c20\0\u1c4d\0\u1c7a\0\u01ef\0\u1ca7";
+    "\0\u1b99\0\u1bc6\0\u1bf3\0\u1c20\0\u1c4d\0\u1c7a\0\u1ca7\0\u1cd4"+
+    "\0\u1d01";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[208];
+    int [] result = new int[209];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -276,10 +277,11 @@ public class BuildGradleLexer implements FlexLexer {
     "\54\0\1\307\54\0\1\310\44\0\1\311\21\0\3\307"+
     "\45\0\1\312\45\0\1\313\53\0\1\314\13\0\53\315"+
     "\1\0\1\315\26\0\1\316\66\0\1\150\14\0\53\315"+
-    "\1\317\1\315\45\0\1\320\42\0\1\150\21\0";
+    "\1\317\1\315\45\0\1\320\11\0\1\321\47\0\1\321"+
+    "\35\0\1\150\74\0\1\317\1\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[7380];
+    int [] result = new int[7470];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -325,10 +327,10 @@ public class BuildGradleLexer implements FlexLexer {
     "\1\1\14\0\1\11\1\0\3\1\1\0\1\1\6\0"+
     "\1\11\1\0\1\11\6\0\1\11\1\0\1\1\6\0"+
     "\1\1\3\0\1\11\10\0\1\11\1\0\1\11\7\0"+
-    "\1\11\10\0\1\11\1\0";
+    "\1\11\10\0\1\1\2\0";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[208];
+    int [] result = new int[209];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;

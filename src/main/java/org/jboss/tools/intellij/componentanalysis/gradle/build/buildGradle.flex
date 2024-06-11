@@ -44,7 +44,7 @@ ROOT_GROUP_KEY=group\s*[=]\s*
 ROOT_GROUP_VERSION_VALUE=[a-zA-Z0-9.'-]+
 ROOT_VERSION_KEY=version\s*[=]\s*
 TEST=test\s*[{][^}]+[}]
-REPOSITORIES=repositories\s*[{][^}]+[}]
+REPOSITORIES=repositories\s*[{][^}]+[}]([\n|\r|\r\n][}])*
 SOURCE_SETS=sourceSets
 MAIN=main
 JAVA=java
