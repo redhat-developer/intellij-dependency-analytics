@@ -11,6 +11,7 @@
 
 package org.jboss.tools.intellij.componentanalysis;
 
+import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 
 import java.util.Objects;
@@ -81,6 +82,14 @@ public class Dependency {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String toPurl(String type) {
+        try {
+            return new PackageURL(type,this.namespace,this.name,this.version,null,null).toString();
+        } catch (MalformedPackageURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

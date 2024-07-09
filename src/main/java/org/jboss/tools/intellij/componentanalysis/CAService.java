@@ -15,20 +15,31 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.ProviderReport;
 import com.redhat.exhort.api.Source;
 import org.jboss.tools.intellij.exhort.ApiService;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+
 @Service(Service.Level.PROJECT)
 public final class CAService {
+
+    private static final Logger LOG = Logger.getInstance(CAService.class);
 
     public static CAService getInstance() {
         return ServiceManager.getService(CAService.class);
@@ -58,10 +69,21 @@ public final class CAService {
     public static boolean performAnalysis(String packageManager,
                                           String fileName,
                                           String filePath,
-                                          Set<Dependency> dependencies) {
+                                          Set<Dependency> dependencies,
+                                          PsiFile file) {
         if (dependenciesModified(filePath, dependencies)) {
+            Path tempManifest;
             ApiService apiService = ServiceManager.getService(ApiService.class);
-            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
+            try {
+                Path tempDirectory = Files.createTempDirectory("rhda-idea");
+                tempManifest = Files.createFile(Path.of(tempDirectory.toString(),fileName));
+                Files.write(tempManifest,PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file).getText().getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+//            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
+            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, tempManifest.toString());
             if (report == null) {
                 throw new RuntimeException("Failed to perform component analysis, result is invalid.");
             }
@@ -126,16 +148,38 @@ public final class CAService {
                             }
                         });
             }
+            List<String> allPairs = getPairsOfDepsVulnsFromMap(resultMap);
+            LOG.info("Before - List of all dependencies and their purl from vulnerability dependency report " + iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairs));
+
 
             if (!resultMap.isEmpty()) {
                 getInstance().vulnerabilityCache.put(filePath, resultMap);
             } else {
                 getInstance().vulnerabilityCache.invalidate(filePath);
             }
-
+            allPairs = getPairsOfDepsVulnsFromMap(resultMap);
+            LOG.info("After - List of all dependencies and their purl from vulnerability dependency report " + iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairs));
+            LOG.info("List of dependencies in cache, before update" + System.lineSeparator() + getListOfDependencies(getInstance().dependencyCache.get(filePath, p -> Collections.emptySet())));
             getInstance().dependencyCache.put(filePath, dependencies);
-            return true;
+            LOG.info("List of dependencies in cache, after after" + System.lineSeparator() + getListOfDependencies(dependencies));
+
+
+
         }
         return false;
+    }
+
+    public static String iterateOverListOfStringDelimitedByCommaAndNewLineGetString(List<String> allPairs) {
+        return allPairs.stream().collect(Collectors.joining("," + System.lineSeparator()));
+    }
+
+    public static @NotNull List<String> getPairsOfDepsVulnsFromMap(Map<Dependency, Map<VulnerabilitySource, DependencyReport>> resultMap) {
+        Map<Dependency, DependencyReport> collect = resultMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().entrySet().stream().map(Map.Entry::getValue).findAny().get()));
+        List<String> allPairs = collect.entrySet().stream().map(p -> p.getKey().toPurl("maven").toString() + "==>" + p.getValue().getRef().toString()).collect(Collectors.toList());
+        return allPairs;
+    }
+
+    public static String getListOfDependencies(Set<Dependency> dependencies) {
+        return dependencies.stream().map(dep -> dep.toPurl("maven").toString()).collect(joining(";" + System.lineSeparator()));
     }
 }
