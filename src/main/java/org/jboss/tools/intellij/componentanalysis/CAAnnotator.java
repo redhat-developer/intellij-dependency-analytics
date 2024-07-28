@@ -89,9 +89,13 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
             LOG.info("Resolved Dependency->vuln pairs from cache");
             LOG.info(iterateOverListOfStringDelimitedByCommaAndNewLineGetString(pairsOfDepsVulnsFromMap));
             Map<Dependency, Result> dependencyResultMap = this.matchDependencies(info.getDependencies(), reports);
-            String debugString = reformatDependencyResultMapForDebugging(dependencyResultMap);
-            LOG.info("Pairs with offsets that are going to be applied=>");
-            LOG.info(debugString);
+            String debugString;
+            if(Objects.nonNull(dependencyResultMap)) {
+                debugString = reformatDependencyResultMapForDebugging(dependencyResultMap);
+                LOG.info("Pairs with offsets that are going to be applied=>");
+                LOG.info(debugString);
+            }
+
             return dependencyResultMap;
         }
 

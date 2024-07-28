@@ -157,12 +157,14 @@ public final class CAService {
             } else {
                 getInstance().vulnerabilityCache.invalidate(filePath);
             }
-            allPairs = getPairsOfDepsVulnsFromMap(resultMap);
-            LOG.info("After - List of all dependencies and their purl from vulnerability dependency report " + iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairs));
+            if(Objects.nonNull(resultMap)) {
+                allPairs = getPairsOfDepsVulnsFromMap(resultMap);
+                LOG.info("After - List of all dependencies and their purl from vulnerability dependency report " + iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairs));
+            }
             LOG.info("List of dependencies in cache, before update" + System.lineSeparator() + getListOfDependencies(getInstance().dependencyCache.get(filePath, p -> Collections.emptySet())));
             getInstance().dependencyCache.put(filePath, dependencies);
             LOG.info("List of dependencies in cache, after after" + System.lineSeparator() + getListOfDependencies(dependencies));
-
+            return true;
 
 
         }
