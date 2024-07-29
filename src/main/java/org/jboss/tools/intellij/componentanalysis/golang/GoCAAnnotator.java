@@ -65,6 +65,7 @@ public class GoCAAnnotator extends CAAnnotator {
                         .filter(Objects::nonNull)
                         .filter(t -> t.getModuleVersion() != null)
                         .forEach(m -> resultMap.computeIfAbsent(createDependency(m), k -> new LinkedList<>()).add(m));
+
             }
 
             return resultMap;

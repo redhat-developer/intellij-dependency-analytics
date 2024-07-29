@@ -11,6 +11,7 @@
 
 package org.jboss.tools.intellij.componentanalysis.gradle;
 
+import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlComment;
@@ -47,7 +48,7 @@ public class GradleCAAnnotator extends CAAnnotator {
                         }
                     );
 
-            return resultMap;
+             return resultMap;
         }
 
         return Collections.emptyMap();

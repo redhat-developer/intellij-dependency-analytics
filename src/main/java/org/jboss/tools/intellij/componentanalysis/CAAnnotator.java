@@ -32,7 +32,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
+import static org.jboss.tools.intellij.componentanalysis.CAService.iterateOverListOfStringDelimitedByCommaAndNewLineGetString;
 
 public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Map<Dependency, CAAnnotator.Result>> {
 
@@ -54,37 +57,59 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                 && info.getDependencies() != null && !info.getDependencies().isEmpty()) {
             String path = info.getFile().getVirtualFile().getPath();
             Set<Dependency> dependencies = info.getDependencies().keySet();
-
             if (CAService.dependenciesModified(path, dependencies)) {
                 LOG.info("Generate vulnerability report");
                 Project project = info.getFile().getProject();
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
-                    boolean updated = CAService.performAnalysis(
-                            getPackageManager(info.getFile().getName()),
-                            info.getFile().getVirtualFile().getName(),
-                            info.getFile().getVirtualFile().getPath(),
-                            dependencies);
+                        boolean updated = CAService.performAnalysis(
+                                getPackageManager(info.getFile().getName()),
+                                info.getFile().getVirtualFile().getName(),
+                                info.getFile().getVirtualFile().getPath(),
+                                dependencies,
+                                info.getFile());
 
-                    ApplicationManager.getApplication().runReadAction(() -> {
-                        if (updated) {
-                            LOG.info("Refresh dependencies");
-                            try {
-                                DaemonCodeAnalyzer.getInstance(project).restart();
-                            } catch (AlreadyDisposedException ex) {
-                                LOG.warn("DaemonCodeAnalyzer disposed, invalidate cache: " + path, ex);
-                                CAService.deleteReports(path);
+                        ApplicationManager.getApplication().runReadAction(() -> {
+                            if (updated) {
+                                LOG.info("Refresh dependencies");
+                                try {
+                                    DaemonCodeAnalyzer.getInstance(project).restart(info.getFile());
+                                } catch (AlreadyDisposedException ex) {
+                                    LOG.warn("DaemonCodeAnalyzer disposed, invalidate cache: " + path, ex);
+                                    CAService.deleteReports(path);
+                                }
                             }
-                        }
+                        });
                     });
-                });
+
             }
 
             LOG.info("Get vulnerability report from cache");
             Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports = CAService.getReports(path);
-            return this.matchDependencies(info.getDependencies(), reports);
+            List<String> pairsOfDepsVulnsFromMap = CAService.getPairsOfDepsVulnsFromMap(reports);
+            LOG.info("Resolved Dependency->vuln pairs from cache");
+            LOG.info(iterateOverListOfStringDelimitedByCommaAndNewLineGetString(pairsOfDepsVulnsFromMap));
+            Map<Dependency, Result> dependencyResultMap = this.matchDependencies(info.getDependencies(), reports);
+            String debugString;
+            if(Objects.nonNull(dependencyResultMap)) {
+                debugString = reformatDependencyResultMapForDebugging(dependencyResultMap);
+                LOG.info("Pairs with offsets that are going to be applied=>");
+                LOG.info(debugString);
+            }
+
+            return dependencyResultMap;
         }
 
         return null;
+    }
+
+    private String reformatDependencyResultMapForDebugging(Map<Dependency, Result> dependencyResultMap) {
+        List<String> allPairsWithOffsetsInUi = dependencyResultMap.entrySet().stream().map(entry -> {
+            String dependency = entry.getKey().toPurl("maven").toString();
+            String stringOffSets = entry.getValue().elements.get(0).getTextRange().toString();
+            String dependencyVuln = entry.getValue().getReports().entrySet().stream().map(Map.Entry::getValue).map(dep -> dep.getRef().toString()).findFirst().get();
+            return String.format("%s==>%s==>%s", dependency, dependencyVuln, stringOffSets);
+        }).collect(Collectors.toList());
+        return iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairsWithOffsetsInUi);
     }
 
     @Override
@@ -202,7 +227,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
     private Map<Dependency, Result> matchDependencies(Map<Dependency, List<PsiElement>> dependencies,
                                                       Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports) {
-        if (dependencies != null && !dependencies.isEmpty()
+         if (dependencies != null && !dependencies.isEmpty()
                 && reports != null && !reports.isEmpty()) {
             return dependencies.entrySet()
                     .parallelStream()
