@@ -52,10 +52,12 @@ file ::= line*
 
 private line ::= artifact | comment | CRLF| SPACE_CHARACTER | others
 
-private others::= PLUGINS | root_version | root_group  | LCURBRACE | RCURBRACE | DEPENDENCIES | REPOSITORIES | ID_PREFIX | TEST | SOURCE_SETS | MAIN | JAVA
+private others::= PLUGINS | root_version | root_group  | root_generic_key | LCURBRACE | RCURBRACE | DEPENDENCIES | REPOSITORIES | ID_PREFIX | TEST | SOURCE_SETS | MAIN | JAVA | EXT | APPLICATION | JAVAFX | JLINK_START | jlink_components | JLINKZIP | INTELLIJ | RUNIDE | TASKS
 
-private root_version::= ROOT_VERSION_KEY ROOT_GROUP_VERSION_VALUE { pin=1}
-private root_group::= ROOT_GROUP_KEY ROOT_GROUP_VERSION_VALUE { pin=1}
+private jlink_components::= ((JLINK_COMPONENT)+ ((LCURBRACE) (JLINK_COMPONENT)+ (RCURBRACE) (JLINK_COMPONENT)*)* (JLINK_COMPONENT)* (LCURBRACE|RCURBRACE)* CRLF)
+private root_generic_key::= ROOT_GENERIC_KEY (SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER) ROOT_GENERIC_VALUE { pin=1}
+private root_version::= ROOT_VERSION_KEY (SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER) ROOT_GROUP_VERSION_VALUE { pin=1}
+private root_group::= ROOT_GROUP_KEY (SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER) ROOT_GROUP_VERSION_VALUE { pin=1}
 
 artifact ::= (CONFIG_NAME)? (string_notation | map_notation ) (comment)? {pin=2}
 private string_notation ::= (SPACE_CHARACTER | LPARENTHESIS)? (gav_colon) {pin=2}
