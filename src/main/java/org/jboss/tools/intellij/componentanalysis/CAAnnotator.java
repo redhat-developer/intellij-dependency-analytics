@@ -35,7 +35,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import static org.jboss.tools.intellij.componentanalysis.CAService.iterateOverListOfStringDelimitedByCommaAndNewLineGetString;
+
 
 public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Map<Dependency, CAAnnotator.Result>> {
 
@@ -85,31 +85,12 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
 
             LOG.info("Get vulnerability report from cache");
             Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports = CAService.getReports(path);
-            List<String> pairsOfDepsVulnsFromMap = CAService.getPairsOfDepsVulnsFromMap(reports);
-            LOG.info("Resolved Dependency->vuln pairs from cache");
-            LOG.info(iterateOverListOfStringDelimitedByCommaAndNewLineGetString(pairsOfDepsVulnsFromMap));
             Map<Dependency, Result> dependencyResultMap = this.matchDependencies(info.getDependencies(), reports);
             String debugString;
-            if(Objects.nonNull(dependencyResultMap)) {
-                debugString = reformatDependencyResultMapForDebugging(dependencyResultMap);
-                LOG.info("Pairs with offsets that are going to be applied=>");
-                LOG.info(debugString);
-            }
-
             return dependencyResultMap;
         }
 
         return null;
-    }
-
-    private String reformatDependencyResultMapForDebugging(Map<Dependency, Result> dependencyResultMap) {
-        List<String> allPairsWithOffsetsInUi = dependencyResultMap.entrySet().stream().map(entry -> {
-            String dependency = entry.getKey().toPurl("maven").toString();
-            String stringOffSets = entry.getValue().elements.get(0).getTextRange().toString();
-            String dependencyVuln = entry.getValue().getReports().entrySet().stream().map(Map.Entry::getValue).map(dep -> dep.getRef().toString()).findFirst().get();
-            return String.format("%s==>%s==>%s", dependency, dependencyVuln, stringOffSets);
-        }).collect(Collectors.toList());
-        return iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairsWithOffsetsInUi);
     }
 
     @Override

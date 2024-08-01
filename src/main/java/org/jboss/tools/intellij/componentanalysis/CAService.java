@@ -148,40 +148,19 @@ public final class CAService {
                             }
                         });
             }
-            List<String> allPairs = getPairsOfDepsVulnsFromMap(resultMap);
-            LOG.info("Before - List of all dependencies and their purl from vulnerability dependency report " + iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairs));
-
 
             if (!resultMap.isEmpty()) {
                 getInstance().vulnerabilityCache.put(filePath, resultMap);
             } else {
                 getInstance().vulnerabilityCache.invalidate(filePath);
             }
-            if(Objects.nonNull(resultMap)) {
-                allPairs = getPairsOfDepsVulnsFromMap(resultMap);
-                LOG.info("After - List of all dependencies and their purl from vulnerability dependency report " + iterateOverListOfStringDelimitedByCommaAndNewLineGetString(allPairs));
-            }
-            LOG.info("List of dependencies in cache, before update" + System.lineSeparator() + getListOfDependencies(getInstance().dependencyCache.get(filePath, p -> Collections.emptySet())));
             getInstance().dependencyCache.put(filePath, dependencies);
-            LOG.info("List of dependencies in cache, after after" + System.lineSeparator() + getListOfDependencies(dependencies));
             return true;
-
 
         }
         return false;
     }
 
-    public static String iterateOverListOfStringDelimitedByCommaAndNewLineGetString(List<String> allPairs) {
-        return allPairs.stream().collect(Collectors.joining("," + System.lineSeparator()));
-    }
 
-    public static @NotNull List<String> getPairsOfDepsVulnsFromMap(Map<Dependency, Map<VulnerabilitySource, DependencyReport>> resultMap) {
-        Map<Dependency, DependencyReport> collect = resultMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().entrySet().stream().map(Map.Entry::getValue).findAny().get()));
-        List<String> allPairs = collect.entrySet().stream().map(p -> p.getKey().toPurl("maven").toString() + "==>" + p.getValue().getRef().toString()).collect(Collectors.toList());
-        return allPairs;
-    }
 
-    public static String getListOfDependencies(Set<Dependency> dependencies) {
-        return dependencies.stream().map(dep -> dep.toPurl("maven").toString()).collect(joining(";" + System.lineSeparator()));
-    }
 }
