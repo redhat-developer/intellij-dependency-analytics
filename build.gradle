@@ -40,8 +40,8 @@ intellij {
     version = ideaVersion //for a full list of IntelliJ IDEA releases please see https://www.jetbrains.com/intellij-repository/releases
     pluginName = 'org.jboss.tools.intellij.analytics'
     plugins = ['com.redhat.devtools.intellij.telemetry:1.1.0.52',
-               "org.jetbrains.plugins.go:221.5080.9",
-               "Docker:221.5080.9"]
+               "org.jetbrains.plugins.go:223.7571.182",
+               "Docker:223.7571.175"]
     updateSinceUntilBuild = false
 }
 
