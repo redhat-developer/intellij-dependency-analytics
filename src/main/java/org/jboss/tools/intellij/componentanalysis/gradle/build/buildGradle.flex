@@ -12,6 +12,7 @@ import static org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildG
   public BuildGradleLexer() {
     this((java.io.Reader)null);
   }
+  private int  genericBracketsCounter = 0;
   private int dependenciesBracketsCounter = 0;
   private boolean DependenciesStarted = false;
   private boolean secondEnclosingSignForMap = false;
@@ -38,11 +39,24 @@ import static org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildG
   return;
 %eof}
 
-PLUGINS=plugins\s*[{][^}]+[}]
+PLUGINS=(plugins|runPluginVerifier|publishPlugin)\s*[{][^}]+[}]
+EXT=ext\s*[{][^}]+[}]
+APPLICATION=application\s*[{][^}]+[}]
+JAVAFX=javafx\s*[{][^}]+[}]
+JLINK_START=jlink\s*[{]
+JLINK_COMPONENT=[^\n\r\r\n{}]
+JLINKZIP=jlinkZip\s*[{][^}]+[}]
+INTELLIJ=intellij\s*[{][^}]+[}]
+RUNIDE=(runIde|runIdeForUiTests)\s*[{][^}]+[}]
+TASKS=tasks.*[{][^}]+[}]
+
+
 DEPENDENCIES="dependencies"
-ROOT_GROUP_KEY=group\s*[=]\s*
-ROOT_GROUP_VERSION_VALUE=[a-zA-Z0-9.'-]+
-ROOT_VERSION_KEY=version\s*[=]\s*
+ROOT_GROUP_KEY=group
+ROOT_GENERIC_KEY=sourceCompatibility|targetCompatibility|apply plugin:
+ROOT_GENERIC_VALUE=[a-zA-Z0-9.'_-]+
+ROOT_GROUP_VERSION_VALUE=[a-zA-Z0-9.'_-]+
+ROOT_VERSION_KEY=version
 TEST=test\s*[{][^}]+[}]
 REPOSITORIES=repositories\s*[{][^}]+[}]([\n|\r|\r\n][}])*
 SOURCE_SETS=sourceSets
@@ -62,6 +76,7 @@ LCURBRACE="{"
 RCURBRACE="}"
 LPARENTHESIS = "("
 RPARENTHESIS = ")"
+EQUALS = "="
 //ENCLOSING_SIGNS=[{APOSTROPHE}{QUATATION_MARK}]?
 
 
@@ -89,6 +104,8 @@ LINE_COMMENT={SPACE_CHARACTER}{COMMENT}
 %state EXTRACT_ARTIFACT_STRING
 %state EXTRACT_VERSION_STRING
 %xstate GET_ROOT_VALUES
+%xstate GET_GENERIC_VALUES
+%xstate BYPASS_UNNECESSARY_BLOCK
 
 
 %%
@@ -96,8 +113,17 @@ LINE_COMMENT={SPACE_CHARACTER}{COMMENT}
     {PLUGINS}                { return PLUGINS; }
     {ROOT_GROUP_KEY}     {   yybegin(GET_ROOT_VALUES); return ROOT_GROUP_KEY; }
     {ROOT_VERSION_KEY}    {   yybegin(GET_ROOT_VALUES); return ROOT_VERSION_KEY; }
+    {ROOT_GENERIC_KEY}    {   yybegin(GET_GENERIC_VALUES); return ROOT_GENERIC_KEY; }
     {REPOSITORIES}           { return REPOSITORIES; }
     {TEST}                   { return TEST; }
+    {EXT}                    { return EXT; }
+    {APPLICATION}            { return APPLICATION; }
+    {JAVAFX}                 { return JAVAFX; }
+    {JLINK_START}                  { yybegin(BYPASS_UNNECESSARY_BLOCK); genericBracketsCounter++; return JLINK_START; }
+    {JLINKZIP}               { return JLINKZIP; }
+    {INTELLIJ}               { return INTELLIJ; }
+    {RUNIDE}                 { return RUNIDE; }
+    {TASKS}                  { return TASKS; }
     {SOURCE_SETS}             { return SOURCE_SETS; }
     {MAIN}                    { return MAIN; }
     {JAVA}                    { return JAVA; }
@@ -110,8 +136,24 @@ LINE_COMMENT={SPACE_CHARACTER}{COMMENT}
 }
 
 <GET_ROOT_VALUES>{
+     {EQUALS}                   { return EQUALS; }
+     {SPACE_CHARACTER}          { return SPACE_CHARACTER; }
      {ROOT_GROUP_VERSION_VALUE} { yybegin(YYINITIAL); return ROOT_GROUP_VERSION_VALUE; }
 }
+<GET_GENERIC_VALUES>{
+     {EQUALS}                   { return EQUALS; }
+     {SPACE_CHARACTER}          { return SPACE_CHARACTER; }
+     {ROOT_GENERIC_VALUE}       { yybegin(YYINITIAL); return ROOT_GENERIC_VALUE; }
+}
+
+<BYPASS_UNNECESSARY_BLOCK> {
+     {CRLF}                     { return CRLF; }
+     {JLINK_COMPONENT}          { return JLINK_COMPONENT; }
+     {LCURBRACE}                 { genericBracketsCounter++ ; return LCURBRACE; }
+     {RCURBRACE}                { if (--genericBracketsCounter == 0) {
+                                     yybegin(YYINITIAL);} return RCURBRACE; }
+}
+
 
 <HANDLE_DEPENDENCIES> {
     {LCURBRACE}                 { dependenciesBracketsCounter++ ; return LCURBRACE; }

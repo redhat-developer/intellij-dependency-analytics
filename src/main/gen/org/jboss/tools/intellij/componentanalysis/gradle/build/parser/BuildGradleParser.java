@@ -335,6 +335,118 @@ public class BuildGradleParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // (JLINK_COMPONENT)+ ((LCURBRACE) (JLINK_COMPONENT)+ (RCURBRACE) (JLINK_COMPONENT)*)* (JLINK_COMPONENT)* (LCURBRACE|RCURBRACE)* CRLF
+  static boolean jlink_components(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components")) return false;
+    if (!nextTokenIs(b, JLINK_COMPONENT)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = jlink_components_0(b, l + 1);
+    r = r && jlink_components_1(b, l + 1);
+    r = r && jlink_components_2(b, l + 1);
+    r = r && jlink_components_3(b, l + 1);
+    r = r && consumeToken(b, CRLF);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (JLINK_COMPONENT)+
+  private static boolean jlink_components_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, JLINK_COMPONENT);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, JLINK_COMPONENT)) break;
+      if (!empty_element_parsed_guard_(b, "jlink_components_0", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // ((LCURBRACE) (JLINK_COMPONENT)+ (RCURBRACE) (JLINK_COMPONENT)*)*
+  private static boolean jlink_components_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_1")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!jlink_components_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "jlink_components_1", c)) break;
+    }
+    return true;
+  }
+
+  // (LCURBRACE) (JLINK_COMPONENT)+ (RCURBRACE) (JLINK_COMPONENT)*
+  private static boolean jlink_components_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LCURBRACE);
+    r = r && jlink_components_1_0_1(b, l + 1);
+    r = r && consumeToken(b, RCURBRACE);
+    r = r && jlink_components_1_0_3(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (JLINK_COMPONENT)+
+  private static boolean jlink_components_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_1_0_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, JLINK_COMPONENT);
+    while (r) {
+      int c = current_position_(b);
+      if (!consumeToken(b, JLINK_COMPONENT)) break;
+      if (!empty_element_parsed_guard_(b, "jlink_components_1_0_1", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (JLINK_COMPONENT)*
+  private static boolean jlink_components_1_0_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_1_0_3")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, JLINK_COMPONENT)) break;
+      if (!empty_element_parsed_guard_(b, "jlink_components_1_0_3", c)) break;
+    }
+    return true;
+  }
+
+  // (JLINK_COMPONENT)*
+  private static boolean jlink_components_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, JLINK_COMPONENT)) break;
+      if (!empty_element_parsed_guard_(b, "jlink_components_2", c)) break;
+    }
+    return true;
+  }
+
+  // (LCURBRACE|RCURBRACE)*
+  private static boolean jlink_components_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_3")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!jlink_components_3_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "jlink_components_3", c)) break;
+    }
+    return true;
+  }
+
+  // LCURBRACE|RCURBRACE
+  private static boolean jlink_components_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "jlink_components_3_0")) return false;
+    boolean r;
+    r = consumeToken(b, LCURBRACE);
+    if (!r) r = consumeToken(b, RCURBRACE);
+    return r;
+  }
+
+  /* ********************************************************** */
   // artifact | comment | CRLF| SPACE_CHARACTER | others
   static boolean line(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "line")) return false;
@@ -429,13 +541,14 @@ public class BuildGradleParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // PLUGINS | root_version | root_group  | LCURBRACE | RCURBRACE | DEPENDENCIES | REPOSITORIES | ID_PREFIX | TEST | SOURCE_SETS | MAIN | JAVA
+  // PLUGINS | root_version | root_group  | root_generic_key | LCURBRACE | RCURBRACE | DEPENDENCIES | REPOSITORIES | ID_PREFIX | TEST | SOURCE_SETS | MAIN | JAVA | EXT | APPLICATION | JAVAFX | JLINK_START | jlink_components | JLINKZIP | INTELLIJ | RUNIDE | TASKS
   static boolean others(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "others")) return false;
     boolean r;
     r = consumeToken(b, PLUGINS);
     if (!r) r = root_version(b, l + 1);
     if (!r) r = root_group(b, l + 1);
+    if (!r) r = root_generic_key(b, l + 1);
     if (!r) r = consumeToken(b, LCURBRACE);
     if (!r) r = consumeToken(b, RCURBRACE);
     if (!r) r = consumeToken(b, DEPENDENCIES);
@@ -445,33 +558,196 @@ public class BuildGradleParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, SOURCE_SETS);
     if (!r) r = consumeToken(b, MAIN);
     if (!r) r = consumeToken(b, JAVA);
+    if (!r) r = consumeToken(b, EXT);
+    if (!r) r = consumeToken(b, APPLICATION);
+    if (!r) r = consumeToken(b, JAVAFX);
+    if (!r) r = consumeToken(b, JLINK_START);
+    if (!r) r = jlink_components(b, l + 1);
+    if (!r) r = consumeToken(b, JLINKZIP);
+    if (!r) r = consumeToken(b, INTELLIJ);
+    if (!r) r = consumeToken(b, RUNIDE);
+    if (!r) r = consumeToken(b, TASKS);
     return r;
   }
 
   /* ********************************************************** */
-  // ROOT_GROUP_KEY ROOT_GROUP_VERSION_VALUE
+  // ROOT_GENERIC_KEY (SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER) ROOT_GENERIC_VALUE
+  static boolean root_generic_key(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_generic_key")) return false;
+    if (!nextTokenIs(b, ROOT_GENERIC_KEY)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_);
+    r = consumeToken(b, ROOT_GENERIC_KEY);
+    p = r; // pin = 1
+    r = r && report_error_(b, root_generic_key_1(b, l + 1));
+    r = p && consumeToken(b, ROOT_GENERIC_VALUE) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
+  }
+
+  // SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER
+  private static boolean root_generic_key_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_generic_key_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = root_generic_key_1_0(b, l + 1);
+    if (!r) r = consumeToken(b, SPACE_CHARACTER);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SPACE_CHARACTER* EQUALS SPACE_CHARACTER*
+  private static boolean root_generic_key_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_generic_key_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = root_generic_key_1_0_0(b, l + 1);
+    r = r && consumeToken(b, EQUALS);
+    r = r && root_generic_key_1_0_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SPACE_CHARACTER*
+  private static boolean root_generic_key_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_generic_key_1_0_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SPACE_CHARACTER)) break;
+      if (!empty_element_parsed_guard_(b, "root_generic_key_1_0_0", c)) break;
+    }
+    return true;
+  }
+
+  // SPACE_CHARACTER*
+  private static boolean root_generic_key_1_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_generic_key_1_0_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SPACE_CHARACTER)) break;
+      if (!empty_element_parsed_guard_(b, "root_generic_key_1_0_2", c)) break;
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
+  // ROOT_GROUP_KEY (SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER) ROOT_GROUP_VERSION_VALUE
   static boolean root_group(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root_group")) return false;
     if (!nextTokenIs(b, ROOT_GROUP_KEY)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_);
-    r = consumeTokens(b, 1, ROOT_GROUP_KEY, ROOT_GROUP_VERSION_VALUE);
+    r = consumeToken(b, ROOT_GROUP_KEY);
     p = r; // pin = 1
+    r = r && report_error_(b, root_group_1(b, l + 1));
+    r = p && consumeToken(b, ROOT_GROUP_VERSION_VALUE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
+  // SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER
+  private static boolean root_group_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_group_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = root_group_1_0(b, l + 1);
+    if (!r) r = consumeToken(b, SPACE_CHARACTER);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SPACE_CHARACTER* EQUALS SPACE_CHARACTER*
+  private static boolean root_group_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_group_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = root_group_1_0_0(b, l + 1);
+    r = r && consumeToken(b, EQUALS);
+    r = r && root_group_1_0_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SPACE_CHARACTER*
+  private static boolean root_group_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_group_1_0_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SPACE_CHARACTER)) break;
+      if (!empty_element_parsed_guard_(b, "root_group_1_0_0", c)) break;
+    }
+    return true;
+  }
+
+  // SPACE_CHARACTER*
+  private static boolean root_group_1_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_group_1_0_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SPACE_CHARACTER)) break;
+      if (!empty_element_parsed_guard_(b, "root_group_1_0_2", c)) break;
+    }
+    return true;
+  }
+
   /* ********************************************************** */
-  // ROOT_VERSION_KEY ROOT_GROUP_VERSION_VALUE
+  // ROOT_VERSION_KEY (SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER) ROOT_GROUP_VERSION_VALUE
   static boolean root_version(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "root_version")) return false;
     if (!nextTokenIs(b, ROOT_VERSION_KEY)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_);
-    r = consumeTokens(b, 1, ROOT_VERSION_KEY, ROOT_GROUP_VERSION_VALUE);
+    r = consumeToken(b, ROOT_VERSION_KEY);
     p = r; // pin = 1
+    r = r && report_error_(b, root_version_1(b, l + 1));
+    r = p && consumeToken(b, ROOT_GROUP_VERSION_VALUE) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  // SPACE_CHARACTER* EQUALS SPACE_CHARACTER*|SPACE_CHARACTER
+  private static boolean root_version_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_version_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = root_version_1_0(b, l + 1);
+    if (!r) r = consumeToken(b, SPACE_CHARACTER);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SPACE_CHARACTER* EQUALS SPACE_CHARACTER*
+  private static boolean root_version_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_version_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = root_version_1_0_0(b, l + 1);
+    r = r && consumeToken(b, EQUALS);
+    r = r && root_version_1_0_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SPACE_CHARACTER*
+  private static boolean root_version_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_version_1_0_0")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SPACE_CHARACTER)) break;
+      if (!empty_element_parsed_guard_(b, "root_version_1_0_0", c)) break;
+    }
+    return true;
+  }
+
+  // SPACE_CHARACTER*
+  private static boolean root_version_1_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "root_version_1_0_2")) return false;
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, SPACE_CHARACTER)) break;
+      if (!empty_element_parsed_guard_(b, "root_version_1_0_2", c)) break;
+    }
+    return true;
   }
 
   /* ********************************************************** */
