@@ -364,6 +364,8 @@
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>1.1.0</b></p>
+  <p>Added support for Gradle manifest files.</p>
   <p><b>1.0.0</b></p>
   <p>Added support for base image vulnerability scanning in Dockerfiles.</p>
   <p>Bumped Telemetry plugin to 1.1.0.</p>
