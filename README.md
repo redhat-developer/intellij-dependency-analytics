@@ -19,8 +19,8 @@ Dependency Analytics only accesses your manifest files to analyze your applicati
 vulnerability report.
 
 **IMPORTANT:**
-<br >Currently, Dependency Analytics only supports projects that use Maven (`mvn`), Node (`npm`), Golang (`go mod`) and
-Python (`pip`) ecosystems, and base images in `Dockerfile`.
+<br >Currently, Dependency Analytics only supports projects that use Maven (`mvn`), Node (`npm`), Golang (`go mod`),
+Python (`pip`) and Gradle (`gradle`) ecosystems, and base images in `Dockerfile`.
 In future releases, Red Hat plans to support other programming languages.
 
 ##### Table of Contents
@@ -109,6 +109,12 @@ according to your preferences.
   <br >If selecting option `Allow alternate package version` while using virtual environment, the dependency versions
   specified in the manifest file will be ignored, and dependency versions will be resolved dynamically instead (this
   feature cannot be enabled when `Strictly match package version` is selected).
+
+- **Gradle** :
+  <br >Set the full path of the Gradle executable, which allows Exhort to locate and execute the `gradle` command to resolve
+  dependencies for Gradle projects.
+  <br >By not setting a path to the gradle binary, IntelliJ IDEA uses its default path environment to locate the file.
+
 
 - **Image** :
   <br >Set the full path of the Syft executable, which allows Exhort to locate and execute the `syft` command to
@@ -220,6 +226,13 @@ according to your preferences.
   ```text
   requests==2.28.1 # exhortignore
   ```
+  If you want to ignore vulnerabilities for a dependency in a `build.gradle` file, you must add `exhortignore` as a
+  comment against the dependency in the manifest file.
+  For example:
+  ```text
+  implementation "log4j:log4j:1.2.17" // exhortignore
+  implementation group: 'log4j', name: 'log4j', version: '1.2.17' // exhortignore 
+  ```
 
 - **Excluding developmental or test dependencies**
   <br >Red Hat Dependency Analytics does not analyze dependencies marked as `dev` or `test`, these dependencies are
@@ -288,7 +301,16 @@ Read our [privacy statement](https://developers.redhat.com/article/tool-data-col
 This plugin respects the settings of the `Telemetry by Red Hat` plugin, which you can learn more
 about [here](https://plugins.jetbrains.com/plugin/16209-telemetry-by-red-hat).
 
+
 ## Support, feedback & questions
+
+The Red Hat Dependency Analytics plugin for IntelliJ IDEA in current version, supports the following IntelliJ IDEA versions:
+ - 2022.1
+ - 2022.2
+ - 2022.3
+ - 2023.1
+ - 2023.2
+ - 2023.3
 
 There are two ways you can contact us:
 
