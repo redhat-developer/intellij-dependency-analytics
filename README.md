@@ -152,7 +152,7 @@ according to your preferences.
 
   ![ Animated screenshot showing the inline reporting feature of Dependency Analytics ](src/main/resources/images/component-analysis.gif)
 
-- **Docker scanning**
+- **Dockerfile scanning**
   <br >Upon opening a Dockerfile, a vulnerability scan starts analyzing the images within the Dockerfile.
   After the analysis finishes, you can view any recommendations and remediation by clicking the _More actions..._ menu
   from the highlighted image name.
@@ -161,16 +161,18 @@ according to your preferences.
 
   <br >You must have the [`syft`](https://github.com/anchore/syft#installation)
   and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to
-  use the Docker scanning feature.
-  You can specify a specific path to these binaries, and others by settings the following parameters:
+  use the Dockerfile scanning feature.
+  You can specify a specific path to these binaries, and others by settings the following parameters as environment
+  variables or system properties:
 
-    * `syft.executable.path` : Specify the absolute path of `syft` executable.
-    * `syft.config.path` : Specify the absolute path to the Syft configuration file.
-    * `skopeo.executable.path` : Specify the absolute path of `skopeo` executable.
-    * `skopeo.config.path` : Specify the absolute path to the authentication file used by the `skopeo inspect` command.
-    * `docker.executable.path` : Specify the absolute path of `docker` executable.
-    * `podman.executable.path` : Specify the absolute path of `podman` executable.
-    * `image.platform` : Specify the platform used for multi-arch images.
+    * `EXHORT_SYFT_PATH` : Specify the absolute path of `syft` executable.
+    * `EXHORT_SYFT_CONFIG_PATH` : Specify the absolute path to the Syft configuration file.
+    * `EXHORT_SKOPEO_PATH` : Specify the absolute path of `skopeo` executable.
+    * `EXHORT_SKOPEO_CONFIG_PATH` : Specify the absolute path to the authentication file used by the `skopeo inspect`
+      command.
+    * `EXHORT_DOCKER_PATH` : Specify the absolute path of `docker` executable.
+    * `EXHORT_PODMAN_PATH` : Specify the absolute path of `podman` executable.
+    * `EXHORT_IMAGE_PLATFORM` : Specify the platform used for multi-arch images.
 
   ![ Animated screenshot showing the inline reporting feature of Image Analysis ](src/main/resources/images/image-analysis.gif)
 
