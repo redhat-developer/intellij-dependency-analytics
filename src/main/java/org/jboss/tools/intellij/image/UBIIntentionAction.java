@@ -25,6 +25,9 @@ import org.jetbrains.annotations.NotNull;
 import java.net.URI;
 
 public class UBIIntentionAction implements IntentionAction {
+
+    public static final String UBI9_BASE_IMAGE_LINK = "https://catalog.redhat.com/software/containers/ubi9/ubi/615bcf606feffc5384e8452e?architecture=amd64&image=66993ed7cb27bf20e0cf2d27";
+
     @Override
     public @IntentionName @NotNull String getText() {
         return "Switch to UBI 9 for enhanced security and enterprise-grade stability";
@@ -42,7 +45,7 @@ public class UBIIntentionAction implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-        BrowserUtil.browse(URI.create("https://catalog.redhat.com/software/containers/search"));
+        BrowserUtil.browse(URI.create(UBI9_BASE_IMAGE_LINK));
     }
 
     @Override
