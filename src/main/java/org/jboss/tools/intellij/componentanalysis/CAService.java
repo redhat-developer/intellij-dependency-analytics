@@ -22,6 +22,7 @@ import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.api.DependencyReport;
 import com.redhat.exhort.api.ProviderReport;
 import com.redhat.exhort.api.Source;
+import org.apache.commons.io.FileUtils;
 import org.jboss.tools.intellij.exhort.ApiService;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,9 +74,10 @@ public final class CAService {
                                           PsiFile file) {
         if (dependenciesModified(filePath, dependencies)) {
             Path tempManifest;
+            Path tempDirectory;
             ApiService apiService = ServiceManager.getService(ApiService.class);
             try {
-                Path tempDirectory = Files.createTempDirectory("rhda-idea");
+                tempDirectory = Files.createTempDirectory("rhda-idea");
                 tempManifest = Files.createFile(Path.of(tempDirectory.toString(),fileName));
                 Files.write(tempManifest,PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file).getText().getBytes());
             } catch (IOException e) {
@@ -84,6 +86,7 @@ public final class CAService {
 
 //            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
             AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, tempManifest.toString());
+            deleteTempDir(tempDirectory);
             if (report == null) {
                 throw new RuntimeException("Failed to perform component analysis, result is invalid.");
             }
@@ -161,6 +164,13 @@ public final class CAService {
         return false;
     }
 
+    private static void deleteTempDir(Path tempDirectory)  {
+        try {
+            FileUtils.deleteDirectory(tempDirectory.toFile());
+        } catch (IOException e) {
+            LOG.warn("Failed to delete temp directory: " + tempDirectory, e);
+        }
+    }
 
 
 }
