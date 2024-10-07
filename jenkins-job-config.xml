@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><flow-definition>
+    <actions/>
+    <description>Intellij Dependency Analytics Build job</description>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty plugin="workflow-job@1400.v7fd111b_ec82f">
+            <triggers>
+                <hudson.triggers.SCMTrigger>
+                    <spec>H/5 * * * *</spec>
+                    <ignorePostCommitHooks>false</ignorePostCommitHooks>
+                </hudson.triggers.SCMTrigger>
+            </triggers>
+        </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+        <hudson.model.ParametersDefinitionProperty>
+            <parameterDefinitions>
+                <hudson.model.StringParameterDefinition>
+                    <name>UPLOAD_LOCATION</name>
+                    <defaultValue>tools@filemgmt.jboss.org:/downloads_htdocs/tools/intellij</defaultValue>
+                    <description>Base path under which bits are published</description>
+                </hudson.model.StringParameterDefinition>
+                <hudson.model.BooleanParameterDefinition>
+                    <name>publishToMarketPlace</name>
+                    <defaultValue>false</defaultValue>
+                    <description>Publish the build to JetBrains marketplace?</description>
+                </hudson.model.BooleanParameterDefinition>
+                <hudson.model.StringParameterDefinition>
+                    <name>sha1</name>
+                    <defaultValue>main</defaultValue>
+                    <description/>
+                </hudson.model.StringParameterDefinition>
+            </parameterDefinitions>
+        </hudson.model.ParametersDefinitionProperty>
+        <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.39.0">
+            <projectUrl>https://github.com/redhat-developer/intellij-dependency-analytics/</projectUrl>
+        </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    </properties>
+    <triggers/>
+    <logRotator>
+        <daysToKeep>30</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+    </logRotator>
+    <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition">
+        <scriptPath>Jenkinsfile</scriptPath>
+        <lightweight>false</lightweight>
+        <scm class="hudson.plugins.git.GitSCM">
+            <userRemoteConfigs>
+                <hudson.plugins.git.UserRemoteConfig>
+                    <url>https://github.com/redhat-developer/intellij-dependency-analytics</url>
+                </hudson.plugins.git.UserRemoteConfig>
+            </userRemoteConfigs>
+            <branches>
+                <hudson.plugins.git.BranchSpec>
+                    <name>${sha1}</name>
+                </hudson.plugins.git.BranchSpec>
+            </branches>
+            <configVersion>2</configVersion>
+            <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+            <gitTool>Default</gitTool>
+        </scm>
+    </definition>
+</flow-definition>
