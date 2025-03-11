@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        IJ: [IC-2022.3]
-
+        IJ:
+          - IC-2024.2
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
