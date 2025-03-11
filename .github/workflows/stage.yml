@@ -15,13 +15,14 @@ jobs:
     name: Build plugin
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Java 17
         uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'oracle'
+          cache: 'gradle'
 
       - name: Build plugin with Gradle
         uses: gradle/gradle-build-action@v2
@@ -32,7 +33,7 @@ jobs:
             -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload distribution archive as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: distributions
           path: ./build/distributions
@@ -45,17 +46,17 @@ jobs:
     if: github.repository == 'redhat-developer/intellij-dependency-analytics'
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download distribution artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: distributions
           path: ./distributions
 
       - name: Check for existing early-access release
         id: existing_release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         continue-on-error: true
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -67,7 +68,7 @@ jobs:
 
       - name: Delete early-access release if exists
         if: ${{ steps.existing_release.outputs.id }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -85,7 +86,7 @@ jobs:
 
       - name: Create new early-access release
         id: new_release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
