@@ -13,15 +13,17 @@
 Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply chain
 while you build your application.
 
-**NOTE:**
-<br >The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
+<br >Dependency Analytics only supports the following project ecosystems:
+- Maven
+- Node
+- Golang
+- Python
+- Gradle
+
+<br >**NOTE:**
+The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
 Dependency Analytics only accesses your manifest files to analyze your application dependencies before displaying the
 vulnerability report.
-
-**IMPORTANT:**
-<br >Currently, Dependency Analytics only supports projects that use Maven (`mvn`), Node (`npm`), Golang (`go mod`),
-Python (`pip`) and Gradle (`gradle`) ecosystems, and base images in `Dockerfile`.
-In future releases, Red Hat plans to support other programming languages.
 
 ##### Table of Contents
 
@@ -45,10 +47,8 @@ In future releases, Red Hat plans to support other programming languages.
 - For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment.
 - For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
   IDE's `PATH` environment.
-- For base images, analyzing a `Dockerfile`, you must have
-  the [`syft`](https://github.com/anchore/syft?tab=readme-ov-file#installation)
-  and [`skopeo`](https://github.com/containers/skopeo/blob/main/install.md) binaries in your IDE's `PATH`
-  environment.
+- For Gradle projects, analyzing a `build.gradle` file, you must have the `gradle` binary in your system's `PATH` environment.
+- For base images, analyzing a `Dockerfile`, you must have the [`syft`](https://github.com/anchore/syft?tab=readme-ov-file#installation) and [`skopeo`](https://github.com/containers/skopeo/blob/main/install.md) binaries in your IDE's `PATH` environment.
 
 **Procedure**
 
@@ -79,20 +79,20 @@ according to your preferences.
 **Configurable parameters**
 
 - **Maven** :
-  <br >Set the full path of the Maven executable, which allows Exhort to locate and execute the `mvn` command to resolve
+  <br >Set the full path of the Maven executable, which allows Exhort to locate and run the `mvn` command to resolve
   dependencies for Maven projects.
   <br >Path of the `JAVA_HOME` directory is required by the `mvn` executable.
   <br >If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the
   executables.
 
 - **Node** :
-  <br >Set the full path of the Node executable, which allows Exhort to locate and execute the `npm` command to resolve
+  <br >Set the full path of the Node executable, which allows Exhort to locate and run the `npm` command to resolve
   dependencies for Node projects.
   <br >Path of the directory containing the `node` executable is required by the `npm` executable.
   <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
 - **Golang** :
-  <br >Set the full path of the Go executable, which allows Exhort to locate and execute the `go` command to resolve
+  <br >Set the full path of the Go executable, which allows Exhort to locate and run the `go` command to resolve
   dependencies for Go projects.
   <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
   <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
@@ -100,7 +100,7 @@ according to your preferences.
 
 - **Python** :
   <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
-  and execute the `pip3` commands to resolve dependencies for Python projects.
+  and run the `pip3` commands to resolve dependencies for Python projects.
   <br >Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
   <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
   <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
@@ -111,17 +111,17 @@ according to your preferences.
   feature cannot be enabled when `Strictly match package version` is selected).
 
 - **Gradle** :
-  <br >Set the full path of the Gradle executable, which allows Exhort to locate and execute the `gradle` command to resolve
+  <br >Set the full path of the Gradle executable, which allows Exhort to locate and run the `gradle` command to resolve
   dependencies for Gradle projects.
   <br >By not setting a path to the gradle binary, IntelliJ IDEA uses its default path environment to locate the file.
 
 
 - **Image** :
-  <br >Set the full path of the Syft executable, which allows Exhort to locate and execute the `syft` command to
+  <br >Set the full path of the Syft executable, which allows Exhort to locate and run the `syft` command to
   generate Software Bill of Materials for the base images.
   <br >Optionally, set the full path of the Docker or Podman executable. Syft will attempt to find the images in the
   Docker or Podman daemon with the executable. Otherwise, Syft will try direct remote registry access.
-  <br >Set the full path of the Skopeo executable, which allows Exhort to locate and execute the `skopeo` command to
+  <br >Set the full path of the Skopeo executable, which allows Exhort to locate and run the `skopeo` command to
   determine the image digests.
   <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
   <br >If a Syft configuration file is used and not at the
@@ -130,10 +130,8 @@ according to your preferences.
   <br >If
   an [authentication file](https://github.com/containers/skopeo/blob/3eacbe5ae2fe859f872a02bf28c16371fb1de7b8/docs/skopeo-inspect.1.md#options)
   is applied for `skopeo inspect`, set the full path to the file in configuration.
-  <br >If platform is not specified in the `Dockerfile` for multi-platform images and a default platform should be
-  applied, set the default platform in the configuration. Otherwise, set the full path of the Docker or Podman
-  executable, then Exhort will use the executable to determine the image platform based on the OS and architecture of
-  the container runtime.
+  <br >If platform is not specified in the `Dockerfile` for multi-platform images the default platform is used, as set in the configuration.
+  Otherwise, set the full path of the Docker or Podman executable, then Exhort will use the executable to find the image platform based on the operating system and architecture of the container runtime.
 
 - **Inline Vulnerability Severity Alerts** :
   <br >You can set the vulnerability severity alert level to `Error` or `Warning` for inline notifications of detected
