@@ -18,7 +18,7 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.*;
 
 import java.util.*;

@@ -13,7 +13,7 @@ import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
 import com.intellij.xml.util.XmlUtil;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.PackageRef;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jetbrains.annotations.NotNull;

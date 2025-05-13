@@ -15,7 +15,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
-import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.image.ImageRef;
 
 import java.util.Collection;

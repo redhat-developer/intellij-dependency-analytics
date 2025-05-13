@@ -14,7 +14,7 @@ package org.jboss.tools.intellij.componentanalysis.npm;
 import com.intellij.json.psi.*;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.*;
 
 import java.util.*;
