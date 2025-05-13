@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.filetype.BuildGradleFileType;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildGradleFile;

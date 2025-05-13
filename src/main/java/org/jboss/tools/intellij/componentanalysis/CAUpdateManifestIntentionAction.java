@@ -19,7 +19,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.PackageRef;
 import org.jetbrains.annotations.NotNull;
 

@@ -13,7 +13,7 @@ package org.jboss.tools.intellij.componentanalysis.pypi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.redhat.exhort.api.DependencyReport;
+import com.redhat.exhort.api.v4.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.*;
 import org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.NameReq;
 import org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.NameReqComment;

@@ -2,6 +2,9 @@ plugins {
    id "org.jetbrains.intellij" version "1.17.4"
 }
 
+def exhortRepoUser = findProperty("gpr.username") ?: System.getenv("GITHUB_USERNAME")
+def exhortRepoToken = findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN")
+
 repositories {
     mavenCentral()
 	flatDir {
@@ -9,10 +12,17 @@ repositories {
 	}
     maven { url 'https://jitpack.io' }
     maven {
-        url 'https://maven.pkg.github.com/RHEcosystemAppEng/exhort-java-api'
+        url 'https://maven.pkg.github.com/trustification/exhort-java-api'
         credentials {
-            username = project.findProperty("gpr.username") ?: System.getenv("GITHUB_USERNAME")
-            password = project.findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN")
+            username = exhortRepoUser
+            password = exhortRepoToken
+        }
+    }
+    maven {
+        url 'https://maven.pkg.github.com/trustification/exhort-api-spec'
+        credentials {
+            username = exhortRepoUser
+            password = exhortRepoToken
         }
     }
 }
@@ -61,6 +71,7 @@ dependencies {
 
     implementation 'org.kohsuke:github-api:1.314'
     implementation 'org.apache.commons:commons-compress:1.21'
+    implementation 'com.redhat.ecosystemappeng:exhort-api-spec:1.0.6'
     implementation 'com.redhat.exhort:exhort-java-api:0.0.8-SNAPSHOT'
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     // https://mvnrepository.com/artifact/com.github.package-url/packageurl-java
