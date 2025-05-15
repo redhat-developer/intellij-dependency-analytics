@@ -4,5 +4,8 @@ target
 build
 .gradle
 out
+.DS_Store
+intellij-community-tmp
+/.intellijPlatform/
 distributions
 bin
