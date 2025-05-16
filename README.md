@@ -137,6 +137,9 @@ according to your preferences.
   <br >You can set the vulnerability severity alert level to `Error` or `Warning` for inline notifications of detected
   vulnerabilities.
 
+- **Proxy Configuration** :
+  <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
+
 ## Features
 
 - **Component analysis**

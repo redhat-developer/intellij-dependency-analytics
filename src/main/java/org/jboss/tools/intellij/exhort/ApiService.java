@@ -17,6 +17,8 @@ import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginDescriptor;
 import com.intellij.openapi.extensions.PluginId;
+import com.intellij.util.net.ProxyConfiguration;
+import com.intellij.util.net.ProxySettings;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.impl.ExhortApi;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -211,5 +214,32 @@ public final class ApiService {
         if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
             System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
+        Optional<String> proxyUrlOpt = getProxyUrl();
+        if (proxyUrlOpt.isPresent()) {
+            System.setProperty("EXHORT_PROXY_URL", proxyUrlOpt.get());
+        } else {
+            System.clearProperty("EXHORT_PROXY_URL");
+        }
+    }
+
+    public static Optional<String> getProxyUrl() {
+        // This API only works in 2024.2+ versions.
+        ProxyConfiguration proxyConfiguration = ProxySettings.getInstance().getProxyConfiguration();
+
+        if (proxyConfiguration instanceof ProxyConfiguration.StaticProxyConfiguration) {
+            ProxyConfiguration.StaticProxyConfiguration staticProxyConfiguration =
+                    (ProxyConfiguration.StaticProxyConfiguration) proxyConfiguration;
+
+            String protocol = staticProxyConfiguration.getProtocol().toString().toLowerCase(); // e.g., "http" or "socks"
+            String host = staticProxyConfiguration.getHost();
+            int port = staticProxyConfiguration.getPort();
+
+            if (host != null && !host.isBlank() && port > 0 && protocol.equals("http")) {
+                String proxyUrl = protocol + "://" + host.trim() + ":" + port;
+                return Optional.of(proxyUrl);
+            }
+        }
+
+        return Optional.empty();
     }
 }

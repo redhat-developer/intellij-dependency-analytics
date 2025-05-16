@@ -30,11 +30,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static org.jboss.tools.intellij.exhort.ApiService.getProxyUrl;
 
 @Service(Service.Level.APP)
 public final class ApiService {
@@ -162,6 +165,13 @@ public final class ApiService {
             System.setProperty("EXHORT_IMAGE_PLATFORM", settings.imagePlatform);
         } else {
             System.clearProperty("EXHORT_IMAGE_PLATFORM");
+        }
+
+        Optional<String> proxyUrlOpt = getProxyUrl();
+        if (proxyUrlOpt.isPresent()) {
+            System.setProperty("EXHORT_PROXY_URL", proxyUrlOpt.get());
+        } else {
+            System.clearProperty("EXHORT_PROXY_URL");
         }
     }
 }
