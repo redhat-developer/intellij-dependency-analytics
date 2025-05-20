@@ -42,6 +42,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         boolean modified = !settingsComponent.getMvnPathText().equals(settings.mvnPath);
         modified |= !settingsComponent.getJavaPathText().equals(settings.javaPath);
         modified |= !settingsComponent.getNpmPathText().equals(settings.npmPath);
+        modified |= !settingsComponent.getPnpmPathText().equals(settings.pnpmPath);
         modified |= !settingsComponent.getNodePathText().equals(settings.nodePath);
         modified |= !settingsComponent.getGoPathText().equals(settings.goPath);
         modified |= settingsComponent.getGoMatchManifestVersionsCheck() != settings.goMatchManifestVersions;
@@ -68,6 +69,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.mvnPath = settingsComponent.getMvnPathText();
         settings.javaPath = settingsComponent.getJavaPathText();
         settings.npmPath = settingsComponent.getNpmPathText();
+        settings.pnpmPath = settingsComponent.getPnpmPathText();
         settings.nodePath = settingsComponent.getNodePathText();
         settings.goPath = settingsComponent.getGoPathText();
         settings.goMatchManifestVersions = settingsComponent.getGoMatchManifestVersionsCheck();
@@ -93,6 +95,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setMvnPathText(settings.mvnPath != null ? settings.mvnPath : "");
         settingsComponent.setJavaPathText(settings.javaPath != null ? settings.javaPath : "");
         settingsComponent.setNpmPathText(settings.npmPath != null ? settings.npmPath : "");
+        settingsComponent.setPnpmPathText(settings.pnpmPath != null ? settings.pnpmPath : "");
         settingsComponent.setNodePathText(settings.nodePath != null ? settings.nodePath : "");
         settingsComponent.setGoPathText(settings.goPath != null ? settings.goPath : "");
         settingsComponent.setGoMatchManifestVersionsCheck(settings.goMatchManifestVersions);

@@ -21,7 +21,7 @@
 <p>
     <b>IMPORTANT:</b>
     <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node
-    (<code>npm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems, and base images in
+    (<code>npm</code> or <code>pnpm</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems, and base images in
     <code>Dockerfile</code>.
     <br>In future releases, Red Hat plans to support other programming languages.
 <p>
@@ -33,7 +33,7 @@
     <li>For Maven projects, analyzing a <code>pom.xml</code> file, you must have the <code>mvn</code> binary in your
         IDE's <code>PATH</code> environment.
     </li>
-    <li>For Node projects, analyzing a <code>package.json</code> file, you must have the <code>npm</code> and
+    <li>For Node projects, analyzing a <code>package.json</code> file, you must have one of the corresponding package manager <code>npm</code> or <code>pnpm</code> and
         <code>node</code> binaries in your IDE's <code>PATH</code> environment.
     </li>
     <li>For Golang projects, analyzing a <code>go.mod</code> file, you must have the <code>go</code> binary in your
@@ -99,9 +99,9 @@
     </li>
     <li>
         <b>Node</b>:
-        <br>Set the full path of the Node executable, which allows Exhort to locate and execute <code>npm</code> command
+        <br>Set the full path of the Node executable, which allows Exhort to locate and execute one of the corresponding <code>npm</code> or <code>pnpm</code> command
         to resolve dependencies for Node projects.
-        <br>Path of the directory containing the <code>node</code> executable is required by the <code>npm</code>
+        <br>Path of the directory containing the <code>node</code> executable is required by one of the corresponding package manager <code>npm</code> or <code>pnpm</code>
         executable.
         <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
         executables.
@@ -450,6 +450,14 @@
                          implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAInspection"/>
         <externalAnnotator language="JSON"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
+
+        <localInspection language="JSON" shortName="PnpmCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupPath="JavaScript and TypeScript" groupName="Imports and dependencies"
+                         enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.pnpm.PnpmCAInspection"/>
+        <externalAnnotator language="JSON"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.pnpm.PnpmCAAnnotator"/>
 
         <fileType name="rhda-requirements"
                   language="rhda-requirements"
