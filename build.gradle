@@ -25,6 +25,7 @@ repositories {
             password = exhortRepoToken
         }
     }
+    mavenLocal()
 }
 
 // Include the generated files in the source set

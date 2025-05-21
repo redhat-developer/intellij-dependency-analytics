@@ -32,6 +32,8 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of Java installation directory.</html>";
     private final static String npmPathLabel = "<html>Npm > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>npm</b> executable.</html>";
+    private final static String pnpmPathLabel = "<html>Pnpm > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>pnpm</b> executable.</html>";
     private final static String nodePathLabel = "<html>Node > Directory: <b>Path</b>"
             + "<br>Specifies absolute path of the <i>directory</i> containing <b>node</b> executable.</html>";
     private final static String goPathLabel = "<html>Go > Executable: <b>Path</b>"
@@ -72,6 +74,7 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton mvnPathText;
     private final TextFieldWithBrowseButton javaPathText;
     private final TextFieldWithBrowseButton npmPathText;
+    private final TextFieldWithBrowseButton pnpmPathText;
     private final TextFieldWithBrowseButton nodePathText;
     private final TextFieldWithBrowseButton goPathText;
     private final JBCheckBox goMatchManifestVersionsCheck;
@@ -114,6 +117,15 @@ public class ApiSettingsComponent {
 
         npmPathText = new TextFieldWithBrowseButton();
         npmPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        pnpmPathText = new TextFieldWithBrowseButton();
+        pnpmPathText.addBrowseFolderListener(
                 null,
                 null,
                 null,
@@ -239,6 +251,8 @@ public class ApiSettingsComponent {
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(npmPathLabel), npmPathText, 1, true)
                 .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(pnpmPathLabel), pnpmPathText, 1, true)
+                .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(nodePathLabel), nodePathText, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
@@ -314,6 +328,15 @@ public class ApiSettingsComponent {
 
     public void setNpmPathText(@NotNull String text) {
         npmPathText.setText(text);
+    }
+
+    @NotNull
+    public String getPnpmPathText() {
+        return pnpmPathText.getText();
+    }
+
+    public void setPnpmPathText(@NotNull String text) {
+        pnpmPathText.setText(text);
     }
 
     @NotNull

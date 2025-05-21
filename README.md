@@ -42,7 +42,7 @@ vulnerability report.
 **Prerequisites**
 
 - For Maven projects, analyzing a `pom.xml` file, you must have the `mvn` binary in your IDE's `PATH` environment.
-- For Node projects, analyzing a `package.json` file, you must have the `npm` and `node` binaries in your IDE's `PATH`
+- For Node projects, analyzing a `package.json` file, you must have one of the corresponding package manager `npm` or `pnpm`, `node` binaries in your IDE's `PATH`
   environment.
 - For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment.
 - For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
@@ -86,9 +86,9 @@ according to your preferences.
   executables.
 
 - **Node** :
-  <br >Set the full path of the Node executable, which allows Exhort to locate and run the `npm` command to resolve
+  <br >Set the full path of the Node executable, which allows Exhort to locate and run one of the corresponding `npm` or `pnpm` command to resolve
   dependencies for Node projects.
-  <br >Path of the directory containing the `node` executable is required by the `npm` executable.
+  <br >Path of the directory containing the `node` executable is required by one of the corresponding `npm` or `pnpm` executable.
   <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
 - **Golang** :
