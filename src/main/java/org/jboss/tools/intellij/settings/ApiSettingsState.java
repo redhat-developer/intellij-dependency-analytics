@@ -40,6 +40,7 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
 
     public String npmPath;
     public String pnpmPath;
+    public String yarnPath;
     public String nodePath;
 
     public String goPath;

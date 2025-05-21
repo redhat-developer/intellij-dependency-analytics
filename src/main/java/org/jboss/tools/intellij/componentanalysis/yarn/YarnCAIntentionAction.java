@@ -9,7 +9,7 @@
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.jboss.tools.intellij.componentanalysis.pnpm;
+package org.jboss.tools.intellij.componentanalysis.yarn;
 
 import com.intellij.codeInsight.intention.FileModifier;
 import com.intellij.json.psi.JsonElementGenerator;
@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.PACKAGE_JSON;
 
-public final class PnpmCAIntentionAction extends CAIntentionAction {
-    PnpmCAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
+public final class YarnCAIntentionAction extends CAIntentionAction {
+    YarnCAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         super(element, source, report);
     }
 
@@ -43,7 +43,7 @@ public final class PnpmCAIntentionAction extends CAIntentionAction {
 
     @Override
     protected @Nullable FileModifier createCAIntentionActionInCopy(PsiElement element) {
-        return new PnpmCAIntentionAction(element, this.source, this.report);
+        return new YarnCAIntentionAction(element, this.source, this.report);
     }
 
     @Override
