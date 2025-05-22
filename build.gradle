@@ -6,6 +6,7 @@ def exhortRepoUser = findProperty("gpr.username") ?: System.getenv("GITHUB_USERN
 def exhortRepoToken = findProperty("gpr.token") ?: System.getenv("GITHUB_TOKEN")
 
 repositories {
+    mavenLocal()
     mavenCentral()
 	flatDir {
 	    dirs buildDir
@@ -34,6 +35,15 @@ sourceSets {
         java {
             srcDirs("src/main/gen")
         }
+    }
+    maven {
+        url 'https://repository.jboss.org/nexus/content/repositories/snapshots'
+    }
+    maven {
+        url 'https://repository.jboss.org/nexus/content/groups/public'
+    }
+    maven {
+        url 'https://packages.jetbrains.team/maven/p/ij/intellij-dependencies'
     }
 }
 
@@ -83,6 +93,7 @@ dependencies {
 
 
     testImplementation('junit:junit:4.13.1')
+    implementation 'com.redhat.devtools.intellij:intellij-common-ui-test-library:0.2.0'
 }
 
 runIde {
@@ -91,6 +102,25 @@ runIde {
 
 runIdeForUiTests {
     systemProperties['com.redhat.devtools.intellij.telemetry.mode'] = 'debug'
+}
+
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/it/java')
+        resources.srcDir file('src/it/resources')
+        compileClasspath += sourceSets.main.output + configurations.runtimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    description = 'Runs the integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+    mustRunAfter test
 }
 
 group 'org.jboss.tools.intellij'
