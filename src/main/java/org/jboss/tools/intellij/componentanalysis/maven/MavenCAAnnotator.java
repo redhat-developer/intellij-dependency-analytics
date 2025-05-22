@@ -23,6 +23,9 @@ import org.jboss.tools.intellij.componentanalysis.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.DEPENDENCIES;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+
 public class MavenCAAnnotator extends CAAnnotator {
 
     @Override
@@ -40,12 +43,12 @@ public class MavenCAAnnotator extends CAAnnotator {
                     .flatMap(e -> Arrays.stream(e.getChildren()))
                     .filter(e -> e instanceof XmlTag && "project".equals(((XmlTag) e).getName()))
                     .flatMap(e -> Arrays.stream(e.getChildren()))
-                    .filter(e -> e instanceof XmlTag && "dependencies".equals(((XmlTag) e).getName()))
+                    .filter(e -> e instanceof XmlTag && DEPENDENCIES.equals(((XmlTag) e).getName()))
                     .flatMap(e -> Arrays.stream(e.getChildren()))
                     .filter(e -> e instanceof XmlTag && "dependency".equals(((XmlTag) e).getName()))
                     .filter(e -> Arrays.stream(e.getChildren())
                             .noneMatch(c -> c instanceof XmlComment
-                                    && "exhortignore".equals(((XmlComment) c).getCommentText().trim())))
+                                    && EXHORT_IGNORE.equals(((XmlComment) c).getCommentText().trim())))
                     .map(e -> (XmlTag) e)
                     .forEach(d -> {
                         List<XmlTag> elements = Arrays.stream(d.getChildren())

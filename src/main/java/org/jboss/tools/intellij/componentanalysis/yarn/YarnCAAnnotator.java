@@ -9,7 +9,7 @@
  * Red Hat, Inc. - initial API and implementation
  ******************************************************************************/
 
-package org.jboss.tools.intellij.componentanalysis.pnpm;
+package org.jboss.tools.intellij.componentanalysis.yarn;
 
 import com.intellij.json.psi.JsonProperty;
 import com.intellij.json.psi.JsonStringLiteral;
@@ -27,11 +27,11 @@ import java.util.Map;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.getDependencyListMap;
 
-public class PnpmCAAnnotator extends CAAnnotator {
+public class YarnCAAnnotator extends CAAnnotator {
 
     @Override
     protected String getInspectionShortName() {
-        return PnpmCAInspection.SHORT_NAME;
+        return YarnCAInspection.SHORT_NAME;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class PnpmCAAnnotator extends CAAnnotator {
 
     @Override
     protected CAIntentionAction createQuickFix(PsiElement element, VulnerabilitySource source, DependencyReport report) {
-        return new PnpmCAIntentionAction(element, source, report);
+        return new YarnCAIntentionAction(element, source, report);
     }
 
     @Override

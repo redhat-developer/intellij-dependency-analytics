@@ -16,13 +16,12 @@ import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 public class ApiSettingsComponent {
 
@@ -34,6 +33,8 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of <b>npm</b> executable.</html>";
     private final static String pnpmPathLabel = "<html>Pnpm > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>pnpm</b> executable.</html>";
+    private final static String yarnPathLabel = "<html>Yarn > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>yarn</b> executable.</html>";
     private final static String nodePathLabel = "<html>Node > Directory: <b>Path</b>"
             + "<br>Specifies absolute path of the <i>directory</i> containing <b>node</b> executable.</html>";
     private final static String goPathLabel = "<html>Go > Executable: <b>Path</b>"
@@ -75,6 +76,7 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton javaPathText;
     private final TextFieldWithBrowseButton npmPathText;
     private final TextFieldWithBrowseButton pnpmPathText;
+    private final TextFieldWithBrowseButton yarnPathText;
     private final TextFieldWithBrowseButton nodePathText;
     private final TextFieldWithBrowseButton goPathText;
     private final JBCheckBox goMatchManifestVersionsCheck;
@@ -126,6 +128,15 @@ public class ApiSettingsComponent {
 
         pnpmPathText = new TextFieldWithBrowseButton();
         pnpmPathText.addBrowseFolderListener(
+                null,
+                null,
+                null,
+                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        yarnPathText = new TextFieldWithBrowseButton();
+        yarnPathText.addBrowseFolderListener(
                 null,
                 null,
                 null,
@@ -253,6 +264,8 @@ public class ApiSettingsComponent {
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(pnpmPathLabel), pnpmPathText, 1, true)
                 .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(yarnPathLabel), yarnPathText, 1, true)
+                .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(nodePathLabel), nodePathText, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
@@ -337,6 +350,14 @@ public class ApiSettingsComponent {
 
     public void setPnpmPathText(@NotNull String text) {
         pnpmPathText.setText(text);
+    }
+
+    public String getYarnPathText() {
+        return yarnPathText.getText();
+    }
+
+    public void setYarnPathText(@NotNull String text) {
+        yarnPathText.setText(text);
     }
 
     @NotNull

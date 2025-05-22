@@ -26,6 +26,8 @@ import org.jboss.tools.intellij.componentanalysis.maven.MavenCAUpdateManifestInt
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+
 public class GradleCAAnnotator extends CAAnnotator {
 
     @Override
@@ -40,7 +42,7 @@ public class GradleCAAnnotator extends CAAnnotator {
             List<Artifact> elements;
             Arrays.stream(file.getChildren())
                     .filter(e -> e instanceof Artifact)
-                    .filter(artifact -> ((Artifact)artifact).getComment() == null || Objects.nonNull(((Artifact)artifact).getComment()) && !((Artifact)artifact).getComment().getText().contains("exhortignore"))
+                    .filter(artifact -> ((Artifact)artifact).getComment() == null || Objects.nonNull(((Artifact)artifact).getComment()) && !((Artifact)artifact).getComment().getText().contains(EXHORT_IGNORE))
                     .map(dep -> (Artifact)dep)
                     .forEach(  dep -> {
                             Dependency dependency = new Dependency("maven", dep.getGroup().getText().replace("\"","") , dep.getArtifactId().getText(),dep.getVersion().getText());

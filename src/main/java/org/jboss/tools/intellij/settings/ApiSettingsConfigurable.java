@@ -14,7 +14,7 @@ package org.jboss.tools.intellij.settings;
 import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
 public class ApiSettingsConfigurable implements com.intellij.openapi.options.Configurable {
 
@@ -43,6 +43,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getJavaPathText().equals(settings.javaPath);
         modified |= !settingsComponent.getNpmPathText().equals(settings.npmPath);
         modified |= !settingsComponent.getPnpmPathText().equals(settings.pnpmPath);
+        modified |= !settingsComponent.getYarnPathText().equals(settings.yarnPath);
         modified |= !settingsComponent.getNodePathText().equals(settings.nodePath);
         modified |= !settingsComponent.getGoPathText().equals(settings.goPath);
         modified |= settingsComponent.getGoMatchManifestVersionsCheck() != settings.goMatchManifestVersions;
@@ -70,6 +71,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.javaPath = settingsComponent.getJavaPathText();
         settings.npmPath = settingsComponent.getNpmPathText();
         settings.pnpmPath = settingsComponent.getPnpmPathText();
+        settings.yarnPath = settingsComponent.getYarnPathText();
         settings.nodePath = settingsComponent.getNodePathText();
         settings.goPath = settingsComponent.getGoPathText();
         settings.goMatchManifestVersions = settingsComponent.getGoMatchManifestVersionsCheck();
@@ -96,6 +98,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setJavaPathText(settings.javaPath != null ? settings.javaPath : "");
         settingsComponent.setNpmPathText(settings.npmPath != null ? settings.npmPath : "");
         settingsComponent.setPnpmPathText(settings.pnpmPath != null ? settings.pnpmPath : "");
+        settingsComponent.setYarnPathText(settings.yarnPath != null ? settings.yarnPath : "");
         settingsComponent.setNodePathText(settings.nodePath != null ? settings.nodePath : "");
         settingsComponent.setGoPathText(settings.goPath != null ? settings.goPath : "");
         settingsComponent.setGoMatchManifestVersionsCheck(settings.goMatchManifestVersions);

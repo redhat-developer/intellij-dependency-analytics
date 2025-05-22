@@ -20,6 +20,8 @@ import org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.NameReqC
 
 import java.util.*;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+
 public class PipCAAnnotator extends CAAnnotator {
     @Override
     protected String getInspectionShortName() {
@@ -39,7 +41,7 @@ public class PipCAAnnotator extends CAAnnotator {
                             .noneMatch(c -> {
                                 String comment = c.getText().trim();
                                 if (!comment.isEmpty() && '#' == comment.charAt(0)) {
-                                    return "exhortignore".equals(comment.substring(1).trim());
+                                    return EXHORT_IGNORE.equals(comment.substring(1).trim());
                                 }
                                 return false;
                             }))

@@ -149,6 +149,11 @@ public final class ApiService {
         } else {
             System.clearProperty("EXHORT_NPM_PATH");
         }
+        if (settings.yarnPath != null && !settings.yarnPath.isBlank()) {
+            System.setProperty("EXHORT_YARN_PATH", settings.yarnPath);
+        } else {
+            System.clearProperty("EXHORT_YARN_PATH");
+        }
         if (settings.nodePath != null && !settings.nodePath.isBlank()) {
             System.setProperty("NODE_HOME", settings.nodePath);
         } else {

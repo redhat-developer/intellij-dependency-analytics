@@ -23,6 +23,8 @@ import org.jboss.tools.intellij.componentanalysis.*;
 
 import java.util.*;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+
 public class GoCAAnnotator extends CAAnnotator {
     @Override
     protected String getInspectionShortName() {
@@ -42,7 +44,7 @@ public class GoCAAnnotator extends CAAnnotator {
                             PsiComment[] comments = PsiTreeUtil.getChildrenOfType(m, PsiComment.class);
                             if (comments != null) {
                                 return Arrays.stream(comments)
-                                        .noneMatch(c -> c.getText().contains("exhortignore"));
+                                        .noneMatch(c -> c.getText().contains(EXHORT_IGNORE));
                             }
                             return true;
                         })
@@ -57,7 +59,7 @@ public class GoCAAnnotator extends CAAnnotator {
                             PsiComment[] comments = PsiTreeUtil.getChildrenOfType(r, PsiComment.class);
                             if (comments != null) {
                                 return Arrays.stream(comments)
-                                        .noneMatch(c -> c.getText().contains("exhortignore"));
+                                        .noneMatch(c -> c.getText().contains(EXHORT_IGNORE));
                             }
                             return true;
                         })

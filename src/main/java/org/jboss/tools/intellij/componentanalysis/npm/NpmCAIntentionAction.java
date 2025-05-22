@@ -25,6 +25,8 @@ import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.PACKAGE_JSON;
+
 public final class NpmCAIntentionAction extends CAIntentionAction {
     NpmCAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         super(element, source, report);
@@ -46,6 +48,6 @@ public final class NpmCAIntentionAction extends CAIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return file != null && "package.json".equals(file.getName());
+        return file != null && PACKAGE_JSON.equals(file.getName());
     }
 }
