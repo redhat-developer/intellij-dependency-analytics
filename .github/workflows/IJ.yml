@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         IJ:
-          - IC-2024.2
+          - IC-2024.3
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17

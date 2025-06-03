@@ -1,0 +1,28 @@
+[versions]
+# libraries
+caffeine = "3.1.8"
+commons-compress = "1.21"
+commons-io = "2.16.1"
+exhort-api-spec = "1.0.6"
+exhort-java-api = "0.0.8-SNAPSHOT"
+github-api = "1.314"
+junit = "4.13.2"
+packageurl-java = "1.4.1"
+
+# plugins
+gradleIntelliJPlugin = "2.6.0"
+
+[libraries]
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commons-compress" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commons-io" }
+exhort-api-spec = { group = "com.redhat.ecosystemappeng", name = "exhort-api-spec", version.ref = "exhort-api-spec" }
+exhort-java-api = { group = "com.redhat.exhort", name = "exhort-java-api", version.ref = "exhort-java-api" }
+github-api = { group = "org.kohsuke", name = "github-api", version.ref = "github-api" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+packageurl-java = { group = "com.github.package-url", name = "packageurl-java", version.ref = "packageurl-java" }
+
+[plugins]
+gradleIntelliJPlugin = { id = "org.jetbrains.intellij.platform", version.ref = "gradleIntelliJPlugin" }
+
+
