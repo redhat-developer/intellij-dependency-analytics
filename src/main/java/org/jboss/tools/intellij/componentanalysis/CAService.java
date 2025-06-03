@@ -80,6 +80,31 @@ public final class CAService {
                 tempDirectory = Files.createTempDirectory("rhda-idea");
                 tempManifest = Files.createFile(Path.of(tempDirectory.toString(),fileName));
                 Files.write(tempManifest,PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file).getText().getBytes());
+
+                if (packageManager.equals("npm")) {
+                    Path parentDir = Path.of(filePath).getParent();
+                    List<String> lockFiles = new ArrayList<>();
+                    if (Files.exists(parentDir.resolve("package-lock.json"))) {
+                        lockFiles.add("package-lock.json");
+                    }
+                    if (Files.exists(parentDir.resolve("pnpm-lock.yaml"))) {
+                        lockFiles.add("pnpm-lock.yaml");
+                    }
+                    if (Files.exists(parentDir.resolve("yarn.lock"))) {
+                        lockFiles.add("yarn.lock");
+                    }
+                    // Check the number of lockfiles
+                    if (lockFiles.size() > 1) {
+                        throw new RuntimeException("Multiple lockfiles detected: " + String.join(", ", lockFiles));
+                    } else if (lockFiles.size() == 1) {
+                        // Copy the single lockfile to tempDirectory
+                        Path lockFilePath = parentDir.resolve(lockFiles.get(0));
+                        Path targetLockFilePath = tempDirectory.resolve(lockFiles.get(0));
+                        Files.copy(lockFilePath, targetLockFilePath);
+                    } else {
+                        throw new RuntimeException("No lockfile found. Please generate a lockfile (package-lock.json, pnpm-lock.yaml, or yarn.lock).");
+                    }
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
