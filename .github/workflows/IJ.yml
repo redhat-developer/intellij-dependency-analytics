@@ -12,10 +12,6 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        IJ:
-          - IC-2024.3
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -29,7 +25,6 @@ jobs:
     - name: Build with Gradle
       run: >
         ./gradlew buildPlugin
-        -PideaVersion=${{ matrix.IJ }}
         -Pgpr.username=${{ github.actor }}
         -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
 
@@ -50,8 +45,7 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: >
-          ./gradlew runPluginVerifier
-          -PideaVersion=IC-2022.3
+          ./gradlew verifyPlugin
           -Pgpr.username=${{ github.actor }}
           -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
       - name: Upload report
