@@ -10,31 +10,7 @@ on:
     branches: [ main ]
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        IJ:
-          - IC-2024.2
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: 17
-        distribution: 'temurin'
-        cache: 'gradle'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: >
-        ./gradlew buildPlugin
-        -PideaVersion=${{ matrix.IJ }}
-        -Pgpr.username=${{ github.actor }}
-        -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
-
   verify:
-    if: false
     runs-on: ubuntu-latest
 
     steps:
@@ -50,8 +26,7 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: >
-          ./gradlew runPluginVerifier
-          -PideaVersion=IC-2022.3
+          ./gradlew verifyPlugin
           -Pgpr.username=${{ github.actor }}
           -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
       - name: Upload report
