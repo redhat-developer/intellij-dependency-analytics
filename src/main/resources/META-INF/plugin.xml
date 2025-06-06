@@ -451,21 +451,6 @@
         <externalAnnotator language="JSON"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.npm.NpmCAAnnotator"/>
 
-        <localInspection language="JSON" shortName="PnpmCAInspection"
-                         displayName="Red Hat Dependency Analytics component analysis"
-                         groupPath="JavaScript and TypeScript" groupName="Imports and dependencies"
-                         enabledByDefault="true" level="ERROR"
-                         implementationClass="org.jboss.tools.intellij.componentanalysis.pnpm.PnpmCAInspection"/>
-        <externalAnnotator language="JSON"
-                           implementationClass="org.jboss.tools.intellij.componentanalysis.pnpm.PnpmCAAnnotator"/>
-
-        <localInspection language="JSON" shortName="YarnCAInspection"
-                         displayName="Red Hat Dependency Analytics component analysis"
-                         groupPath="JavaScript and TypeScript" groupName="Imports and dependencies"
-                         enabledByDefault="true" level="ERROR"
-                         implementationClass="org.jboss.tools.intellij.componentanalysis.yarn.YarnCAInspection"/>
-        <externalAnnotator language="JSON"
-                           implementationClass="org.jboss.tools.intellij.componentanalysis.yarn.YarnCAAnnotator"/>
         <fileType name="rhda-requirements"
                   language="rhda-requirements"
                   fileNames="requirements.txt"
