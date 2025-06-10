@@ -92,7 +92,7 @@ public final class ApiService {
             CompletableFuture<AnalysisReport> componentReport;
             if ("go.mod".equals(manifestName) || "requirements.txt".equals(manifestName)) {
                 var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
-                componentReport = exhortApi.componentAnalysis(manifestName, manifestContent);
+                componentReport = exhortApi.componentAnalysis(manifestPath, manifestContent);
             } else {
                 componentReport = exhortApi.componentAnalysis(manifestPath);
             }
