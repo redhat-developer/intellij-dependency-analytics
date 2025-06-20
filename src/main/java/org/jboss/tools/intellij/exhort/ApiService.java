@@ -244,7 +244,7 @@ public final class ApiService {
             String host = staticProxyConfiguration.getHost();
             int port = staticProxyConfiguration.getPort();
 
-            if (!host.isBlank() && port > 0 && protocol.equals("http")) {
+            if (host != null && !host.isBlank() && port > 0 && protocol.equals("http")) {
                 String proxyUrl = protocol + "://" + host.trim() + ":" + port;
                 return Optional.of(proxyUrl);
             }
