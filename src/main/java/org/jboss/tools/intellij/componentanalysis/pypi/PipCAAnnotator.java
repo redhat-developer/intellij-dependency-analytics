@@ -14,11 +14,20 @@ package org.jboss.tools.intellij.componentanalysis.pypi;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.redhat.exhort.api.v4.DependencyReport;
-import org.jboss.tools.intellij.componentanalysis.*;
+import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
+import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
+import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
+import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 import org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.NameReq;
 import org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.NameReqComment;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 

@@ -14,7 +14,6 @@ import org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildGradleTy
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestIntentionAction {
     @Override

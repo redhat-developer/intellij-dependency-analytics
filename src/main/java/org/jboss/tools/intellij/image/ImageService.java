@@ -259,7 +259,7 @@ public final class ImageService {
             var imageService = ImageService.getInstance();
             var images = imageService.getBaseImages(dockerfile);
 
-            if (images != null && !images.isEmpty()) {
+            if (!images.isEmpty()) {
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
                         var manifestDetails = imageService.performImageAnalysis(
