@@ -24,18 +24,18 @@ import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Source;
 import org.apache.commons.io.FileUtils;
 import org.jboss.tools.intellij.exhort.ApiService;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.joining;
 
 @Service(Service.Level.PROJECT)
 public final class CAService {

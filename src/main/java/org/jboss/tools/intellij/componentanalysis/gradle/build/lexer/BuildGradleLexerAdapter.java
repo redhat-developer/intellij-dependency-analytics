@@ -12,7 +12,6 @@
 package org.jboss.tools.intellij.componentanalysis.gradle.build.lexer;
 
 import com.intellij.lexer.FlexAdapter;
-import org.jboss.tools.intellij.componentanalysis.pypi.requirements.lexer.RequirementsLexer;
 
 public class BuildGradleLexerAdapter extends FlexAdapter {
     public BuildGradleLexerAdapter() {

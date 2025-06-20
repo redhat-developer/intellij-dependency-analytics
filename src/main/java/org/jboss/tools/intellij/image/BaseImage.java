@@ -14,8 +14,8 @@ package org.jboss.tools.intellij.image;
 import java.util.Objects;
 
 public class BaseImage {
-    private String imageName;
-    private String platform;
+    private final String imageName;
+    private final String platform;
 
     public BaseImage(String imageName, String platform) {
         this.imageName = imageName;

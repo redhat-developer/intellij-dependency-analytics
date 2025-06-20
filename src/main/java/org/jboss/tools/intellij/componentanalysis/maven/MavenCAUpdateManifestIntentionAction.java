@@ -1,29 +1,19 @@
 package org.jboss.tools.intellij.componentanalysis.maven;
 
-import com.intellij.icons.AllIcons;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.source.xml.XmlTagImpl;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
-import com.intellij.xml.util.XmlUtil;
 import com.redhat.exhort.api.v4.DependencyReport;
-import com.redhat.exhort.api.PackageRef;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jetbrains.annotations.NotNull;
 
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class MavenCAUpdateManifestIntentionAction extends CAUpdateManifestIntentionAction {
     @Override

@@ -126,7 +126,7 @@ public abstract class CAIntentionAction implements IntentionAction {
     }
 
     static boolean thereIsRecommendation(DependencyReport dependency) {
-        return dependency.getRecommendation() != null && !dependency.getRecommendation().version().trim().equals("");
+        return dependency.getRecommendation() != null && !dependency.getRecommendation().version().trim().isEmpty();
     }
 
     static boolean thereAreNoIssues(DependencyReport dependency) {

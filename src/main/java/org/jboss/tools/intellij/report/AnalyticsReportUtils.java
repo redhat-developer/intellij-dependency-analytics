@@ -17,7 +17,12 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 public class AnalyticsReportUtils {
 
@@ -33,7 +38,7 @@ public class AnalyticsReportUtils {
     public void openCustomEditor(FileEditorManager instance, JsonObject manifestDetails) throws IOException {
 
         // Close custom editor if already opened in previous run,
-        // if its a different manifest file with same name then dont close existing one and open a new tab.
+        // if it's a different manifest file with same name then don't close existing one and open a new tab.
         manifestDetails = closeCustomEditor(instance, manifestDetails);
 
         // Create a temp file in which is registered with AnalyticsReportEditorProvider.
@@ -73,7 +78,7 @@ public class AnalyticsReportUtils {
 
             // iterate  through all files and if Report file is open then close it
             for (VirtualFile openFile : openFiles) {
-                // Check if opened file extension is ra, and existing tab manifest file type is same as new (pom.xml, go.mod)
+                // Check if opened file extension is ar, and existing tab manifest file type is same as new (pom.xml, go.mod)
                 // if not then no need to close any existing tab, just create new tab.
                 if ("ar".equals(openFile.getExtension())
                         && openFile.getNameWithoutExtension()
@@ -94,7 +99,7 @@ public class AnalyticsReportUtils {
                         openFile.refresh(true, true);
                         break;
                     } else {
-                        // If paths are not same it means file types are same but they are in different locations
+                        // If paths are not same it means file types are same, but they are in different locations
                         // In that case show parent directory to distinguish between tabs
                         // Ex Dependency Analytics Report for requirements.txt and Dependency Analytics Report for test/requirements.txt
                         manifestDetails.addProperty("showParent", true);

@@ -11,20 +11,23 @@
 
 package org.jboss.tools.intellij.componentanalysis.gradle;
 
-import com.intellij.openapi.util.Key;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.xml.XmlComment;
-import com.intellij.psi.xml.XmlDocument;
-import com.intellij.psi.xml.XmlTag;
-import com.intellij.psi.xml.XmlText;
 import com.redhat.exhort.api.v4.DependencyReport;
-import org.jboss.tools.intellij.componentanalysis.*;
+import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
+import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
+import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
+import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.psi.Artifact;
-import org.jboss.tools.intellij.componentanalysis.maven.MavenCAUpdateManifestIntentionAction;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
@@ -39,7 +42,6 @@ public class GradleCAAnnotator extends CAAnnotator {
     protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file) {
         if ("build.gradle".equals(file.getName())) {
             Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
-            List<Artifact> elements;
             Arrays.stream(file.getChildren())
                     .filter(e -> e instanceof Artifact)
                     .filter(artifact -> ((Artifact)artifact).getComment() == null || Objects.nonNull(((Artifact)artifact).getComment()) && !((Artifact)artifact).getComment().getText().contains(EXHORT_IGNORE))
