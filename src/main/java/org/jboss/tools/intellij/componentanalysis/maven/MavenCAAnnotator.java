@@ -18,10 +18,20 @@ import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
 import com.redhat.exhort.api.v4.DependencyReport;
-import org.jboss.tools.intellij.componentanalysis.*;
+import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
+import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
+import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
+import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 
-import java.util.*;
-import java.util.stream.Collectors;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.DEPENDENCIES;
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
@@ -54,7 +64,7 @@ public class MavenCAAnnotator extends CAAnnotator {
                         List<XmlTag> elements = Arrays.stream(d.getChildren())
                                 .filter(c -> c instanceof XmlTag)
                                 .map(c -> (XmlTag) c)
-                                .collect(Collectors.toList());
+                                .toList();
 
                         String groupId = null;
                         String artifactId = null;

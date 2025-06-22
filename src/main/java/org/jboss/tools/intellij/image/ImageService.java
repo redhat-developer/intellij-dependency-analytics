@@ -256,10 +256,10 @@ public final class ImageService {
 
     void openAnalysisHtmlReport(Project project, PsiFile dockerfile) {
         if (dockerfile != null && project != null) {
-            var imageService = ImageService.getInstance();
+            var imageService = getInstance();
             var images = imageService.getBaseImages(dockerfile);
 
-            if (images != null && !images.isEmpty()) {
+            if (!images.isEmpty()) {
                 ApplicationManager.getApplication().executeOnPooledThread(() -> {
                     try {
                         var manifestDetails = imageService.performImageAnalysis(

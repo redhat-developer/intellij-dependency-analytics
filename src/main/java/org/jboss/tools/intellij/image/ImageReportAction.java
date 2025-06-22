@@ -12,7 +12,11 @@
 package org.jboss.tools.intellij.image;
 
 import com.intellij.docker.dockerFile.DockerFileType;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import org.jetbrains.annotations.NotNull;
 
 public class ImageReportAction extends AnAction {

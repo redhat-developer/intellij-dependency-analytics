@@ -24,7 +24,6 @@ import com.intellij.psi.tree.TokenSet;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.lang.BuildGradleLanguage;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.lexer.BuildGradleLexerAdapter;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.parser.BuildGradleParser;
-import org.jboss.tools.intellij.componentanalysis.pypi.requirements.psi.RequirementsTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class BuildGradleParserDefinition implements ParserDefinition {

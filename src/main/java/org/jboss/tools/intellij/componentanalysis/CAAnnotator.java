@@ -31,8 +31,12 @@ import com.redhat.exhort.api.v4.DependencyReport;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.concurrent.ExecutionException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -86,7 +90,6 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
             LOG.info("Get vulnerability report from cache");
             Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports = CAService.getReports(path);
             Map<Dependency, Result> dependencyResultMap = this.matchDependencies(info.getDependencies(), reports);
-            String debugString;
             return dependencyResultMap;
         }
 
