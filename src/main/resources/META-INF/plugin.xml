@@ -488,7 +488,7 @@
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
     <actions>
-        <group>
+        <group id="saAnalysis-group">
             <action id="saAnalysis" text="Dependency Analytics Report"
                     class="org.jboss.tools.intellij.stackanalysis.SaAction"
                     icon="/images/report-icon.png"/>
@@ -500,7 +500,7 @@
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </group>
 
-        <group>
+        <group id="imageAnalysis-group">
             <action id="imageAnalysis" text="Image Analytics Report"
                     class="org.jboss.tools.intellij.image.ImageReportAction"
                     icon="/images/report-icon.png"/>
