@@ -37,7 +37,7 @@
         <code>node</code> binaries in your IDE's <code>PATH</code> environment.
     </li>
     <li>For Golang projects, analyzing a <code>go.mod</code> file, you must have the <code>go</code> binary in your
-        IDE's <code>PATH</code> environment.
+        IDE's <code>PATH</code> environment. Furthermore, Golang projects can only be analyzed with IntelliJ Ultimate Edition.
     </li>
     <li>For Python projects, analyzing a <code>requirements.txt</code> file, you must have the <code>python3</code> and
         <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
