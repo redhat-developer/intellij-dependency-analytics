@@ -16,16 +16,17 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Source;
-import org.apache.commons.io.FileUtils;
 import org.jboss.tools.intellij.exhort.ApiService;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -73,20 +74,9 @@ public final class CAService {
                                           Set<Dependency> dependencies,
                                           PsiFile file) {
         if (dependenciesModified(filePath, dependencies)) {
-            Path tempManifest;
-            Path tempDirectory;
             ApiService apiService = ServiceManager.getService(ApiService.class);
-            try {
-                tempDirectory = Files.createTempDirectory("rhda-idea");
-                tempManifest = Files.createFile(Path.of(tempDirectory.toString(),fileName));
-                Files.write(tempManifest,PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file).getText().getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-//            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
-            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, tempManifest.toString());
-            deleteTempDir(tempDirectory);
+            waitUntilMemoryAndDiskContentSynchronized(file, filePath);
+            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
             if (report == null) {
                 throw new RuntimeException("Failed to perform component analysis, result is invalid.");
             }
@@ -164,13 +154,43 @@ public final class CAService {
         return false;
     }
 
-    private static void deleteTempDir(Path tempDirectory)  {
-        try {
-            FileUtils.deleteDirectory(tempDirectory.toFile());
-        } catch (IOException e) {
-            LOG.warn("Failed to delete temp directory: " + tempDirectory, e);
+    private static void waitUntilMemoryAndDiskContentSynchronized(PsiFile file, String filePath) {
+        Document document = PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file);
+        if (document == null) {
+            LOG.warn("Document is not cached for file: " + file.getName());
         }
+
+        Path path = Path.of(filePath);
+        long timeoutMillis = 5000;
+        long intervalMillis = 200;
+        long startTime = System.currentTimeMillis();
+
+        while (System.currentTimeMillis() - startTime < timeoutMillis) {
+            document = PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file);
+            String memoryContent = document.getText();
+            String diskContent = "";
+
+            try {
+                if (Files.exists(path)) {
+                    diskContent = Files.readString(path, StandardCharsets.UTF_8);
+                } else {
+                    LOG.debug("Waiting for file to appear: " + filePath);
+                }
+            } catch (IOException e) {
+                LOG.warn("Failed to read file from disk during wait: " + filePath, e);
+            }
+
+            if (memoryContent.equals(diskContent)) {
+                LOG.debug("Memory and disk content match for: " + filePath);
+            }
+
+            try {
+                Thread.sleep(intervalMillis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                LOG.warn("Wait interrupted");
+            }
+        }
+        LOG.warn("Timeout: Memory and disk content did not match within 5 seconds for: " + filePath);
     }
-
-
 }
