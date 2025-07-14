@@ -13,9 +13,14 @@ package org.jboss.tools.intellij.componentanalysis;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.redhat.exhort.api.v4.AnalysisReport;
@@ -73,20 +78,23 @@ public final class CAService {
                                           Set<Dependency> dependencies,
                                           PsiFile file) {
         if (dependenciesModified(filePath, dependencies)) {
-            Path tempManifest;
-            Path tempDirectory;
             ApiService apiService = ServiceManager.getService(ApiService.class);
-            try {
-                tempDirectory = Files.createTempDirectory("rhda-idea");
-                tempManifest = Files.createFile(Path.of(tempDirectory.toString(),fileName));
-                Files.write(tempManifest,PsiDocumentManager.getInstance(file.getProject()).getCachedDocument(file).getText().getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            Project project = file.getProject();
+            Document document = PsiDocumentManager.getInstance(project).getDocument(file);
+            if (document == null) {
+                throw new RuntimeException("Failed to perform component analysis, document " + file + " is invalid.");
+            }
+            // Fix for TC-1631 to avoid analysis happens before changes is saved to disk.
+            // Explicitly synchronize PSI file cached document content and disk file content
+            if (FileDocumentManager.getInstance().isDocumentUnsaved(document)) {
+                ApplicationManager.getApplication().invokeAndWait(() ->
+                        WriteCommandAction.runWriteCommandAction(project, () ->
+                                FileDocumentManager.getInstance().saveDocument(document)
+                        )
+                );
             }
 
-//            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
-            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, tempManifest.toString());
-            deleteTempDir(tempDirectory);
+            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
             if (report == null) {
                 throw new RuntimeException("Failed to perform component analysis, result is invalid.");
             }
