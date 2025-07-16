@@ -40,6 +40,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
     public boolean isModified() {
         ApiSettingsState settings = ApiSettingsState.getInstance();
         boolean modified = !settingsComponent.getMvnPathText().equals(settings.mvnPath);
+        modified |= settingsComponent.getUseMavenWrapperCombo() != settings.useMavenWrapper;
         modified |= !settingsComponent.getJavaPathText().equals(settings.javaPath);
         modified |= !settingsComponent.getNpmPathText().equals(settings.npmPath);
         modified |= !settingsComponent.getPnpmPathText().equals(settings.pnpmPath);
@@ -68,6 +69,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
     public void apply() {
         ApiSettingsState settings = ApiSettingsState.getInstance();
         settings.mvnPath = settingsComponent.getMvnPathText();
+        settings.useMavenWrapper = settingsComponent.getUseMavenWrapperCombo();
         settings.javaPath = settingsComponent.getJavaPathText();
         settings.npmPath = settingsComponent.getNpmPathText();
         settings.pnpmPath = settingsComponent.getPnpmPathText();
@@ -95,6 +97,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
     public void reset() {
         ApiSettingsState settings = ApiSettingsState.getInstance();
         settingsComponent.setMvnPathText(settings.mvnPath != null ? settings.mvnPath : "");
+        settingsComponent.setUseMavenWrapperCombo(settings.useMavenWrapper);
         settingsComponent.setJavaPathText(settings.javaPath != null ? settings.javaPath : "");
         settingsComponent.setNpmPathText(settings.npmPath != null ? settings.npmPath : "");
         settingsComponent.setPnpmPathText(settings.pnpmPath != null ? settings.pnpmPath : "");

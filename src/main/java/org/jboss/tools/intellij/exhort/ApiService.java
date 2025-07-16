@@ -23,6 +23,7 @@ import com.redhat.exhort.Api;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.impl.ExhortApi;
 import org.jboss.tools.intellij.settings.ApiSettingsState;
+import org.jboss.tools.intellij.settings.MavenSettingsUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -133,7 +134,20 @@ public final class ApiService {
         } else {
             System.clearProperty("EXHORT_MVN_PATH");
         }
-                if (settings.gradlePath != null && !settings.gradlePath.isBlank()) {
+
+        if (settings.useMavenWrapper.equals("fallback")) {
+            if (MavenSettingsUtil.isMavenWrapperSelected()) {
+                System.setProperty("EXHORT_PREFER_MVNW", settings.useMavenWrapper);
+            } else {
+                System.clearProperty("EXHORT_PREFER_MVNW");
+            }
+        } else if (settings.useMavenWrapper.equals("true")) {
+            System.setProperty("EXHORT_PREFER_MVNW", settings.useMavenWrapper);
+        } else {
+            System.clearProperty("EXHORT_PREFER_MVNW");
+        }
+
+        if (settings.gradlePath != null && !settings.gradlePath.isBlank()) {
             System.setProperty("EXHORT_GRADLE_PATH", settings.gradlePath);
         } else {
             System.clearProperty("EXHORT_GRADLE_PATH");

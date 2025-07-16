@@ -12,6 +12,7 @@
 package org.jboss.tools.intellij.settings;
 
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.components.JBCheckBox;
@@ -27,6 +28,10 @@ public class ApiSettingsComponent {
 
     private final static String mvnPathLabel = "<html>Maven > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>mvn</b> executable.</html>";
+    private final static String useMavenWrapperLabel = "<html>Maven: <b>Prefer Wrapper</b>"
+            + "<br>Specifies whether to use the local maven wrapper."
+            + "<br>The 'fallback' option will default to Build,Execution,Deployment › Build Tools > Maven: Maven home path setting"
+            + "<br>Else defaulting to 'true'.</html>";
     private final static String javaPathLabel = "<html>Maven > JAVA_HOME: <b>Path</b>"
             + "<br>Specifies absolute path of Java installation directory.</html>";
     private final static String npmPathLabel = "<html>Npm > Executable: <b>Path</b>"
@@ -73,6 +78,7 @@ public class ApiSettingsComponent {
     private final JPanel mainPanel;
 
     private final TextFieldWithBrowseButton mvnPathText;
+    private final ComboBox useMavenWrapperCombo;
     private final TextFieldWithBrowseButton javaPathText;
     private final TextFieldWithBrowseButton npmPathText;
     private final TextFieldWithBrowseButton pnpmPathText;
@@ -107,6 +113,10 @@ public class ApiSettingsComponent {
                 FileChooserDescriptorFactory.createSingleFileDescriptor(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
+
+        useMavenWrapperCombo = new ComboBox<>(new String[]{"fallback", "true", "false"});
+        useMavenWrapperCombo.setEditable(false);
+        useMavenWrapperCombo.setSelectedIndex(0);
 
         javaPathText = new TextFieldWithBrowseButton();
         javaPathText.addBrowseFolderListener(
@@ -257,6 +267,8 @@ public class ApiSettingsComponent {
         mainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(mvnPathLabel), mvnPathText, 1, true)
                 .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(useMavenWrapperLabel), useMavenWrapperCombo, 1, true)
+                .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(javaPathLabel), javaPathText, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
@@ -322,6 +334,14 @@ public class ApiSettingsComponent {
 
     public void setMvnPathText(@NotNull String text) {
         mvnPathText.setText(text);
+    }
+
+    public String getUseMavenWrapperCombo() {
+        return useMavenWrapperCombo.getSelectedItem().toString();
+    }
+
+    public void setUseMavenWrapperCombo(@NotNull String text) {
+        useMavenWrapperCombo.setSelectedItem(text);
     }
 
     @NotNull
