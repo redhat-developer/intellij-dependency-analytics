@@ -85,6 +85,12 @@ according to your preferences.
   <br >If the paths are not provided, your IDE's `PATH` and `JAVA_HONE` environments will be used to locate the
   executables.
 
+- **Maven Wrappers** :
+  <br >`preferWrapper`: Configure whether to use Maven wrapper. There are three options available:
+  <br >`true`: Always use the wrapper regardless of `Build,Execution,Deployment › Build Tools > Maven: Maven home path` setting
+  <br >`false`: Never use the wrapper regardless of `Build,Execution,Deployment › Build Tools > Maven: Maven home path` setting
+  <br >`fallback`: Use IntelliJ's `Build,Execution,Deployment › Build Tools > Maven: Maven home path` setting (default behavior)
+
 - **Node** :
   <br >Set the full path of the Node executable, which allows Exhort to locate and run one of the corresponding `npm`, `pnpm` or `yarn` command to resolve
   dependencies for Node projects.

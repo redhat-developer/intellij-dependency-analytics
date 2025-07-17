@@ -97,6 +97,15 @@
         <br>If the paths are not provided, your IDE's <code>PATH</code> and <code>JAVA_HONE</code> environments will be
         used to locate the executables.
     </li>
+
+    <li>
+        <b>Maven Wrapper</b>:
+        <br><code>preferWrapper</code> : Configure whether to use Maven wrapper. There are three options available
+        <br><code>true</code>: Always use the wrapper regardless of Build,Execution,Deployment › Build Tools > Maven: Maven home path setting
+        <br><code>false</code>: Never use the wrapper regardless of Build,Execution,Deployment › Build Tools > Maven: Maven home path setting
+        <br><code>fallback</code>: Use IntelliJ's Build,Execution,Deployment › Build Tools > Maven: Maven home path setting (default behavior)
+    </li>
+
     <li>
         <b>Node</b>:
         <br>Set the full path of the Node executable, which allows Exhort to locate and execute one of the corresponding <code>npm</code>, <code>pnpm</code> or <code>yarn</code> command
@@ -421,6 +430,8 @@
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.jetbrains.idea.maven</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
     <depends>Docker</depends>
     <depends config-file="go.xml" optional="true">org.jetbrains.plugins.go</depends>

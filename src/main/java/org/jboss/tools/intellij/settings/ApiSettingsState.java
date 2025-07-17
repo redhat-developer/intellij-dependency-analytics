@@ -36,6 +36,7 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public String rhdaToken;
 
     public String mvnPath;
+    public String useMavenWrapper = "fallback";
     public String javaPath;
 
     public String npmPath;
