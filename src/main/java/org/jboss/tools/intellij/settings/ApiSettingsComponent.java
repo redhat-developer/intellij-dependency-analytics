@@ -18,6 +18,8 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
+import com.intellij.ui.components.JBTextArea;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.FormBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,6 +76,9 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of <b>podman</b> executable.</html>";
      private final static String imagePlatformLabel = "<html>Image > Build: <b>Platform</b>"
             + "<br>Specifies the platform of the images, e.g. <b>linux/amd64</b> or <b>linux/arm64</b>.</html>";
+    private final static String manifestExclusionPatternsLabel = "<html>Component Analysis > Exclusion Patterns"
+            + "<br>Specifies glob patterns for manifest files to exclude from component analysis."
+            + "<br>One pattern per line. Examples: <b>**/node_modules/**/package.json</b>, <b>test/**/pom.xml</b></html>";
 
     private final JPanel mainPanel;
 
@@ -102,6 +107,8 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton dockerPathText;
     private final TextFieldWithBrowseButton podmanPathText;
     private final JBTextField imagePlatformText;
+    private final JBTextArea manifestExclusionPatternsText;
+    private final JBScrollPane manifestExclusionPatternsScrollPane;
 
 
     public ApiSettingsComponent() {
@@ -232,6 +239,11 @@ public class ApiSettingsComponent {
 
         imagePlatformText = new JBTextField();
 
+        manifestExclusionPatternsText = new JBTextArea();
+        manifestExclusionPatternsText.setRows(5);
+        manifestExclusionPatternsText.setColumns(50);
+        manifestExclusionPatternsScrollPane = new JBScrollPane(manifestExclusionPatternsText);
+
         mainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(mvnPathLabel), mvnPathText, 1, true)
                 .addVerticalGap(10)
@@ -283,6 +295,9 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(podmanPathLabel), podmanPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(imagePlatformLabel), imagePlatformText, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(manifestExclusionPatternsLabel), manifestExclusionPatternsScrollPane, 1, true)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -494,5 +509,14 @@ public class ApiSettingsComponent {
 
     public void setGradlePathText(@NotNull String text) {
         gradlePathText.setText(text);
+    }
+
+    @NotNull
+    public String getManifestExclusionPatternsText() {
+        return manifestExclusionPatternsText.getText();
+    }
+
+    public void setManifestExclusionPatternsText(@NotNull String text) {
+        manifestExclusionPatternsText.setText(text);
     }
 }
