@@ -11,10 +11,18 @@
 
 package org.jboss.tools.intellij.settings;
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
+import java.util.Objects;
 
 public class ApiSettingsConfigurable implements com.intellij.openapi.options.Configurable {
 
@@ -40,7 +48,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
     public boolean isModified() {
         ApiSettingsState settings = ApiSettingsState.getInstance();
         boolean modified = !settingsComponent.getMvnPathText().equals(settings.mvnPath);
-        modified |= settingsComponent.getUseMavenWrapperCombo() != settings.useMavenWrapper;
+        modified |= !Objects.equals(settingsComponent.getUseMavenWrapperCombo(), settings.useMavenWrapper);
         modified |= !settingsComponent.getJavaPathText().equals(settings.javaPath);
         modified |= !settingsComponent.getNpmPathText().equals(settings.npmPath);
         modified |= !settingsComponent.getPnpmPathText().equals(settings.pnpmPath);
@@ -62,12 +70,14 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getPodmanPathText().equals(settings.podmanPath);
         modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
         modified |= !settingsComponent.getGradlePathText().equals(settings.gradlePath);
+        modified |= !settingsComponent.getManifestExclusionPatternsText().equals(settings.manifestExclusionPatterns);
         return modified;
     }
 
     @Override
     public void apply() {
         ApiSettingsState settings = ApiSettingsState.getInstance();
+
         settings.mvnPath = settingsComponent.getMvnPathText();
         settings.useMavenWrapper = settingsComponent.getUseMavenWrapperCombo();
         settings.javaPath = settingsComponent.getJavaPathText();
@@ -91,6 +101,28 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.podmanPath = settingsComponent.getPodmanPathText();
         settings.imagePlatform = settingsComponent.getImagePlatformText();
         settings.gradlePath = settingsComponent.getGradlePathText();
+
+        // Check if exclusion patterns changed
+        String oldPatterns = settings.manifestExclusionPatterns;
+        String newPatterns = settingsComponent.getManifestExclusionPatternsText();
+        boolean patternsChanged = !Objects.equals(oldPatterns, newPatterns);
+        settings.manifestExclusionPatterns = newPatterns;
+
+        // Trigger re-analysis if exclusion patterns changed
+        if (patternsChanged) {
+            refreshComponentAnalysis();
+        }
+    }
+
+    private void refreshComponentAnalysis() {
+        ApplicationManager.getApplication().runReadAction(() -> {
+            Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
+            for (Project project : openProjects) {
+                if (!project.isDisposed()) {
+                    DaemonCodeAnalyzer.getInstance(project).restart();
+                }
+            }
+        });
     }
 
     @Override
@@ -119,6 +151,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setPodmanPathText(settings.podmanPath);
         settingsComponent.setImagePlatformText(settings.imagePlatform);
         settingsComponent.setGradlePathText(settings.gradlePath != null ? settings.gradlePath : "");
+        settingsComponent.setManifestExclusionPatternsText(settings.manifestExclusionPatterns != null ? settings.manifestExclusionPatterns : "");
     }
 
     @Override
