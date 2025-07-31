@@ -87,6 +87,7 @@ dependencies {
 
     // for tests
     testImplementation(libs.junit)
+    testImplementation(libs.mockito)
 }
 
 tasks {

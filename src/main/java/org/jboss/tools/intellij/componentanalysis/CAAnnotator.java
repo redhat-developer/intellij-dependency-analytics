@@ -51,6 +51,12 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
         if (inspection == null) {
             return null;
         }
+
+        if (ManifestExclusionManager.isManifestExcluded(file.getVirtualFile(), file.getProject())) {
+            LOG.debug("Skipping analysis for excluded manifest: " + file.getName());
+            return null;
+        }
+
         LOG.info("Get dependencies");
         return new Info(file, this.getDependencies(file));
     }
@@ -176,6 +182,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                             }
                                         }
                                         builder.withFix(new SAIntentionAction());
+                                        builder.withFix(new ExcludeManifestIntentionAction());
                                         builder.create();
                                       }
                                     );
