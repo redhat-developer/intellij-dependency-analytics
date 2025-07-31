@@ -27,12 +27,8 @@ import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.DependencyReport;
 import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Source;
-import org.apache.commons.io.FileUtils;
 import org.jboss.tools.intellij.exhort.ApiService;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -171,14 +167,4 @@ public final class CAService {
         }
         return false;
     }
-
-    private static void deleteTempDir(Path tempDirectory)  {
-        try {
-            FileUtils.deleteDirectory(tempDirectory.toFile());
-        } catch (IOException e) {
-            LOG.warn("Failed to delete temp directory: " + tempDirectory, e);
-        }
-    }
-
-
 }
