@@ -186,6 +186,14 @@
         <br>You can set the vulnerability severity alert level to <code>Error</code> or <code>Warning</code> for inline
         notifications of detected vulnerabilities.
     </li>
+    <li>
+        <b>Manifest Exclusion Patterns</b>:
+        <br>You can exclude manifest files from component analysis using glob patterns. This is useful for excluding
+        third-party dependencies, test files, or other manifests that should not be analyzed.
+        <br>Enter one pattern per line. Examples: <code>**/node_modules/**/package.json</code> to exclude all
+        package.json files in node_modules directories, or <code>test/**/pom.xml</code> to exclude all Maven files
+        in test directories.
+    </li>
 </ul>
 <p>
 
@@ -343,6 +351,18 @@
         <br>The Red Hat Dependency Analytics Report is a temporary HTML file that exists if the <b>Red Hat Dependency
         Analytics Report</b> tab remains open.
         <br>Closing the tab removes the temporary HTML file.
+    </li>
+    <li>
+        <b>Excluding manifest files with patterns</b>
+        <br>You can exclude specific manifest files from component analysis using configurable glob patterns. This
+        feature allows you to avoid analyzing third-party dependencies, test files, or other manifests that are not
+        relevant to your security analysis.
+        <br>Patterns are configured in the plugin settings under <b>Tools > Red Hat Dependency Analytics > Manifest
+        Exclusion Patterns</b>.
+        <br>Examples: <code>**/node_modules/**/package.json</code>, <code>test/**/pom.xml</code>,
+        <code>vendor/**/*.go.mod</code>
+        <br>Right-click on any manifest file and select <b>Exclude from Component Analysis</b> to quickly add an
+        exclusion pattern for that specific file.
     </li>
 </ul>
 <p>
