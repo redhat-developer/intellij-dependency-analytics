@@ -150,6 +150,10 @@ according to your preferences.
 - **Proxy Configuration** :
   <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a static proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
 
+- **Manifest Exclusion Patterns** :
+  <br >You can exclude manifest files from component analysis using glob patterns. This is useful for excluding third-party dependencies, test files, or other manifests that should not be analyzed.
+  <br >Enter one pattern per line. Examples: `**/node_modules/**/package.json` to exclude all package.json files in node_modules directories, or `test/**/pom.xml` to exclude all Maven files in test directories.
+
 ## Features
 
 - **Component analysis**
@@ -293,6 +297,18 @@ according to your preferences.
 
   You can create an alternative file to `requirements.txt`, for example, a `requirements-dev.txt` or
   a `requirements-test.txt` file where you can add the development or test dependencies there.
+
+
+- **Excluding manifest files with patterns**
+  <br >You can exclude specific manifest files from component analysis using configurable glob patterns. This feature allows you to avoid analyzing third-party dependencies, test files, or other manifests that are not relevant to your security analysis.
+  <br >Patterns are configured in the plugin settings under **Tools > Red Hat Dependency Analytics > Manifest Exclusion Patterns**.
+  <br >Examples of exclusion patterns:
+  - `**/node_modules/**/package.json` - Excludes all package.json files in node_modules directories
+  - `test/**/pom.xml` - Excludes all Maven pom.xml files in test directories
+  - `vendor/**/*.go.mod` - Excludes all go.mod files in vendor directories
+  - `**/build.gradle` - Excludes all Gradle build files
+    <br >Right-click on any manifest file and select **Exclude from Component Analysis** to quickly add an exclusion pattern for that specific file.
+
 
 - **Red Hat Dependency Analytics report**
   <br >The Red Hat Dependency Analytics report is a temporary HTML file that exist if the **Red Hat Dependency Analytics
