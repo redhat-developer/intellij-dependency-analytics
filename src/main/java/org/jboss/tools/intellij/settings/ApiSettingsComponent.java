@@ -108,9 +108,7 @@ public class ApiSettingsComponent {
         mvnPathText = new TextFieldWithBrowseButton();
         mvnPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
@@ -121,54 +119,42 @@ public class ApiSettingsComponent {
         javaPathText = new TextFieldWithBrowseButton();
         javaPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                FileChooserDescriptorFactory.singleDir(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         npmPathText = new TextFieldWithBrowseButton();
         npmPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         pnpmPathText = new TextFieldWithBrowseButton();
         pnpmPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         yarnPathText = new TextFieldWithBrowseButton();
         yarnPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         nodePathText = new TextFieldWithBrowseButton();
         nodePathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFolderDescriptor(),
+                FileChooserDescriptorFactory.singleDir(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         goPathText = new TextFieldWithBrowseButton();
         goPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
@@ -177,18 +163,14 @@ public class ApiSettingsComponent {
         pythonPathText = new TextFieldWithBrowseButton();
         pythonPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         pipPathText = new TextFieldWithBrowseButton();
         pipPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
@@ -203,62 +185,48 @@ public class ApiSettingsComponent {
         gradlePathText = new TextFieldWithBrowseButton();
         gradlePathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
         syftPathText = new TextFieldWithBrowseButton();
         syftPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         syftConfigPathText = new TextFieldWithBrowseButton();
         syftConfigPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         skopeoPathText = new TextFieldWithBrowseButton();
         skopeoPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         skopeoConfigPathText = new TextFieldWithBrowseButton();
         skopeoConfigPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         dockerPathText = new TextFieldWithBrowseButton();
         dockerPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
         podmanPathText = new TextFieldWithBrowseButton();
         podmanPathText.addBrowseFolderListener(
                 null,
-                null,
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor(),
+                FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
 
