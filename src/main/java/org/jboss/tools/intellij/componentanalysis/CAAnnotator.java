@@ -14,6 +14,7 @@ package org.jboss.tools.intellij.componentanalysis;
 import com.github.packageurl.PackageURL;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.daemon.HighlightDisplayKey;
+import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.InspectionProfile;
 import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.lang.annotation.AnnotationBuilder;
@@ -165,7 +166,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                 if (!quickfixes.isEmpty() && this.isQuickFixApplicable(e)) {
                                     quickfixes.forEach((source, report) ->{
                                         AnnotationBuilder builder = holder
-                                                .newAnnotation(getHighlightSeverity(report), messageBuilder.toString())
+                                                .newAnnotation(getHighlightSeverity(report, e), messageBuilder.toString())
                                                 .tooltip(tooltipBuilder.toString())
                                                 .range(e);
                                         if(CAIntentionAction.isQuickFixAvailable(report)) {
@@ -189,16 +190,24 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
     }
 
     @NotNull
-    private static HighlightSeverity getHighlightSeverity(DependencyReport report) {
-        if(CAIntentionAction.thereAreNoIssues(report) && CAIntentionAction.thereIsRecommendation(report))
-        {
-            return HighlightSeverity.WEAK_WARNING;
-        }
-        else
-        {
-            return HighlightSeverity.ERROR;
+    private HighlightSeverity getHighlightSeverity(DependencyReport report, @NotNull PsiElement context) {
+        // Get the configured severity from the inspection settings
+        final InspectionProfileEntry inspection = this.getInspection(context, this.getInspectionShortName());
+        if (inspection != null) {
+            final InspectionProfile profile = InspectionProjectProfileManager.getInstance(context.getProject()).getCurrentProfile();
+            final HighlightDisplayKey key = HighlightDisplayKey.find(this.getInspectionShortName());
+            if (key != null) {
+                HighlightDisplayLevel level = profile.getErrorLevel(key, context);
+                return level.getSeverity();
+            }
         }
 
+        // Fallback to original logic if inspection settings can't be determined
+        if(CAIntentionAction.thereAreNoIssues(report) && CAIntentionAction.thereIsRecommendation(report)) {
+            return HighlightSeverity.WEAK_WARNING;
+        } else {
+            return HighlightSeverity.ERROR;
+        }
     }
 
     abstract protected String getInspectionShortName();
