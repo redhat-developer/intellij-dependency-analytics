@@ -51,7 +51,7 @@ vulnerability report.
 - For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment. Furthermore, Golang projects can only be analyzed with IntelliJ Ultimate Edition.
 - For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
   IDE's `PATH` environment.
-- For Gradle projects, analyzing a `build.gradle` file, you must have the `gradle` binary in your system's `PATH` environment.
+- For Gradle projects, analyzing a `build.gradle` file or `build.gradle.kts` file, you must have the `gradle` binary in your system's `PATH` environment.
 - For base images, analyzing a `Dockerfile`, you must have the [`syft`](https://github.com/anchore/syft?tab=readme-ov-file#installation) and [`skopeo`](https://github.com/containers/skopeo/blob/main/install.md) binaries in your IDE's `PATH` environment.
 
 **Procedure**

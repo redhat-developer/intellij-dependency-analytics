@@ -39,7 +39,7 @@
         IDE's <code>PATH</code> environment.
     </li>
     <li>For Node projects, analyzing a <code>package.json</code> file, you must have one of the corresponding package manager <code>npm</code>, <code>pnpm</code> or <code>yarn</code> and
-        <code>node</code> binaries in your IDE's <code>PATH</code> environment.
+        <code>node</code> binaries in your IDE's <code>PATH</code> environment. It also requires a corresponding lock file to be present in order to analyze package.json files.
     </li>
     <li>For Golang projects, analyzing a <code>go.mod</code> file, you must have the <code>go</code> binary in your
         IDE's <code>PATH</code> environment. Furthermore, Golang projects can only be analyzed with IntelliJ Ultimate Edition.
@@ -48,7 +48,7 @@
         <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
     </li>
     <li>
-        For Gradle projects, analyzing a <code>build.gradle</code> file, you must have the <code>gradle</code> binary in your system's <code>PATH</code> environment.
+        For Gradle projects, analyzing a <code>build.gradle</code> file or <code>build.gradle.kts</code> file, you must have the <code>gradle</code> binary in your system's <code>PATH</code> environment.
     </li>
     <li>For base images, analyzing a <code>Dockerfile</code>, you must have the <code><a
             href="https://github.com/anchore/syft?tab=readme-ov-file#installation" rel="noopener noreferrer"
@@ -122,6 +122,7 @@
         executable.
         <br>If the paths are not provided, your IDE's <code>PATH</code> environment will be used to locate the
         executables.
+        <br>It also requires a corresponding lock file to be present in order to analyze package.json files.
     </li>
     <li>
         <b>Golang</b>:
@@ -396,7 +397,7 @@
   <p>Added support for Proxy setting.</p>
   <p>Enable using the Maven Wrapper.</p>
   <p>No restart needed after installation.</p>
-  <p>Opening and analysing a single package.json file in editor is not supposed anymore.</p>
+  <p>Require a lock file to be present in order to analyze package.json files.</p>
   <p><b>1.0.0</b></p>
   <p>Added support for base image vulnerability scanning in Dockerfiles.</p>
   <p>Bumped Telemetry plugin to 1.1.0.</p>
