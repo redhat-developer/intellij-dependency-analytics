@@ -20,10 +20,15 @@
     displaying the vulnerability report.
 <p>
     <b>IMPORTANT:</b>
-    <br>Currently, Dependency Analytics only supports projects that use Maven (<code>mvn</code>), and Node
-    (<code>npm</code>, <code>pnpm</code> or <code>yarn</code>), Golang (<code>go mod</code>) and Python (<code>pip</code>) ecosystems, and base images in
-    <code>Dockerfile</code>.
-    <br>In future releases, Red Hat plans to support other programming languages.
+    <br>Dependency Analytics supports multiple package managers:
+    <li>Maven (mvn)</li>
+    <li>NPM (npm)</li>
+    <li>PNPM (pnpm)</li>
+    <li>Yarn Berry and Classic (yarn)</li>
+    <li>Gradle Kotlin and Groovy (gradle)</li>
+    <li>Golang (go mod)</li>
+    <li>Python (pip) ecosystems, and base images in Dockerfile.</li>
+    <br>In future releases, Red Hat plans to support other package managers.</br>
 <p>
 
 <h2>Quick Start</h2>
@@ -41,6 +46,9 @@
     </li>
     <li>For Python projects, analyzing a <code>requirements.txt</code> file, you must have the <code>python3</code> and
         <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
+    </li>
+    <li>
+        For Gradle projects, analyzing a <code>build.gradle</code> file, you must have the <code>gradle</code> binary in your system's <code>PATH</code> environment.
     </li>
     <li>For base images, analyzing a <code>Dockerfile</code>, you must have the <code><a
             href="https://github.com/anchore/syft?tab=readme-ov-file#installation" rel="noopener noreferrer"
@@ -141,6 +149,13 @@
         dependency versions specified in the manifest file will be ignored, and dependency versions will be resolved
         dynamically instead. This feature cannot be enabled when <code>Strictly match package version</code> is
         selected.
+    </li>
+    <li>
+        <b>Gradle</b>:
+        <br>Set the full path of the Gradle executable, which allows Exhort to locate and run the <code>gradle</code>
+        command to resolve dependencies for Gradle projects.
+        <br>By not setting a path to the gradle binary, IntelliJ IDEA uses its default path environment to locate
+        the file.
     </li>
     <li>
         <b>Image</b>:
@@ -376,6 +391,12 @@
     <change-notes><![CDATA[
   <p><b>1.1.0</b></p>
   <p>Added support for Gradle manifest files.</p>
+  <p>Added support for Yarn.</p>
+  <p>Added support for PNPM.</p>
+  <p>Added support for Proxy setting.</p>
+  <p>Enable using the Maven Wrapper.</p>
+  <p>No restart needed after installation.</p>
+  <p>Opening and analysing a single package.json file in editor is not supposed anymore.</p>
   <p><b>1.0.0</b></p>
   <p>Added support for base image vulnerability scanning in Dockerfiles.</p>
   <p>Bumped Telemetry plugin to 1.1.0.</p>

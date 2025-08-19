@@ -13,12 +13,16 @@
 Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply chain
 while you build your application.
 
-<br >Dependency Analytics only supports the following project ecosystems:
-- Maven
-- Node
-- Golang
-- Python
-- Gradle
+<br>Dependency Analytics supports multiple package managers:
+- Maven (mvn)
+- NPM (npm)
+- PNPM (pnpm)
+- Yarn Berry and Classic (yarn)
+- Gradle Kotlin and Groovy (gradle)
+- Golang (go mod)
+- Python (pip) ecosystems, and base images in Dockerfile.
+
+In future releases, Red Hat plans to support other package managers.
 
 <br >**NOTE:**
 The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
