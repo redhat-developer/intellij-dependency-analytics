@@ -13,12 +13,16 @@
 Red Hat Dependency Analytics (RHDA) plugin gives you awareness to security concerns within your software supply chain
 while you build your application.
 
-<br >Dependency Analytics only supports the following project ecosystems:
-- Maven
-- Node
-- Golang
-- Python
-- Gradle
+<br>Dependency Analytics supports multiple package managers:
+- Maven (mvn)
+- NPM (npm)
+- PNPM (pnpm)
+- Yarn Berry and Classic (yarn)
+- Gradle Kotlin and Groovy (gradle)
+- Golang (go mod)
+- Python (pip) ecosystems, and base images in Dockerfile.
+
+In future releases, Red Hat plans to support other package managers.
 
 <br >**NOTE:**
 The Red Hat Dependency Analytics plugin is an online service hosted and maintained by Red Hat.
@@ -47,7 +51,7 @@ vulnerability report.
 - For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment. Furthermore, Golang projects can only be analyzed with IntelliJ Ultimate Edition.
 - For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
   IDE's `PATH` environment.
-- For Gradle projects, analyzing a `build.gradle` file, you must have the `gradle` binary in your system's `PATH` environment.
+- For Gradle projects, analyzing a `build.gradle` file or `build.gradle.kts` file, you must have the `gradle` binary in your system's `PATH` environment.
 - For base images, analyzing a `Dockerfile`, you must have the [`syft`](https://github.com/anchore/syft?tab=readme-ov-file#installation) and [`skopeo`](https://github.com/containers/skopeo/blob/main/install.md) binaries in your IDE's `PATH` environment.
 
 **Procedure**
@@ -144,7 +148,7 @@ according to your preferences.
   vulnerabilities.
 
 - **Proxy Configuration** :
-  <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
+  <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a static proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
 
 ## Features
 
