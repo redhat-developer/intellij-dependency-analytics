@@ -394,7 +394,7 @@
   <p>Added support for Gradle manifest files.</p>
   <p>Added support for Yarn.</p>
   <p>Added support for PNPM.</p>
-  <p>Added support for Proxy setting.</p>
+  <p>Added support for Proxy setting(Static Proxy Configuration).</p>
   <p>Enable using the Maven Wrapper.</p>
   <p>No restart needed after installation.</p>
   <p>Require a lock file to be present in order to analyze package.json files.</p>

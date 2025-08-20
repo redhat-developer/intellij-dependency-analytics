@@ -148,7 +148,7 @@ according to your preferences.
   vulnerabilities.
 
 - **Proxy Configuration** :
-  <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
+  <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a static proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
 
 ## Features
 
