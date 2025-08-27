@@ -3,7 +3,7 @@
 caffeine = "3.1.8"
 commons-compress = "1.21"
 commons-io = "2.16.1"
-exhort-api-spec = "1.0.6"
+exhort-api-spec = "1.0.18"
 exhort-java-api = "0.0.8"
 github-api = "1.314"
 junit = "4.13.2"

@@ -85,7 +85,7 @@ GROUP_KEY=group:
 NAME_KEY=name:
 VERSION_KEY=version:
 
-CONFIG_NAME=implementation|api|compile|compileClasspath|compileOnly|runtime|runtimeClasspath|runtimeOnly
+CONFIG_NAME=implementation|api|compile|compileClasspath|compileOnly|runtime|runtimeClasspath|runtimeOnly|testImplementation|testCompileOnly|testRuntimeOnly|testCompileClasspath|testRuntimeClasspath
 
 GROUP_ID=[a-zA-Z0-9._-]+
 ARTIFACT_ID=[a-zA-Z0-9_.-]+
