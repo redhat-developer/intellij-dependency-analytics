@@ -16,8 +16,6 @@ on:
   schedule:
     # Run every day at 2 AM UTC to publish nightly builds
     - cron: '0 2 * * *'
-  push:
-    branches: [ main ]
 
 jobs:
   publish-marketplace:
@@ -47,13 +45,19 @@ jobs:
             # Release event - publish to stable channel
             VERSION="${GITHUB_REF#refs/tags/}"
             CHANNEL="stable"
-          elif [ "${{ github.event_name }}" == "schedule" ] || [ "${{ github.event_name }}" == "push" ]; then
-            # Scheduled run or push to main - publish to nightly channel
-            # Get current version from gradle.properties and append timestamp
-            BASE_VERSION=$(grep 'projectVersion=' gradle.properties | cut -d'=' -f2)
-            TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-            VERSION="${BASE_VERSION}-nightly.${TIMESTAMP}"
-            CHANNEL="nightly"
+          elif [ "${{ github.event_name }}" == "schedule" ]; then
+            # Scheduled run - check if we should publish nightly
+            if [ "${{ steps.changes_check.outputs.has_changes }}" == "true" ]; then
+              # Get current version from gradle.properties and append timestamp
+              BASE_VERSION=$(grep 'projectVersion=' gradle.properties | cut -d'=' -f2)
+              TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+              VERSION="${BASE_VERSION}-nightly.${TIMESTAMP}"
+              CHANNEL="nightly"
+            else
+              # No changes, set dummy values (workflow will exit early)
+              VERSION="no-changes"
+              CHANNEL="none"
+            fi
           else
             echo "Unknown trigger: ${{ github.event_name }}"
             exit 1
@@ -62,12 +66,37 @@ jobs:
           echo "CHANNEL=$CHANNEL" >> $GITHUB_OUTPUT
           echo "Publishing version $VERSION to $CHANNEL channel"
 
-      - name: Build or download based on trigger
-        if: github.event_name == 'schedule' || github.event_name == 'push'
+      - name: Check for changes since last nightly
+        if: github.event_name == 'schedule'
+        id: changes_check
         run: |
-          # For nightly builds, we need to build from source
+          # Get the date from yesterday
+          YESTERDAY=$(date -d 'yesterday' +%Y-%m-%d)
+          echo "Checking for changes since: $YESTERDAY"
+
+          # Get the last nightly build commit hash (you might want to store this in a file or use a tag)
+          # For now, we'll check if there are any commits in the last 24 hours
+          COMMIT_COUNT=$(git log --since="$YESTERDAY" --oneline | wc -l)
+
+          if [ "$COMMIT_COUNT" -gt 0 ]; then
+            echo "✅ Found $COMMIT_COUNT commits since $YESTERDAY - proceeding with nightly build"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ No commits since $YESTERDAY - skipping nightly build"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build nightly version
+        if: github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'true'
+        run: |
           echo "Building nightly version from source..."
           ./gradlew buildPlugin -Pgpr.username=${{ github.actor }} -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Skip nightly build
+        if: github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'false'
+        run: |
+          echo "ℹ️ Skipping nightly build - no changes detected since yesterday"
+          echo "This is expected behavior to avoid unnecessary builds"
 
       - name: Download from release
         if: github.event_name == 'release'
@@ -102,9 +131,10 @@ jobs:
           echo "✅ ZIP file verified: build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
 
       - name: Publish to JetBrains Marketplace
+        if: steps.version_info.outputs.CHANNEL != 'none'
         run: >
           ./gradlew publishPlugin
-          -PjetBrainsToken=${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
+          -Ptoken=${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
           -PprojectVersion=${{ steps.version_info.outputs.VERSION }}
           -PjetBrainsChannel=${{ steps.version_info.outputs.CHANNEL }}
           -Pgpr.username=${{ github.actor }}
