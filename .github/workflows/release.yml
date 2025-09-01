@@ -23,7 +23,7 @@ jobs:
           -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
       - name: Simple conventional changelog
         uses: redhat-developer/simple-conventional-changelog@0a6db1ac3910c2cf66f2e1a530951dba1ece8540 #0.0.12
         id: changelog
@@ -47,6 +47,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: '${{ github.workspace }}/build/distributions/org.jboss.tools.intellij.analytics-${{ steps.get_version.outputs.VERSION }}.zip'
+          asset_path: '${{ github.workspace }}/build/distributions/intellij-dependency-analytics-${{ steps.get_version.outputs.VERSION }}.zip'
           asset_name: 'Dependency-Analytics-${{ steps.get_version.outputs.VERSION }}.zip'
           asset_content_type: application/zip
