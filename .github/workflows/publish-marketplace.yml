@@ -3,14 +3,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g., 1.1.0)'
-        required: true
+        description: 'Version to publish (e.g., 1.1.0) - leave empty for automatic nightly build'
+        required: false
         type: string
       channel:
-        description: 'Marketplace channel (stable, nightly)'
-        required: true
+        description: 'Marketplace channel (stable, nightly) - leave empty for automatic detection'
+        required: false
         type: string
-        default: 'stable'
   release:
     types: [published]
   schedule:
@@ -48,10 +47,10 @@ jobs:
           elif [ "${{ github.event_name }}" == "schedule" ]; then
             # Scheduled run - check if we should publish nightly
             if [ "${{ steps.changes_check.outputs.has_changes }}" == "true" ]; then
-              # Get current version from gradle.properties and append timestamp
+              # Get current version from gradle.properties and append date (like 1.1.0-nightly.20240901)
               BASE_VERSION=$(grep 'projectVersion=' gradle.properties | cut -d'=' -f2)
-              TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-              VERSION="${BASE_VERSION}-nightly.${TIMESTAMP}"
+              DATE=$(date +%Y%m%d)
+              VERSION="${BASE_VERSION/-SNAPSHOT/-nightly.${DATE}}"
               CHANNEL="nightly"
             else
               # No changes, set dummy values (workflow will exit early)
