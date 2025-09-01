@@ -36,10 +36,19 @@ jobs:
       - name: Determine version and channel
         id: version_info
         run: |
-          if [ "${{ github.event.inputs.version }}" != "" ]; then
-            # Manual trigger with specific inputs
-            VERSION="${{ github.event.inputs.version }}"
-            CHANNEL="${{ github.event.inputs.channel }}"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Manual trigger - check if inputs are provided
+            if [ "${{ github.event.inputs.version }}" != "" ] && [ "${{ github.event.inputs.channel }}" != "" ]; then
+              # Manual trigger with specific inputs
+              VERSION="${{ github.event.inputs.version }}"
+              CHANNEL="${{ github.event.inputs.channel }}"
+            else
+              # Manual trigger without inputs - treat as nightly build
+              BASE_VERSION=$(grep 'projectVersion=' gradle.properties | cut -d'=' -f2)
+              DATE=$(date +%Y%m%d)
+              VERSION="${BASE_VERSION/-SNAPSHOT/-nightly.${DATE}}"
+              CHANNEL="nightly"
+            fi
           elif [ "${{ github.event_name }}" == "release" ]; then
             # Release event - publish to stable channel
             VERSION="${GITHUB_REF#refs/tags/}"
