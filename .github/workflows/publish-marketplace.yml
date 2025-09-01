@@ -74,7 +74,7 @@ jobs:
           echo "CHANNEL=$CHANNEL" >> $GITHUB_OUTPUT
           echo "Publishing version $VERSION to $CHANNEL channel"
 
-            - name: Check for changes since last nightly
+      - name: Check for changes since last nightly
         if: github.event_name == 'schedule'
         id: changes_check
         run: |
