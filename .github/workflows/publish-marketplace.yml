@@ -1,0 +1,117 @@
+name: Publish to JetBrains Marketplace
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.1.0)'
+        required: true
+        type: string
+      channel:
+        description: 'Marketplace channel (stable, nightly)'
+        required: true
+        type: string
+        default: 'stable'
+  release:
+    types: [published]
+  schedule:
+    # Run every day at 2 AM UTC to publish nightly builds
+    - cron: '0 2 * * *'
+  push:
+    branches: [ main ]
+
+jobs:
+  publish-marketplace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Determine version and channel
+        id: version_info
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            # Manual trigger with specific inputs
+            VERSION="${{ github.event.inputs.version }}"
+            CHANNEL="${{ github.event.inputs.channel }}"
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            # Release event - publish to stable channel
+            VERSION="${GITHUB_REF#refs/tags/}"
+            CHANNEL="stable"
+          elif [ "${{ github.event_name }}" == "schedule" ] || [ "${{ github.event_name }}" == "push" ]; then
+            # Scheduled run or push to main - publish to nightly channel
+            # Get current version from gradle.properties and append timestamp
+            BASE_VERSION=$(grep 'projectVersion=' gradle.properties | cut -d'=' -f2)
+            TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+            VERSION="${BASE_VERSION}-nightly.${TIMESTAMP}"
+            CHANNEL="nightly"
+          else
+            echo "Unknown trigger: ${{ github.event_name }}"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "CHANNEL=$CHANNEL" >> $GITHUB_OUTPUT
+          echo "Publishing version $VERSION to $CHANNEL channel"
+
+      - name: Build or download based on trigger
+        if: github.event_name == 'schedule' || github.event_name == 'push'
+        run: |
+          # For nightly builds, we need to build from source
+          echo "Building nightly version from source..."
+          ./gradlew buildPlugin -Pgpr.username=${{ github.actor }} -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download from release
+        if: github.event_name == 'release'
+        run: |
+          # Download the ZIP file from the GitHub release
+          RELEASE_VERSION="${{ steps.version_info.outputs.VERSION }}"
+          ZIP_URL="https://github.com/${{ github.repository }}/releases/download/${RELEASE_VERSION}/Dependency-Analytics-${RELEASE_VERSION}.zip"
+          echo "Downloading from: $ZIP_URL"
+          mkdir -p build/distributions
+          curl -L -o "build/distributions/intellij-dependency-analytics-${RELEASE_VERSION}.zip" "$ZIP_URL"
+
+      - name: Verify ZIP file exists
+        run: |
+          ls -la build/distributions/
+          # For nightly builds, the filename might be different, so find any ZIP file
+          if [ "${{ steps.version_info.outputs.CHANNEL }}" == "nightly" ]; then
+            ZIP_COUNT=$(find build/distributions -name "*.zip" | wc -l)
+            if [ "$ZIP_COUNT" -eq 0 ]; then
+              echo "Error: No ZIP files found for nightly build!"
+              exit 1
+            fi
+            # Rename the first ZIP file to match our expected naming convention
+            FIRST_ZIP=$(find build/distributions -name "*.zip" | head -1)
+            mv "$FIRST_ZIP" "build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
+          else
+            # For stable releases, expect the exact filename
+            if [ ! -f "build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip" ]; then
+              echo "Error: ZIP file not found!"
+              exit 1
+            fi
+          fi
+          echo "✅ ZIP file verified: build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
+
+      - name: Publish to JetBrains Marketplace
+        run: >
+          ./gradlew publishPlugin
+          -PjetBrainsToken=${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
+          -PprojectVersion=${{ steps.version_info.outputs.VERSION }}
+          -PjetBrainsChannel=${{ steps.version_info.outputs.CHANNEL }}
+          -Pgpr.username=${{ github.actor }}
+          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish success notification
+        if: success()
+        run: |
+          echo "✅ Successfully published version ${{ steps.version_info.outputs.VERSION }} to ${{ steps.version_info.outputs.CHANNEL }} channel"
+          echo "📦 ZIP file: build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
