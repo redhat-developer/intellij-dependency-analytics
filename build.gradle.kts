@@ -75,6 +75,7 @@ dependencies {
 
         pluginVerifier()
         testFramework(TestFrameworkType.Platform)
+
     }
 
     implementation(libs.github.api)
@@ -97,6 +98,11 @@ tasks {
     runIde {
         systemProperties["com.redhat.devtools.intellij.telemetry.mode"] = "debug"
     }
+    
+    publishPlugin {
+        token = providers.gradleProperty("jetBrainsToken")
+        channels = listOf(providers.gradleProperty("jetBrainsChannel").get())
+    }
 }
 
 // https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#runIdeForUiTests
@@ -118,5 +124,10 @@ intellijPlatform {
             "-mute",
             "TemplateWordInPluginId"
         )
+    }
+    
+    publishing {
+        token = providers.gradleProperty("jetBrainsToken")
+        channels = listOf(providers.gradleProperty("jetBrainsChannel").get())
     }
 }

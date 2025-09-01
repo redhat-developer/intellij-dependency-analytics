@@ -98,7 +98,7 @@ jobs:
         if: (github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'true') || github.event_name == 'workflow_dispatch'
         run: |
           echo "Building nightly version from source..."
-          ./gradlew buildPlugin -Pgpr.username=${{ github.actor }} -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+          ./gradlew buildPlugin -Pgpr.username=rhdevelopers-ci -Pgpr.token=${{ secrets.GITHUB_TOKEN }} -PprojectVersion=${{ steps.version_info.outputs.VERSION }}
 
       - name: Skip nightly build
         if: github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'false'
@@ -119,22 +119,10 @@ jobs:
       - name: Verify ZIP file exists
         run: |
           ls -la build/distributions/
-          # For nightly builds, the filename might be different, so find any ZIP file
-          if [ "${{ steps.version_info.outputs.CHANNEL }}" == "nightly" ]; then
-            ZIP_COUNT=$(find build/distributions -name "*.zip" | wc -l)
-            if [ "$ZIP_COUNT" -eq 0 ]; then
-              echo "Error: No ZIP files found for nightly build!"
-              exit 1
-            fi
-            # Rename the first ZIP file to match our expected naming convention
-            FIRST_ZIP=$(find build/distributions -name "*.zip" | head -1)
-            mv "$FIRST_ZIP" "build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
-          else
             # For stable releases, expect the exact filename
-            if [ ! -f "build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip" ]; then
-              echo "Error: ZIP file not found!"
-              exit 1
-            fi
+          if [ ! -f "build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip" ]; then
+            echo "Error: ZIP file not found!"
+            exit 1
           fi
           echo "✅ ZIP file verified: build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
 
@@ -142,10 +130,10 @@ jobs:
         if: steps.version_info.outputs.CHANNEL != 'none'
         run: >
           ./gradlew publishPlugin
-          -Ptoken=${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
+          -PjetBrainsToken=${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
           -PprojectVersion=${{ steps.version_info.outputs.VERSION }}
           -PjetBrainsChannel=${{ steps.version_info.outputs.CHANNEL }}
-          -Pgpr.username=${{ github.actor }}
+          -Pgpr.username=rhdevelopers-ci
           -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish success notification
