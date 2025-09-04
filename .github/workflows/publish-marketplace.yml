@@ -19,6 +19,7 @@ on:
 jobs:
   publish-marketplace:
     runs-on: ubuntu-latest
+    if: github.repository == 'redhat-developer/intellij-dependency-analytics'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
