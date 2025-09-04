@@ -33,6 +33,26 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Check for changes since last nightly
+        if: github.event_name == 'schedule'
+        id: changes_check
+        run: |
+          # Get the date from yesterday
+          YESTERDAY=$(date -d 'yesterday' +%Y-%m-%d)
+          echo "Checking for changes since: $YESTERDAY"
+
+          # Get the last nightly build commit hash (you might want to store this in a file or use a tag)
+          # For now, we'll check if there are any commits in the last 24 hours
+          COMMIT_COUNT=$(git log --since="$YESTERDAY" --oneline | wc -l)
+
+          if [ "$COMMIT_COUNT" -gt 0 ]; then
+            echo "✅ Found $COMMIT_COUNT commits since $YESTERDAY - proceeding with nightly build"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ No commits since $YESTERDAY - skipping nightly build"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Determine version and channel
         id: version_info
         run: |
@@ -73,26 +93,6 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "CHANNEL=$CHANNEL" >> $GITHUB_OUTPUT
           echo "Publishing version $VERSION to $CHANNEL channel"
-
-      - name: Check for changes since last nightly
-        if: github.event_name == 'schedule'
-        id: changes_check
-        run: |
-          # Get the date from yesterday
-          YESTERDAY=$(date -d 'yesterday' +%Y-%m-%d)
-          echo "Checking for changes since: $YESTERDAY"
- 
-          # Get the last nightly build commit hash (you might want to store this in a file or use a tag)
-          # For now, we'll check if there are any commits in the last 24 hours
-          COMMIT_COUNT=$(git log --since="$YESTERDAY" --oneline | wc -l)
- 
-          if [ "$COMMIT_COUNT" -gt 0 ]; then
-            echo "✅ Found $COMMIT_COUNT commits since $YESTERDAY - proceeding with nightly build"
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          else
-            echo "ℹ️ No commits since $YESTERDAY - skipping nightly build"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          fi
 
       - name: Build nightly version
         if: (github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'true') || github.event_name == 'workflow_dispatch'
