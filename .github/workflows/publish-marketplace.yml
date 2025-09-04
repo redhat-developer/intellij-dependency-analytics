@@ -111,9 +111,11 @@ jobs:
 
       - name: Build nightly version
         if: (github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'true') || github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Building nightly version from source..."
-          if ! ./gradlew buildPlugin -Pgpr.username=rhdevelopers-ci -Pgpr.token=${{ secrets.GITHUB_TOKEN }} -PprojectVersion=${{ steps.version_info.outputs.VERSION }}; then
+          if ! ./gradlew buildPlugin -Pgpr.username=rhdevelopers-ci -Pgpr.token="$GITHUB_TOKEN" -PprojectVersion=${{ steps.version_info.outputs.VERSION }}; then
             echo "Error: Gradle build failed"
             exit 1
           fi
