@@ -33,6 +33,21 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Validate required secrets
+        env:
+          JETBRAINS_TOKEN: ${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$JETBRAINS_TOKEN" ]; then
+            echo "Error: JETBRAINS_MARKETPLACE_TOKEN secret is not set"
+            exit 1
+          fi
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "Error: GITHUB_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "✅ Required secrets are available"
+
       - name: Check for changes since last nightly
         if: github.event_name == 'schedule'
         id: changes_check
@@ -98,7 +113,11 @@ jobs:
         if: (github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'true') || github.event_name == 'workflow_dispatch'
         run: |
           echo "Building nightly version from source..."
-          ./gradlew buildPlugin -Pgpr.username=rhdevelopers-ci -Pgpr.token=${{ secrets.GITHUB_TOKEN }} -PprojectVersion=${{ steps.version_info.outputs.VERSION }}
+          if ! ./gradlew buildPlugin -Pgpr.username=rhdevelopers-ci -Pgpr.token=${{ secrets.GITHUB_TOKEN }} -PprojectVersion=${{ steps.version_info.outputs.VERSION }}; then
+            echo "Error: Gradle build failed"
+            exit 1
+          fi
+          echo "✅ Build completed successfully"
 
       - name: Skip nightly build
         if: github.event_name == 'schedule' && steps.changes_check.outputs.has_changes == 'false'
@@ -114,17 +133,39 @@ jobs:
           ZIP_URL="https://github.com/${{ github.repository }}/releases/download/${RELEASE_VERSION}/Dependency-Analytics-${RELEASE_VERSION}.zip"
           echo "Downloading from: $ZIP_URL"
           mkdir -p build/distributions
-          curl -L -o "build/distributions/intellij-dependency-analytics-${RELEASE_VERSION}.zip" "$ZIP_URL"
+
+          if ! curl -L -f -o "build/distributions/intellij-dependency-analytics-${RELEASE_VERSION}.zip" "$ZIP_URL"; then
+            echo "Error: Failed to download ZIP file from release"
+            echo "URL: $ZIP_URL"
+            exit 1
+          fi
+          echo "✅ Downloaded ZIP file successfully"
 
       - name: Verify ZIP file exists
         run: |
           ls -la build/distributions/
-            # For stable releases, expect the exact filename
-          if [ ! -f "build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip" ]; then
-            echo "Error: ZIP file not found!"
+          ZIP_FILE="build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
+
+          if [ ! -f "$ZIP_FILE" ]; then
+            echo "Error: ZIP file not found: $ZIP_FILE"
+            echo "Available files:"
+            ls -la build/distributions/ || echo "No files found in build/distributions/"
             exit 1
           fi
-          echo "✅ ZIP file verified: build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
+
+          # Verify the ZIP file is not empty and is a valid ZIP
+          if [ ! -s "$ZIP_FILE" ]; then
+            echo "Error: ZIP file is empty: $ZIP_FILE"
+            exit 1
+          fi
+
+          if ! file "$ZIP_FILE" | grep -q "Zip archive"; then
+            echo "Error: File is not a valid ZIP archive: $ZIP_FILE"
+            file "$ZIP_FILE"
+            exit 1
+          fi
+
+          echo "✅ ZIP file verified: $ZIP_FILE"
 
       - name: Publish to JetBrains Marketplace
         if: steps.version_info.outputs.CHANNEL != 'none'
