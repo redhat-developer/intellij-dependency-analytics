@@ -7,6 +7,7 @@ exhort-api-spec = "1.0.18"
 exhort-java-api = "0.0.8"
 github-api = "1.314"
 junit = "4.13.2"
+mockito = "4.11.0"
 packageurl-java = "1.4.1"
 
 # plugins
@@ -20,6 +21,7 @@ exhort-api-spec = { group = "com.redhat.ecosystemappeng", name = "exhort-api-spe
 exhort-java-api = { group = "com.redhat.exhort", name = "exhort-java-api", version.ref = "exhort-java-api" }
 github-api = { group = "org.kohsuke", name = "github-api", version.ref = "github-api" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 packageurl-java = { group = "com.github.package-url", name = "packageurl-java", version.ref = "packageurl-java" }
 
 [plugins]
