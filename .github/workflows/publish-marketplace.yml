@@ -145,6 +145,7 @@ jobs:
           echo "✅ Downloaded ZIP file successfully"
 
       - name: Verify ZIP file exists
+        if: steps.version_info.outputs.CHANNEL != 'none'
         run: |
           ls -la build/distributions/
           ZIP_FILE="build/distributions/intellij-dependency-analytics-${{ steps.version_info.outputs.VERSION }}.zip"
