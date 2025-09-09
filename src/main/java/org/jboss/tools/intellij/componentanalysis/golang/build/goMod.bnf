@@ -1,0 +1,63 @@
+{
+  parserClass="org.jboss.tools.intellij.componentanalysis.golang.build.parser.GoModParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="GoMod"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.jboss.tools.intellij.componentanalysis.golang.build.psi"
+  psiImplPackage="org.jboss.tools.intellij.componentanalysis.golang.build.psi.impl"
+
+  elementTypeHolderClass="org.jboss.tools.intellij.componentanalysis.golang.build.psi.GoModTypes"
+  elementTypeClass="org.jboss.tools.intellij.componentanalysis.golang.build.psi.GoModElementType"
+  tokenTypeClass="org.jboss.tools.intellij.componentanalysis.golang.build.psi.GoModTokenType"
+
+  tokens=[
+    COMMENT='regexp://.*'
+    
+    MODULE='module'
+    GO='go'
+    REQUIRE='require'
+    REPLACE='replace'
+    EXCLUDE='exclude'
+    INDIRECT='indirect'
+    
+    LPAREN='('
+    RPAREN=')'
+    ARROW='=>'
+    
+    IDENTIFIER='regexp:[a-zA-Z_][a-zA-Z0-9_./\-]*'
+    VERSION='regexp:v?[0-9]+(\.[0-9]+)*(\-[a-zA-Z0-9\-_.]+)?(\+[a-zA-Z0-9\-_.]+)?'
+    
+    WHITESPACE='regexp:\s+'
+    NEWLINE='regexp:\r?\n'
+  ]
+}
+
+goModFile ::= item*
+
+item ::= statement | COMMENT | NEWLINE
+
+statement ::= moduleStatement | goStatement | requireStatement | replaceStatement | excludeStatement
+
+moduleStatement ::= MODULE IDENTIFIER
+
+goStatement ::= GO VERSION
+
+requireStatement ::= REQUIRE (requireSpec | requireBlock)
+
+requireBlock ::= LPAREN (requireSpec | COMMENT | NEWLINE)* RPAREN
+
+requireSpec ::= IDENTIFIER VERSION (INDIRECT | COMMENT)*
+
+replaceStatement ::= REPLACE (replaceSpec | replaceBlock)
+
+replaceBlock ::= LPAREN (replaceSpec | COMMENT | NEWLINE)* RPAREN
+
+replaceSpec ::= IDENTIFIER ARROW IDENTIFIER VERSION (COMMENT)*
+
+excludeStatement ::= EXCLUDE (excludeSpec | excludeBlock)
+
+excludeBlock ::= LPAREN (excludeSpec | COMMENT | NEWLINE)* RPAREN
+
+excludeSpec ::= IDENTIFIER VERSION? (COMMENT)*
