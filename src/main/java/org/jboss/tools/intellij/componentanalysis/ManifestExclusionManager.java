@@ -23,6 +23,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -80,7 +81,7 @@ public class ManifestExclusionManager {
 
         ApiSettingsState settings = ApiSettingsState.getInstance();
         List<String> currentPatterns = parsePatterns(settings.manifestExclusionPatterns);
-        
+
         if (!currentPatterns.contains(relativePath)) {
             currentPatterns.add(relativePath);
             settings.manifestExclusionPatterns = String.join("\n", currentPatterns);
@@ -107,13 +108,13 @@ public class ManifestExclusionManager {
 
     private static List<String> parsePatterns(String patterns) {
         if (patterns == null || patterns.trim().isEmpty()) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         return Arrays.stream(patterns.split("[\n\r]+"))
                 .map(String::trim)
                 .filter(pattern -> !pattern.isEmpty() && !pattern.startsWith("#"))
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private static boolean matchesAnyPattern(String path, List<String> patterns) {
