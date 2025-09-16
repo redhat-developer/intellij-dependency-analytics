@@ -27,10 +27,4 @@ public class GoModReplaceSpecImpl extends ASTWrapperPsiElement implements GoModR
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public PsiElement getVersion() {
-    return findNotNullChildByType(VERSION);
-  }
-
 }

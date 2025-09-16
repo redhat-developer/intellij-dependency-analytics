@@ -209,25 +209,42 @@ public class GoModParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER ARROW IDENTIFIER VERSION (COMMENT)*
+  // IDENTIFIER VERSION? ARROW IDENTIFIER VERSION? (COMMENT)*
   public static boolean replaceSpec(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "replaceSpec")) return false;
     if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, IDENTIFIER, ARROW, IDENTIFIER, VERSION);
+    r = consumeToken(b, IDENTIFIER);
+    r = r && replaceSpec_1(b, l + 1);
+    r = r && consumeTokens(b, 0, ARROW, IDENTIFIER);
     r = r && replaceSpec_4(b, l + 1);
+    r = r && replaceSpec_5(b, l + 1);
     exit_section_(b, m, REPLACE_SPEC, r);
     return r;
   }
 
-  // (COMMENT)*
+  // VERSION?
+  private static boolean replaceSpec_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "replaceSpec_1")) return false;
+    consumeToken(b, VERSION);
+    return true;
+  }
+
+  // VERSION?
   private static boolean replaceSpec_4(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "replaceSpec_4")) return false;
+    consumeToken(b, VERSION);
+    return true;
+  }
+
+  // (COMMENT)*
+  private static boolean replaceSpec_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "replaceSpec_5")) return false;
     while (true) {
       int c = current_position_(b);
       if (!consumeToken(b, COMMENT)) break;
-      if (!empty_element_parsed_guard_(b, "replaceSpec_4", c)) break;
+      if (!empty_element_parsed_guard_(b, "replaceSpec_5", c)) break;
     }
     return true;
   }

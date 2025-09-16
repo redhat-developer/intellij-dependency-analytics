@@ -411,7 +411,7 @@
 
     <change-notes><![CDATA[
   <p><b>1.2.0</b></p>
-  <p>Go Plugin dependency removal. Golang projects now can be analyzed with IntelliJ Community Edition.</p>
+  <p>Go Plugin dependency removal. Golang projects now can be analyzed with IntelliJ Community Edition (no longer requires Ultimate Edition).</p>
   <p>Add support for user-configurable patterns/globs for excluding manifests from Component Analysis.</p>
   <p><b>1.1.0</b></p>
   <p>Added support for Gradle manifest files.</p>
