@@ -410,6 +410,8 @@
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>1.2.0</b></p>
+  <p>Add support for user-configurable patterns/globs for excluding manifests from Component Analysis.</p>
   <p><b>1.1.0</b></p>
   <p>Added support for Gradle manifest files.</p>
   <p>Added support for Yarn.</p>
