@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class GoCAIntentionAction extends CAIntentionAction {
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\s+)(v?[0-9]+\\.[0-9]+\\.[0-9]+\\S*)");
+    public static final Pattern VERSION_PATTERN = Pattern.compile("(\\s+)(v?[0-9]+\\.[0-9]+\\.[0-9]+\\S*)");
 
     GoCAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         super(element, source, report);

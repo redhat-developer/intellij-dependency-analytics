@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface GoModReplaceSpec extends PsiElement {
 
-  @NotNull
-  PsiElement getVersion();
-
 }

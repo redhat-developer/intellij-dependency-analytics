@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
 public class GoCAAnnotator extends CAAnnotator {
-    private static final Pattern REQUIRE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s+(v?[0-9]+\\.[0-9]+\\.[0-9]+\\S*)(?:\\s*//.*)?$");
-    private static final Pattern REPLACE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s*=>\\s*([a-zA-Z0-9._/-]+)\\s+(v?[0-9]+\\.[0-9]+\\.[0-9]+\\S*)(?:\\s*//.*)?$");
+    public static final Pattern REQUIRE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s+(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)(?:\\s*//.*)?$");
+    public static final Pattern REPLACE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s+(?:(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)\\s+)?=>\\s*([a-zA-Z0-9._/:-]+|\\.\\.?/[a-zA-Z0-9._/-]*|/[a-zA-Z0-9._/-]*)(?:\\s+(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*))?(?:\\s*//.*)?$");
 
     @Override
     protected String getInspectionShortName() {
@@ -89,10 +89,13 @@ public class GoCAAnnotator extends CAAnnotator {
             } else if (inReplaceBlock) {
                 Matcher replaceMatcher = REPLACE_PATTERN.matcher(line);
                 if (replaceMatcher.matches()) {
-                    String targetPath = replaceMatcher.group(2);
-                    String version = replaceMatcher.group(3);
-                    Dependency dependency = createDependency(targetPath, version);
-                    resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                    String targetPath = replaceMatcher.group(3);
+                    String version = replaceMatcher.group(4) != null ? replaceMatcher.group(4) : replaceMatcher.group(2);
+                    // Only analyze if target is not a local path and has a version
+                    if (version != null && !targetPath.startsWith("./") && !targetPath.startsWith("../") && !targetPath.startsWith("/")) {
+                        Dependency dependency = createDependency(targetPath, version);
+                        resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                    }
                 }
             } else {
                 // Single line require/replace
@@ -109,10 +112,13 @@ public class GoCAAnnotator extends CAAnnotator {
                     String replaceLine = line.substring(8).trim();
                     Matcher replaceMatcher = REPLACE_PATTERN.matcher(replaceLine);
                     if (replaceMatcher.matches()) {
-                        String targetPath = replaceMatcher.group(2);
-                        String version = replaceMatcher.group(3);
-                        Dependency dependency = createDependency(targetPath, version);
-                        resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                        String targetPath = replaceMatcher.group(3);
+                        String version = replaceMatcher.group(4) != null ? replaceMatcher.group(4) : replaceMatcher.group(2);
+                        // Only analyze if target is not a local path and has a version
+                        if (version != null && !targetPath.startsWith("./") && !targetPath.startsWith("../") && !targetPath.startsWith("/")) {
+                            Dependency dependency = createDependency(targetPath, version);
+                            resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                        }
                     }
                 }
             }
@@ -148,7 +154,7 @@ public class GoCAAnnotator extends CAAnnotator {
         String line = lines[lineNumber];
 
         // Find version in the line using regex to get precise position
-        Matcher versionMatcher = Pattern.compile("(v?[0-9]+\\.[0-9]+\\.[0-9]+\\S*)").matcher(line);
+        Matcher versionMatcher = Pattern.compile("(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)").matcher(line);
         if (versionMatcher.find()) {
             int versionStart = lineStartOffset + versionMatcher.start();
             int versionEnd = lineStartOffset + versionMatcher.end();
