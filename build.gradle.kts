@@ -40,7 +40,7 @@ repositories {
         }
     }
     maven {
-        url = uri("https://maven.pkg.github.com/trustification/exhort-api-spec")
+        url = uri("https://maven.pkg.github.com/guacsec/trustify-da-api-spec")
         credentials {
             username = exhortRepoUser
             password = exhortRepoToken
