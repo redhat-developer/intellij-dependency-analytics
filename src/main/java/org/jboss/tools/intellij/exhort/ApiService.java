@@ -147,6 +147,20 @@ public final class ApiService {
             System.clearProperty("EXHORT_PREFER_MVNW");
         }
 
+        String userSettingsFile = MavenSettingsUtil.getUserSettingsFile();
+        if (!userSettingsFile.isBlank()) {
+            System.setProperty("EXHORT_MVN_USER_SETTINGS_FILE", userSettingsFile);
+        } else {
+            System.clearProperty("EXHORT_MVN_USER_SETTINGS_FILE");
+        }
+
+        String localRepository = MavenSettingsUtil.getLocalRepository();
+        if (!localRepository.isBlank()) {
+            System.setProperty("EXHORT_MVN_LOCAL_REPOSITORY", localRepository);
+        } else {
+            System.clearProperty("EXHORT_MVN_LOCAL_REPOSITORY");
+        }
+
         if (settings.gradlePath != null && !settings.gradlePath.isBlank()) {
             System.setProperty("EXHORT_GRADLE_PATH", settings.gradlePath);
         } else {
