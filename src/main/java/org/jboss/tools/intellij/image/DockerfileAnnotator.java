@@ -30,6 +30,8 @@ import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Severity;
 import com.redhat.exhort.api.v4.Source;
 import com.redhat.exhort.image.ImageRef;
+import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
+import org.jboss.tools.intellij.image.build.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -235,6 +237,11 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
 
     @Override
     public @Nullable Info collectInformation(@NotNull PsiFile file) {
+        // Only process our custom Dockerfile type
+        if (!DockerfileFileType.INSTANCE.equals(file.getFileType())) {
+            return null;
+        }
+
         var inspection = getInspection(file);
         if (inspection == null) {
             return null;

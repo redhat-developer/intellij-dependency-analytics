@@ -1,0 +1,91 @@
+{
+  parserClass="org.jboss.tools.intellij.image.build.parser.DockerfileParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Dockerfile"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.jboss.tools.intellij.image.build.psi"
+  psiImplPackage="org.jboss.tools.intellij.image.build.psi.impl"
+
+  elementTypeHolderClass="org.jboss.tools.intellij.image.build.psi.DockerfileTypes"
+  elementTypeClass="org.jboss.tools.intellij.image.build.psi.DockerfileElementType"
+  tokenTypeClass="org.jboss.tools.intellij.image.build.psi.DockerfileTokenType"
+
+  tokens=[
+    COMMENT='regexp:#.*'
+
+    FROM='from'
+    ARG='arg'
+    AS='as'
+    PLATFORM_FLAG='--platform'
+
+    RUN='run'
+    COPY='copy'
+    ADD='add'
+    WORKDIR='workdir'
+    CMD='cmd'
+    ENTRYPOINT='entrypoint'
+    ENV='env'
+    EXPOSE='expose'
+    VOLUME='volume'
+    USER='user'
+    LABEL='label'
+
+    EQUALS='='
+    COLON=':'
+    DOLLAR='$'
+    LBRACE='{'
+    RBRACE='}'
+
+    ANY_CHAR='regexp:[^\s\r\n]'
+
+    IDENTIFIER='regexp:[a-zA-Z_][a-zA-Z0-9_.\-/]*'
+    IMAGE_NAME_TOKEN='regexp:[a-zA-Z0-9._\-/]+'
+    VERSION='regexp:[a-zA-Z0-9._\-]+'
+    PLATFORM='regexp:linux/(amd64|arm64|386|arm/v7|arm/v6|ppc64le|s390x)'
+
+    STRING='regexp:"([^"\\]|\\.)*"'
+
+    OTHER_TOKEN='regexp:[^\s\r\n]+'
+
+    WHITESPACE='regexp:\s+'
+    NEWLINE='regexp:\r?\n'
+  ]
+}
+
+dockerFile ::= item*
+
+item ::= instruction | COMMENT | NEWLINE
+
+instruction ::= fromInstruction | argInstruction | otherInstruction
+
+fromInstruction ::= FROM (platformOption)? imageName (asClause)?
+
+platformOption ::= PLATFORM_FLAG EQUALS platformValue
+
+platformValue ::= PLATFORM | variableRef
+
+imageName ::= imageNamePart+
+
+imageNamePart ::= imageNameLiteral | variableRef | COLON | VERSION
+
+imageNameLiteral ::= IMAGE_NAME_TOKEN | IDENTIFIER
+
+asClause ::= AS IDENTIFIER
+
+argInstruction ::= ARG argDeclaration
+
+argDeclaration ::= IDENTIFIER (EQUALS argValue)?
+
+argValue ::= STRING | IDENTIFIER | VERSION | variableRef
+
+otherInstruction ::= (RUN | COPY | ADD | WORKDIR | CMD | ENTRYPOINT | ENV | EXPOSE | VOLUME | USER | LABEL) instructionArgs*
+
+instructionArgs ::= STRING | IDENTIFIER | VERSION | IMAGE_NAME_TOKEN | OTHER_TOKEN | COLON | EQUALS | DOLLAR | LBRACE | RBRACE | PLATFORM_FLAG | PLATFORM | ANY_CHAR | variableRef
+
+variableRef ::= DOLLAR (simpleVar | complexVar)
+
+simpleVar ::= IDENTIFIER
+
+complexVar ::= LBRACE IDENTIFIER RBRACE

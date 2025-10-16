@@ -11,7 +11,7 @@
 
 package org.jboss.tools.intellij.image;
 
-import com.intellij.docker.dockerFile.DockerFileType;
+import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
 import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -37,7 +37,7 @@ public class ImageReportAction extends AnAction {
     @Override
     public void update(@NotNull AnActionEvent event) {
         var psiFile = event.getData(CommonDataKeys.PSI_FILE);
-        if (psiFile != null && DockerFileType.DOCKER_FILE_TYPE.equals(psiFile.getFileType())) {
+        if (psiFile != null && DockerfileFileType.INSTANCE.equals(psiFile.getFileType())) {
             event.getPresentation().setEnabledAndVisible(true);
         } else {
             event.getPresentation().setEnabledAndVisible(false);

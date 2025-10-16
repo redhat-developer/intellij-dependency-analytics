@@ -14,7 +14,7 @@ package org.jboss.tools.intellij.image;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
-import com.intellij.docker.dockerFile.DockerFileType;
+import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -40,7 +40,7 @@ public class UBIIntentionAction implements IntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile psiFile) {
-        return DockerFileType.DOCKER_FILE_TYPE.equals(psiFile.getFileType());
+        return DockerfileFileType.INSTANCE.equals(psiFile.getFileType());
     }
 
     @Override
