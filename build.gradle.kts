@@ -119,7 +119,12 @@ val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
 intellijPlatform {
     pluginVerification {
         ides {
-            recommended()
+            select {
+                types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
+                channels = listOf(ProductRelease.Channel.RELEASE) // Only stable releases
+                sinceBuild = "251" // From your minimum supported version
+                untilBuild = "252.*" // Up to current major version
+            }
         }
         freeArgs = listOf(
             "-mute",
