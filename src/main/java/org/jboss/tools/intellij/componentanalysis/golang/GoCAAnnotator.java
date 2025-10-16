@@ -11,13 +11,8 @@
 
 package org.jboss.tools.intellij.componentanalysis.golang;
 
-import com.goide.vgo.mod.psi.VgoModuleSpec;
-import com.goide.vgo.mod.psi.VgoReplaceDirective;
-import com.goide.vgo.mod.psi.VgoRequireDirective;
-import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.redhat.exhort.api.v4.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
@@ -25,17 +20,20 @@ import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionActio
 import org.jboss.tools.intellij.componentanalysis.Dependency;
 import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
 public class GoCAAnnotator extends CAAnnotator {
+    public static final Pattern REQUIRE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s+(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)(?:\\s*//.*)?$");
+    public static final Pattern REPLACE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s+(?:(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)\\s+)?=>\\s*([a-zA-Z0-9._/:-]+|\\.\\.?/[a-zA-Z0-9._/-]*|/[a-zA-Z0-9._/-]*)(?:\\s+(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*))?(?:\\s*//.*)?$");
+
     @Override
     protected String getInspectionShortName() {
         return GoCAInspection.SHORT_NAME;
@@ -43,47 +41,90 @@ public class GoCAAnnotator extends CAAnnotator {
 
     @Override
     protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file) {
-        if ("go.mod".equals(file.getName())) {
-            Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
-
-            VgoRequireDirective[] requires = PsiTreeUtil.getChildrenOfType(file, VgoRequireDirective.class);
-            if (requires != null) {
-                Arrays.stream(requires)
-                        .flatMap(r -> r.getModuleSpecList().stream())
-                        .filter(m -> {
-                            PsiComment[] comments = PsiTreeUtil.getChildrenOfType(m, PsiComment.class);
-                            if (comments != null) {
-                                return Arrays.stream(comments)
-                                        .noneMatch(c -> c.getText().contains(EXHORT_IGNORE));
-                            }
-                            return true;
-                        })
-                        .forEach(m -> resultMap.computeIfAbsent(createDependency(m), k -> new LinkedList<>()).add(m));
-            }
-
-            VgoReplaceDirective[] replaces = PsiTreeUtil.getChildrenOfType(file, VgoReplaceDirective.class);
-            if (replaces != null) {
-                Arrays.stream(replaces)
-                        .flatMap(r -> r.getReplacementList().stream())
-                        .filter(r -> {
-                            PsiComment[] comments = PsiTreeUtil.getChildrenOfType(r, PsiComment.class);
-                            if (comments != null) {
-                                return Arrays.stream(comments)
-                                        .noneMatch(c -> c.getText().contains(EXHORT_IGNORE));
-                            }
-                            return true;
-                        })
-                        .map(r -> r.getTarget())
-                        .filter(Objects::nonNull)
-                        .filter(t -> t.getModuleVersion() != null)
-                        .forEach(m -> resultMap.computeIfAbsent(createDependency(m), k -> new LinkedList<>()).add(m));
-
-            }
-
-            return resultMap;
+        if (!"go.mod".equals(file.getName())) {
+            return Collections.emptyMap();
         }
 
-        return Collections.emptyMap();
+        Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
+        String fileText = file.getText();
+        String[] lines = fileText.split("\\n");
+
+        boolean inRequireBlock = false;
+        boolean inReplaceBlock = false;
+
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
+
+            // Track require/replace blocks
+            if (line.startsWith("require")) {
+                inRequireBlock = line.contains("(");
+                continue;
+            }
+            if (line.startsWith("replace")) {
+                inReplaceBlock = line.contains("(");
+                continue;
+            }
+            if (line.equals(")")) {
+                inRequireBlock = false;
+                inReplaceBlock = false;
+                continue;
+            }
+
+            // Skip if line contains exhortignore
+            if (line.contains(EXHORT_IGNORE)) {
+                continue;
+            }
+
+            PsiElement lineElement = findElementAtLine(file, i);
+            if (lineElement == null) continue;
+
+            if (inRequireBlock) {
+                Matcher requireMatcher = REQUIRE_PATTERN.matcher(line);
+                if (requireMatcher.matches()) {
+                    String modulePath = requireMatcher.group(1);
+                    String version = requireMatcher.group(2);
+                    Dependency dependency = createDependency(modulePath, version);
+                    resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                }
+            } else if (inReplaceBlock) {
+                Matcher replaceMatcher = REPLACE_PATTERN.matcher(line);
+                if (replaceMatcher.matches()) {
+                    String targetPath = replaceMatcher.group(3);
+                    String version = replaceMatcher.group(4) != null ? replaceMatcher.group(4) : replaceMatcher.group(2);
+                    // Only analyze if target is not a local path and has a version
+                    if (version != null && !targetPath.startsWith("./") && !targetPath.startsWith("../") && !targetPath.startsWith("/")) {
+                        Dependency dependency = createDependency(targetPath, version);
+                        resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                    }
+                }
+            } else {
+                // Single line require/replace
+                if (line.startsWith("require ")) {
+                    String requireLine = line.substring(8).trim();
+                    Matcher requireMatcher = REQUIRE_PATTERN.matcher(requireLine);
+                    if (requireMatcher.matches()) {
+                        String modulePath = requireMatcher.group(1);
+                        String version = requireMatcher.group(2);
+                        Dependency dependency = createDependency(modulePath, version);
+                        resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                    }
+                } else if (line.startsWith("replace ")) {
+                    String replaceLine = line.substring(8).trim();
+                    Matcher replaceMatcher = REPLACE_PATTERN.matcher(replaceLine);
+                    if (replaceMatcher.matches()) {
+                        String targetPath = replaceMatcher.group(3);
+                        String version = replaceMatcher.group(4) != null ? replaceMatcher.group(4) : replaceMatcher.group(2);
+                        // Only analyze if target is not a local path and has a version
+                        if (version != null && !targetPath.startsWith("./") && !targetPath.startsWith("../") && !targetPath.startsWith("/")) {
+                            Dependency dependency = createDependency(targetPath, version);
+                            resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(lineElement);
+                        }
+                    }
+                }
+            }
+        }
+
+        return resultMap;
     }
 
     @Override
@@ -98,23 +139,57 @@ public class GoCAAnnotator extends CAAnnotator {
 
     @Override
     protected boolean isQuickFixApplicable(PsiElement element) {
-        return element instanceof VgoModuleSpec && ((VgoModuleSpec) element).getModuleVersion() != null;
+        return element != null && element.getContainingFile().getName().equals("go.mod");
     }
 
-    private static Dependency createDependency(final VgoModuleSpec m) {
-        String name = m.getIdentifier().getText();
-        int index = name.lastIndexOf("/");
-        String namespace = null;
-        if (index > 0) {
-            namespace = name.substring(0, index);
-            name = name.substring(index + 1);
-        } else if (index == 0) {
-            name = name.substring(index + 1);
+    private PsiElement findElementAtLine(PsiFile file, int lineNumber) {
+        String[] lines = file.getText().split("\\n");
+        if (lineNumber >= lines.length) return null;
+
+        int lineStartOffset = 0;
+        for (int i = 0; i < lineNumber; i++) {
+            lineStartOffset += lines[i].length() + 1; // +1 for newline
         }
-        PsiElement mv = m.getModuleVersion();
-        String version = mv != null
-                ? mv.getText()
-                : null;
+
+        String line = lines[lineNumber];
+
+        // Find version in the line using regex to get precise position
+        Matcher versionMatcher = Pattern.compile("(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)").matcher(line);
+        if (versionMatcher.find()) {
+            int versionStart = lineStartOffset + versionMatcher.start();
+            int versionEnd = lineStartOffset + versionMatcher.end();
+
+            // Find the PSI element that covers the version
+            PsiElement versionElement = file.findElementAt(versionStart);
+            if (versionElement != null) {
+                // Make sure we get an element that covers the full version
+                while (versionElement != null &&
+                       versionElement.getTextRange().getEndOffset() < versionEnd) {
+                    versionElement = versionElement.getParent();
+                }
+                return versionElement;
+            }
+        }
+
+        // Fallback to middle of line if version not found
+        if (lineStartOffset < file.getTextLength()) {
+            return file.findElementAt(lineStartOffset + line.length() / 2);
+        }
+        return null;
+    }
+
+    private static Dependency createDependency(String modulePath, String version) {
+        String name = modulePath;
+        String namespace = null;
+
+        int lastSlash = modulePath.lastIndexOf("/");
+        if (lastSlash > 0) {
+            namespace = modulePath.substring(0, lastSlash);
+            name = modulePath.substring(lastSlash + 1);
+        } else if (lastSlash == 0) {
+            name = modulePath.substring(1);
+        }
+
         return new Dependency("golang", namespace, name, version);
     }
 }
