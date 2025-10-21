@@ -188,6 +188,8 @@ according to your preferences.
     * `EXHORT_DOCKER_PATH` : Specify the absolute path of `docker` executable.
     * `EXHORT_PODMAN_PATH` : Specify the absolute path of `podman` executable.
     * `EXHORT_IMAGE_PLATFORM` : Specify the platform used for multi-arch images.
+    * `EXHORT_MVN_USER_SETTINGS` : Specify the absolute path to the Maven user settings file.
+    * `EXHORT_MVN_LOCAL_REPO` : Specify the absolute path to the Maven local repository.
 
   ![ Animated screenshot showing the inline reporting feature of Image Analysis ](src/main/resources/images/image-analysis.gif)
 
