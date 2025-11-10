@@ -193,6 +193,52 @@ according to your preferences.
 
   ![ Animated screenshot showing the inline reporting feature of Image Analysis ](src/main/resources/images/image-analysis.gif)
 
+## Development
+
+### Custom Dockerfile Parser
+
+This plugin implements a custom Dockerfile parser to provide syntax highlighting and analysis without requiring the Docker plugin dependency. The parser is built using JFlex lexer and Grammar-Kit parser generators.
+
+#### Parser Architecture
+
+- **Grammar Definition**: `src/main/java/org/jboss/tools/intellij/image/build/dockerfile.bnf` - Defines Dockerfile syntax rules using Grammar-Kit BNF format
+- **Lexer Specification**: `src/main/java/org/jboss/tools/intellij/image/build/dockerfile.flex` - Defines token patterns using JFlex format
+- **Generated Classes**: PSI (Program Structure Interface) classes are generated in `src/main/java/org/jboss/tools/intellij/image/build/psi/`
+
+#### Regenerating Parser Classes
+
+When modifying the grammar or lexer files, you need to regenerate the parser classes:
+
+1. **Install JFlex** (if not already installed):
+   ```bash
+   # Download JFlex 1.9.2 or later
+   wget https://github.com/jflex-de/jflex/releases/download/v1.9.2/jflex-1.9.2.jar
+   ```
+
+2. **Generate Lexer**:
+   ```bash
+   java -jar jflex-1.9.2.jar src/main/java/org/jboss/tools/intellij/image/build/dockerfile.flex
+   ```
+
+3. **Generate Parser** (using Grammar-Kit plugin in IntelliJ):
+   - Open the `.bnf` file in IntelliJ IDEA
+   - Right-click and select "Generate Parser Code" from context menu
+   - Or use Tools → Grammar Kit → Generate Parser Code
+
+4. **Important Notes**:
+   - Always use `IMAGE_NAME_TOKEN` (not `IMAGE_NAME`) in both grammar and lexer to avoid naming conflicts
+   - The `ANY_CHAR` token serves as a catch-all for any non-whitespace characters in Dockerfile instructions
+   - Generated PSI classes should be committed to git to ensure reproducible builds
+
+#### Supported Dockerfile Features
+
+- All standard Dockerfile instructions (FROM, RUN, COPY, ADD, etc.)
+- Multi-stage builds with AS aliases
+- Platform specifications (--platform flag)
+- Variable substitution (${VAR} and $VAR)
+- Comments and complex shell commands
+- Comprehensive syntax error handling
+
 - **Excluding dependencies with `exhortignore`**
   <br >You can exclude a package from analysis by marking the package for exclusion.
   If you want to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
