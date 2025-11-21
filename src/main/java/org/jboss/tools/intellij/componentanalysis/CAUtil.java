@@ -33,6 +33,7 @@ public class CAUtil {
 
     public static String PACKAGE_JSON = "package.json";
     public static String TRUSTIFY_DA_IGNORE = "trustify-da-ignore";
+    public static String EXHORT_IGNORE = "exhortignore";
     public static String DEPENDENCIES = "dependencies";
 
     public static Map<Dependency, List<PsiElement>> getDependencyListMap(PsiFile file) {
@@ -77,7 +78,9 @@ public class CAUtil {
         Set<String> ignored = Arrays.stream(file.getChildren())
                 .filter(e -> e instanceof JsonObject)
                 .flatMap(e -> Arrays.stream(e.getChildren()))
-                .filter(e -> e instanceof JsonProperty && TRUSTIFY_DA_IGNORE.equals(((JsonProperty) e).getName()))
+                .filter(e -> e instanceof JsonProperty &&
+                        (TRUSTIFY_DA_IGNORE.equals(((JsonProperty) e).getName()) ||
+                         EXHORT_IGNORE.equals(((JsonProperty) e).getName())))
                 .flatMap(e -> Arrays.stream(e.getChildren()))
                 .filter(e -> e instanceof JsonArray)
                 .flatMap(e -> Arrays.stream(e.getChildren()))

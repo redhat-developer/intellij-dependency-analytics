@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
 public class PipCAAnnotator extends CAAnnotator {
     @Override
@@ -50,7 +51,9 @@ public class PipCAAnnotator extends CAAnnotator {
                             .noneMatch(c -> {
                                 String comment = c.getText().trim();
                                 if (!comment.isEmpty() && '#' == comment.charAt(0)) {
-                                    return TRUSTIFY_DA_IGNORE.equals(comment.substring(1).trim());
+                                    String commentContent = comment.substring(1).trim();
+                                    return TRUSTIFY_DA_IGNORE.equals(commentContent) ||
+                                           EXHORT_IGNORE.equals(commentContent);
                                 }
                                 return false;
                             }))

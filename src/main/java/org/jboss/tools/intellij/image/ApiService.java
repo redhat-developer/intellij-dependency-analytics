@@ -38,6 +38,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jboss.tools.intellij.exhort.ApiService.getProxyUrl;
+import static org.jboss.tools.intellij.exhort.ApiService.setBackendUrl;
 
 @Service(Service.Level.APP)
 public final class ApiService {
@@ -124,6 +125,8 @@ public final class ApiService {
 
         var settings = ApiSettingsState.getInstance();
         System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
+
+        setBackendUrl();
 
         if (settings.syftPath != null && !settings.syftPath.isBlank()) {
             System.setProperty("TRUSTIFY_DA_SYFT_PATH", settings.syftPath);
