@@ -17,7 +17,7 @@ import com.intellij.psi.xml.XmlComment;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
-import com.redhat.exhort.api.v4.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.DEPENDENCIES;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
 public class MavenCAAnnotator extends CAAnnotator {
@@ -58,7 +59,8 @@ public class MavenCAAnnotator extends CAAnnotator {
                     .filter(e -> e instanceof XmlTag && "dependency".equals(((XmlTag) e).getName()))
                     .filter(e -> Arrays.stream(e.getChildren())
                             .noneMatch(c -> c instanceof XmlComment
-                                    && EXHORT_IGNORE.equals(((XmlComment) c).getCommentText().trim())))
+                                    && (TRUSTIFY_DA_IGNORE.equals(((XmlComment) c).getCommentText().trim()) ||
+                                        EXHORT_IGNORE.equals(((XmlComment) c).getCommentText().trim()))))
                     .map(e -> (XmlTag) e)
                     .forEach(d -> {
                         List<XmlTag> elements = Arrays.stream(d.getChildren())

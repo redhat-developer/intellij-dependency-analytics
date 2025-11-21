@@ -13,7 +13,7 @@ package org.jboss.tools.intellij.componentanalysis.pypi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.redhat.exhort.api.v4.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
 public class PipCAAnnotator extends CAAnnotator {
@@ -50,7 +51,9 @@ public class PipCAAnnotator extends CAAnnotator {
                             .noneMatch(c -> {
                                 String comment = c.getText().trim();
                                 if (!comment.isEmpty() && '#' == comment.charAt(0)) {
-                                    return EXHORT_IGNORE.equals(comment.substring(1).trim());
+                                    String commentContent = comment.substring(1).trim();
+                                    return TRUSTIFY_DA_IGNORE.equals(commentContent) ||
+                                           EXHORT_IGNORE.equals(commentContent);
                                 }
                                 return false;
                             }))

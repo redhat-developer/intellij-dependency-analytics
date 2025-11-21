@@ -32,7 +32,7 @@ public class TelemetryService {
         telemetryMsg.property(ApiService.TelemetryKeys.ECOSYSTEM.toString(), CAAnnotator.getPackageManager(file.getName()));
         telemetryMsg.property(ApiService.TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
         telemetryMsg.property(ApiService.TelemetryKeys.MANIFEST.toString(), file.getName());
-        telemetryMsg.property(ApiService.TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
+        telemetryMsg.property(ApiService.TelemetryKeys.TRUST_DA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
         telemetryMsg.send();
     }
 

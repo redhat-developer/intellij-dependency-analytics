@@ -13,7 +13,7 @@ package org.jboss.tools.intellij.componentanalysis.golang;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.redhat.exhort.api.v4.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
 
 public class GoCAAnnotator extends CAAnnotator {
@@ -70,8 +71,8 @@ public class GoCAAnnotator extends CAAnnotator {
                 continue;
             }
 
-            // Skip if line contains exhortignore
-            if (line.contains(EXHORT_IGNORE)) {
+            // Skip if line contains trustify-da-ignore or exhortignore
+            if (line.contains(TRUSTIFY_DA_IGNORE) || line.contains(EXHORT_IGNORE)) {
                 continue;
             }
 
