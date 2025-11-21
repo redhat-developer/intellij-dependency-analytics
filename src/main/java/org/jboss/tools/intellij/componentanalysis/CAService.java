@@ -23,10 +23,10 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import com.redhat.exhort.api.v4.AnalysisReport;
-import com.redhat.exhort.api.v4.DependencyReport;
-import com.redhat.exhort.api.v4.ProviderReport;
-import com.redhat.exhort.api.v4.Source;
+import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
+import io.github.guacsec.trustifyda.api.v5.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.ProviderReport;
+import io.github.guacsec.trustifyda.api.v5.Source;
 import org.jboss.tools.intellij.exhort.ApiService;
 
 import java.util.Collections;

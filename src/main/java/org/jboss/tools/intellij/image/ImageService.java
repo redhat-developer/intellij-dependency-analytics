@@ -23,11 +23,24 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
-import org.jboss.tools.intellij.image.build.psi.*;
+import org.jboss.tools.intellij.image.build.psi.DockerfileArgDeclaration;
+import org.jboss.tools.intellij.image.build.psi.DockerfileArgInstruction;
+import org.jboss.tools.intellij.image.build.psi.DockerfileAsClause;
+import org.jboss.tools.intellij.image.build.psi.DockerfileFromInstruction;
+import org.jboss.tools.intellij.image.build.psi.DockerfileImageName;
+import org.jboss.tools.intellij.image.build.psi.DockerfilePlatformOption;
+import org.jboss.tools.intellij.image.build.psi.DockerfilePlatformValue;
 import org.jboss.tools.intellij.report.AnalyticsReportUtils;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 

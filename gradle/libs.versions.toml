@@ -3,8 +3,8 @@
 caffeine = "3.1.8"
 commons-compress = "1.21"
 commons-io = "2.16.1"
-exhort-api-spec = "1.0.18"
-exhort-java-api = "0.0.9-SNAPSHOT"
+trustify-da-api-spec = "2.0.1"
+trustify-da-java-client = "0.0.9"
 github-api = "1.314"
 junit = "4.13.2"
 mockito = "4.11.0"
@@ -17,8 +17,8 @@ gradleIntelliJPlugin = "2.6.0"
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commons-compress" }
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commons-io" }
-exhort-api-spec = { group = "com.redhat.ecosystemappeng", name = "exhort-api-spec", version.ref = "exhort-api-spec" }
-exhort-java-api = { group = "com.redhat.exhort", name = "exhort-java-api", version.ref = "exhort-java-api" }
+trustify-da-api-spec = { group = "io.github.guacsec", name = "trustify-da-api-model", version.ref = "trustify-da-api-spec" }
+trustify-da-java-client = { group = "io.github.guacsec", name = "trustify-da-java-client", version.ref = "trustify-da-java-client" }
 github-api = { group = "org.kohsuke", name = "github-api", version.ref = "github-api" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
