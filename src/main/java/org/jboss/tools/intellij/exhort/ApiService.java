@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutionException;
 public final class ApiService {
 
     private static final Logger LOG = Logger.getInstance(ApiService.class);
+    private static final String TRUSTIFY_DA_BACKEND_URL_PROPERTY = "TRUSTIFY_DA_BACKEND_URL";
+    private static final String RHDA_BACKEND_URL = "https://rhda.rhcloud.com";
 
     enum TelemetryKeys {
         MANIFEST, ECOSYSTEM, PLATFORM, TRUST_DA_TOKEN;
@@ -51,7 +53,12 @@ public final class ApiService {
     private final Api exhortApi;
 
     public ApiService() {
-        this(new ExhortApi());
+        this(createExhortApiWithBackendUrl());
+    }
+
+    public static Api createExhortApiWithBackendUrl() {
+        setBackendUrl();
+        return new ExhortApi();
     }
 
     ApiService(Api exhortApi) {
@@ -128,6 +135,8 @@ public final class ApiService {
 
         ApiSettingsState settings = ApiSettingsState.getInstance();
         System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
+
+        setBackendUrl();
 
         if (settings.mvnPath != null && !settings.mvnPath.isBlank()) {
             System.setProperty("TRUSTIFY_DA_MVN_PATH", settings.mvnPath);
@@ -258,6 +267,14 @@ public final class ApiService {
         } else {
             System.clearProperty("TRUSTIFY_DA_PROXY_URL");
         }
+    }
+
+    public static void setBackendUrl() {
+        String backendUrl = System.getenv(TRUSTIFY_DA_BACKEND_URL_PROPERTY);
+        if (backendUrl == null || backendUrl.isBlank()) {
+            backendUrl = RHDA_BACKEND_URL;
+        }
+        System.setProperty(TRUSTIFY_DA_BACKEND_URL_PROPERTY, backendUrl);
     }
 
     public static Optional<String> getProxyUrl() {
