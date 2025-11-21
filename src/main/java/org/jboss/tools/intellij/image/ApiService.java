@@ -21,7 +21,6 @@ import com.intellij.openapi.extensions.PluginId;
 import io.github.guacsec.trustifyda.Api;
 import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
 import io.github.guacsec.trustifyda.image.ImageRef;
-import io.github.guacsec.trustifyda.impl.ExhortApi;
 import org.jboss.tools.intellij.exhort.TelemetryService;
 import org.jboss.tools.intellij.settings.ApiSettingsState;
 
@@ -37,7 +36,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.jboss.tools.intellij.exhort.ApiService.createExhortApiWithBackendUrl;
 import static org.jboss.tools.intellij.exhort.ApiService.getProxyUrl;
+import static org.jboss.tools.intellij.exhort.ApiService.setBackendUrl;
 
 @Service(Service.Level.APP)
 public final class ApiService {
@@ -47,7 +48,7 @@ public final class ApiService {
     private final Api exhortApi;
 
     public ApiService() {
-        this.exhortApi = new ExhortApi();
+        this.exhortApi = createExhortApiWithBackendUrl();
     }
 
     static ApiService getInstance() {
@@ -124,6 +125,8 @@ public final class ApiService {
 
         var settings = ApiSettingsState.getInstance();
         System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
+
+        setBackendUrl();
 
         if (settings.syftPath != null && !settings.syftPath.isBlank()) {
             System.setProperty("TRUSTIFY_DA_SYFT_PATH", settings.syftPath);
