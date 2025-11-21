@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 
 public class PipCAAnnotator extends CAAnnotator {
     @Override
@@ -50,7 +50,7 @@ public class PipCAAnnotator extends CAAnnotator {
                             .noneMatch(c -> {
                                 String comment = c.getText().trim();
                                 if (!comment.isEmpty() && '#' == comment.charAt(0)) {
-                                    return EXHORT_IGNORE.equals(comment.substring(1).trim());
+                                    return TRUSTIFY_DA_IGNORE.equals(comment.substring(1).trim());
                                 }
                                 return false;
                             }))
