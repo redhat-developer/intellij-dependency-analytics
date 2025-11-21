@@ -13,7 +13,7 @@ package org.jboss.tools.intellij.componentanalysis.pypi;
 
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.redhat.exhort.api.v4.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;

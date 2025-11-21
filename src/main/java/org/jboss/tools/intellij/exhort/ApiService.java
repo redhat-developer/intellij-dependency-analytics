@@ -19,9 +19,9 @@ import com.intellij.openapi.extensions.PluginDescriptor;
 import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.net.ProxyConfiguration;
 import com.intellij.util.net.ProxySettings;
-import com.redhat.exhort.Api;
-import com.redhat.exhort.api.v4.AnalysisReport;
-import com.redhat.exhort.impl.ExhortApi;
+import io.github.guacsec.trustifyda.Api;
+import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
+import io.github.guacsec.trustifyda.impl.ExhortApi;
 import org.jboss.tools.intellij.settings.ApiSettingsState;
 import org.jboss.tools.intellij.settings.MavenSettingsUtil;
 

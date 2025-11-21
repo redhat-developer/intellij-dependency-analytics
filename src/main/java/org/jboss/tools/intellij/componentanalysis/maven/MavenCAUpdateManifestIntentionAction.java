@@ -8,7 +8,7 @@ import com.intellij.psi.impl.source.xml.XmlTagImpl;
 import com.intellij.psi.xml.XmlDocument;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.psi.xml.XmlText;
-import com.redhat.exhort.api.v4.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jetbrains.annotations.NotNull;
 
