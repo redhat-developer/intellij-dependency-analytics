@@ -180,16 +180,16 @@ according to your preferences.
   You can specify a specific path to these binaries, and others by settings the following parameters as environment
   variables or system properties:
 
-    * `EXHORT_SYFT_PATH` : Specify the absolute path of `syft` executable.
-    * `EXHORT_SYFT_CONFIG_PATH` : Specify the absolute path to the Syft configuration file.
-    * `EXHORT_SKOPEO_PATH` : Specify the absolute path of `skopeo` executable.
-    * `EXHORT_SKOPEO_CONFIG_PATH` : Specify the absolute path to the authentication file used by the `skopeo inspect`
+    * `TRUSTIFY_DA_SYFT_PATH` : Specify the absolute path of `syft` executable.
+    * `TRUSTIFY_DA_SYFT_CONFIG_PATH` : Specify the absolute path to the Syft configuration file.
+    * `TRUSTIFY_DA_SKOPEO_PATH` : Specify the absolute path of `skopeo` executable.
+    * `TRUSTIFY_DA_SKOPEO_CONFIG_PATH` : Specify the absolute path to the authentication file used by the `skopeo inspect`
       command.
-    * `EXHORT_DOCKER_PATH` : Specify the absolute path of `docker` executable.
-    * `EXHORT_PODMAN_PATH` : Specify the absolute path of `podman` executable.
-    * `EXHORT_IMAGE_PLATFORM` : Specify the platform used for multi-arch images.
-    * `EXHORT_MVN_USER_SETTINGS` : Specify the absolute path to the Maven user settings file.
-    * `EXHORT_MVN_LOCAL_REPO` : Specify the absolute path to the Maven local repository.
+    * `TRUSTIFY_DA_DOCKER_PATH` : Specify the absolute path of `docker` executable.
+    * `TRUSTIFY_DA_PODMAN_PATH` : Specify the absolute path of `podman` executable.
+    * `TRUSTIFY_DA_IMAGE_PLATFORM` : Specify the platform used for multi-arch images.
+    * `TRUSTIFY_DA_MVN_USER_SETTINGS` : Specify the absolute path to the Maven user settings file.
+    * `TRUSTIFY_DA_MVN_LOCAL_REPO` : Specify the absolute path to the Maven local repository.
 
   ![ Animated screenshot showing the inline reporting feature of Image Analysis ](src/main/resources/images/image-analysis.gif)
 
@@ -239,20 +239,20 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
 - Comments and complex shell commands
 - Comprehensive syntax error handling
 
-- **Excluding dependencies with `exhortignore`**
+- **Excluding dependencies with `trustify-da-ignore`**
   <br >You can exclude a package from analysis by marking the package for exclusion.
-  If you want to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `exhortignore` as a comment
+  If you want to ignore vulnerabilities for a dependency in a `pom.xml` file, you must add `trustify-da-ignore` as a comment
   against the dependency, group id, artifact id, or version scopes of that particular dependency in the manifest file.
   For example:
   ```xml
-  <dependency> <!--exhortignore-->
+  <dependency> <!--trustify-da-ignore-->
       <groupId>...</groupId>
       <artifactId>...</artifactId>
       <version>...</version>
   </dependency>
   ```
 
-  If you want to ignore vulnerabilities for a dependency in a `package.json` file, you must add `exhortignore` as a
+  If you want to ignore vulnerabilities for a dependency in a `package.json` file, you must add `trustify-da-ignore` as a
   attribute-value pair.
   For example:
   ```json
@@ -270,33 +270,33 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
           "jsonwebtoken": "^8.5.1",
           "mongoose": "^5.9.18"
       },
-      "exhortignore": [
+      "trustify-da-ignore": [
           "jsonwebtoken"
       ]
   }
   ```
 
-  If you want to ignore vulnerabilities for a dependency in a `go.mod` file, you must add `exhortignore` as a comment
+  If you want to ignore vulnerabilities for a dependency in a `go.mod` file, you must add `trustify-da-ignore` as a comment
   against the dependency in the manifest file.
   For example:
   ```text
   require (
-      golang.org/x/sys v1.6.7 // exhortignore
+      golang.org/x/sys v1.6.7 // trustify-da-ignore
   )
   ```
 
-  If you want to ignore vulnerabilities for a dependency in a `requirements.txt` file, you must add `exhortignore` as a
+  If you want to ignore vulnerabilities for a dependency in a `requirements.txt` file, you must add `trustify-da-ignore` as a
   comment against the dependency in the manifest file.
   For example:
   ```text
-  requests==2.28.1 # exhortignore
+  requests==2.28.1 # trustify-da-ignore
   ```
-  If you want to ignore vulnerabilities for a dependency in a `build.gradle` file, you must add `exhortignore` as a
+  If you want to ignore vulnerabilities for a dependency in a `build.gradle` file, you must add `trustify-da-ignore` as a
   comment against the dependency in the manifest file.
   For example:
   ```text
-  implementation "log4j:log4j:1.2.17" // exhortignore
-  implementation group: 'log4j', name: 'log4j', version: '1.2.17' // exhortignore 
+  implementation "log4j:log4j:1.2.17" // trustify-da-ignore
+  implementation group: 'log4j', name: 'log4j', version: '1.2.17' // trustify-da-ignore
   ```
 
 - **Excluding developmental or test dependencies**

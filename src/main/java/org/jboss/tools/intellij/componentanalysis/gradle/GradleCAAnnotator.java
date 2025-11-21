@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 
 public class GradleCAAnnotator extends CAAnnotator {
 
@@ -44,7 +44,7 @@ public class GradleCAAnnotator extends CAAnnotator {
             Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
             Arrays.stream(file.getChildren())
                     .filter(e -> e instanceof Artifact)
-                    .filter(artifact -> ((Artifact)artifact).getComment() == null || Objects.nonNull(((Artifact)artifact).getComment()) && !((Artifact)artifact).getComment().getText().contains(EXHORT_IGNORE))
+                    .filter(artifact -> ((Artifact)artifact).getComment() == null || Objects.nonNull(((Artifact)artifact).getComment()) && !((Artifact)artifact).getComment().getText().contains(TRUSTIFY_DA_IGNORE))
                     .map(dep -> (Artifact)dep)
                     .forEach(  dep -> {
                             Dependency dependency = new Dependency("maven", dep.getGroup().getText().replace("\"","") , dep.getArtifactId().getText(),dep.getVersion().getText());
