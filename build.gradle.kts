@@ -12,11 +12,6 @@ plugins {
 group = "com.redhat.devtools.intellij"
 version = providers.gradleProperty("projectVersion").get() // Plugin version
 val platformVersion = providers.gradleProperty("ideaVersion").get()
-val exhortRepoUser: String? = findProperty("gpr.username") as String?
-    ?: System.getenv("GITHUB_USERNAME")
-val exhortRepoToken: String? = findProperty("gpr.token") as String?
-    ?: System.getenv("GITHUB_TOKEN")
-
 // Set the JVM language level used to build the project.
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -32,20 +27,6 @@ repositories {
         defaultRepositories()
     }
     maven { url = uri("https://jitpack.io") }
-    maven {
-        url = uri("https://maven.pkg.github.com/trustification/exhort-java-api")
-        credentials {
-            username = exhortRepoUser
-            password = exhortRepoToken
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/guacsec/trustify-da-api-spec")
-        credentials {
-            username = exhortRepoUser
-            password = exhortRepoToken
-        }
-    }
 }
 
 sourceSets {
@@ -80,8 +61,8 @@ dependencies {
 
     implementation(libs.github.api)
     implementation(libs.commons.compress)
-    implementation(libs.exhort.api.spec)
-    implementation(libs.exhort.java.api)
+    implementation(libs.trustify.da.api.spec)
+    implementation(libs.trustify.da.java.client)
     implementation(libs.caffeine)
     implementation(libs.packageurl.java)
     implementation(libs.commons.io)
