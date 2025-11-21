@@ -67,7 +67,7 @@ public final class ApiService {
         telemetryMsg.property("ecosystem", "image");
         telemetryMsg.property("platform", System.getProperty("os.name"));
         telemetryMsg.property("images", String.join(";", imageRefs.toString()));
-        telemetryMsg.property("rhda_token", ApiSettingsState.getInstance().rhdaToken);
+        telemetryMsg.property("trust_da_token", ApiSettingsState.getInstance().rhdaToken);
 
         try {
             setServiceEnvironment();
@@ -96,7 +96,7 @@ public final class ApiService {
         telemetryMsg.property("ecosystem", "image");
         telemetryMsg.property("platform", System.getProperty("os.name"));
         telemetryMsg.property("images", String.join(";", imageRefs.toString()));
-        telemetryMsg.property("rhda_token", ApiSettingsState.getInstance().rhdaToken);
+        telemetryMsg.property("trust_da_token", ApiSettingsState.getInstance().rhdaToken);
 
         try {
             setServiceEnvironment();
@@ -117,61 +117,61 @@ public final class ApiService {
         PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
         if (pluginDescriptor != null) {
             var pluginName = pluginDescriptor.getName() + " " + pluginDescriptor.getVersion();
-            System.setProperty("RHDA_SOURCE", ideName + " / " + pluginName);
+            System.setProperty("TRUST_DA_SOURCE", ideName + " / " + pluginName);
         } else {
-            System.setProperty("RHDA_SOURCE", ideName);
+            System.setProperty("TRUST_DA_SOURCE", ideName);
         }
 
         var settings = ApiSettingsState.getInstance();
-        System.setProperty("RHDA_TOKEN", settings.rhdaToken);
+        System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
 
         if (settings.syftPath != null && !settings.syftPath.isBlank()) {
-            System.setProperty("EXHORT_SYFT_PATH", settings.syftPath);
+            System.setProperty("TRUSTIFY_DA_SYFT_PATH", settings.syftPath);
         } else {
-            System.clearProperty("EXHORT_SYFT_PATH");
+            System.clearProperty("TRUSTIFY_DA_SYFT_PATH");
         }
 
         if (settings.syftConfigPath != null && !settings.syftConfigPath.isBlank()) {
-            System.setProperty("EXHORT_SYFT_CONFIG_PATH", settings.syftConfigPath);
+            System.setProperty("TRUSTIFY_DA_SYFT_CONFIG_PATH", settings.syftConfigPath);
         } else {
-            System.clearProperty("EXHORT_SYFT_CONFIG_PATH");
+            System.clearProperty("TRUSTIFY_DA_SYFT_CONFIG_PATH");
         }
 
         if (settings.skopeoPath != null && !settings.skopeoPath.isBlank()) {
-            System.setProperty("EXHORT_SKOPEO_PATH", settings.skopeoPath);
+            System.setProperty("TRUSTIFY_DA_SKOPEO_PATH", settings.skopeoPath);
         } else {
-            System.clearProperty("EXHORT_SKOPEO_PATH");
+            System.clearProperty("TRUSTIFY_DA_SKOPEO_PATH");
         }
 
         if (settings.skopeoConfigPath != null && !settings.skopeoConfigPath.isBlank()) {
-            System.setProperty("EXHORT_SKOPEO_CONFIG_PATH", settings.skopeoConfigPath);
+            System.setProperty("TRUSTIFY_DA_SKOPEO_CONFIG_PATH", settings.skopeoConfigPath);
         } else {
-            System.clearProperty("EXHORT_SKOPEO_CONFIG_PATH");
+            System.clearProperty("TRUSTIFY_DA_SKOPEO_CONFIG_PATH");
         }
 
         if (settings.dockerPath != null && !settings.dockerPath.isBlank()) {
-            System.setProperty("EXHORT_DOCKER_PATH", settings.dockerPath);
+            System.setProperty("TRUSTIFY_DA_DOCKER_PATH", settings.dockerPath);
         } else {
-            System.clearProperty("EXHORT_DOCKER_PATH");
+            System.clearProperty("TRUSTIFY_DA_DOCKER_PATH");
         }
 
         if (settings.podmanPath != null && !settings.podmanPath.isBlank()) {
-            System.setProperty("EXHORT_PODMAN_PATH", settings.podmanPath);
+            System.setProperty("TRUSTIFY_DA_PODMAN_PATH", settings.podmanPath);
         } else {
-            System.clearProperty("EXHORT_PODMAN_PATH");
+            System.clearProperty("TRUSTIFY_DA_PODMAN_PATH");
         }
 
         if (settings.imagePlatform != null && !settings.imagePlatform.isBlank()) {
-            System.setProperty("EXHORT_IMAGE_PLATFORM", settings.imagePlatform);
+            System.setProperty("TRUSTIFY_DA_IMAGE_PLATFORM", settings.imagePlatform);
         } else {
-            System.clearProperty("EXHORT_IMAGE_PLATFORM");
+            System.clearProperty("TRUSTIFY_DA_IMAGE_PLATFORM");
         }
 
         Optional<String> proxyUrlOpt = getProxyUrl();
         if (proxyUrlOpt.isPresent()) {
-            System.setProperty("EXHORT_PROXY_URL", proxyUrlOpt.get());
+            System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());
         } else {
-            System.clearProperty("EXHORT_PROXY_URL");
+            System.clearProperty("TRUSTIFY_DA_PROXY_URL");
         }
     }
 }

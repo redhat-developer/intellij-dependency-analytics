@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 
 public class GoCAAnnotator extends CAAnnotator {
     public static final Pattern REQUIRE_PATTERN = Pattern.compile("^\\s*([a-zA-Z0-9._/-]+)\\s+(v?[0-9]+(?:\\.[0-9]+)*[0-9a-zA-Z\\-+._]*)(?:\\s*//.*)?$");
@@ -69,8 +69,8 @@ public class GoCAAnnotator extends CAAnnotator {
                 continue;
             }
 
-            // Skip if line contains exhortignore
-            if (line.contains(EXHORT_IGNORE)) {
+            // Skip if line contains trustify-da-ignore
+            if (line.contains(TRUSTIFY_DA_IGNORE)) {
                 continue;
             }
 

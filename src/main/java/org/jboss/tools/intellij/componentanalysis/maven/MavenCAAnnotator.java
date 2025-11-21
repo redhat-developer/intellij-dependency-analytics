@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.jboss.tools.intellij.componentanalysis.CAUtil.DEPENDENCIES;
-import static org.jboss.tools.intellij.componentanalysis.CAUtil.EXHORT_IGNORE;
+import static org.jboss.tools.intellij.componentanalysis.CAUtil.TRUSTIFY_DA_IGNORE;
 
 public class MavenCAAnnotator extends CAAnnotator {
 
@@ -58,7 +58,7 @@ public class MavenCAAnnotator extends CAAnnotator {
                     .filter(e -> e instanceof XmlTag && "dependency".equals(((XmlTag) e).getName()))
                     .filter(e -> Arrays.stream(e.getChildren())
                             .noneMatch(c -> c instanceof XmlComment
-                                    && EXHORT_IGNORE.equals(((XmlComment) c).getCommentText().trim())))
+                                    && TRUSTIFY_DA_IGNORE.equals(((XmlComment) c).getCommentText().trim())))
                     .map(e -> (XmlTag) e)
                     .forEach(d -> {
                         List<XmlTag> elements = Arrays.stream(d.getChildren())

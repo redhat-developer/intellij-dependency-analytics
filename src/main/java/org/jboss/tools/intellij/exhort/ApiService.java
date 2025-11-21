@@ -40,7 +40,7 @@ public final class ApiService {
     private static final Logger LOG = Logger.getInstance(ApiService.class);
 
     enum TelemetryKeys {
-        MANIFEST, ECOSYSTEM, PLATFORM, RHDA_TOKEN;
+        MANIFEST, ECOSYSTEM, PLATFORM, TRUST_DA_TOKEN;
 
         @Override
         public String toString() {
@@ -63,7 +63,7 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
         telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
         telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
-        telemetryMsg.property(TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
+        telemetryMsg.property(TelemetryKeys.TRUST_DA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
 
         try {
             setRequestProperties(manifestName);
@@ -86,7 +86,7 @@ public final class ApiService {
         telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
         telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
         telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
-        telemetryMsg.property(TelemetryKeys.RHDA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
+        telemetryMsg.property(TelemetryKeys.TRUST_DA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
 
         try {
             setRequestProperties(manifestName);
@@ -121,50 +121,50 @@ public final class ApiService {
         PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
         if (pluginDescriptor != null) {
             String pluginName = pluginDescriptor.getName() + " " + pluginDescriptor.getVersion();
-            System.setProperty("RHDA_SOURCE", ideName + " / " + pluginName);
+            System.setProperty("TRUST_DA_SOURCE", ideName + " / " + pluginName);
         } else {
-            System.setProperty("RHDA_SOURCE", ideName);
+            System.setProperty("TRUST_DA_SOURCE", ideName);
         }
 
         ApiSettingsState settings = ApiSettingsState.getInstance();
-        System.setProperty("RHDA_TOKEN", settings.rhdaToken);
+        System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
 
         if (settings.mvnPath != null && !settings.mvnPath.isBlank()) {
-            System.setProperty("EXHORT_MVN_PATH", settings.mvnPath);
+            System.setProperty("TRUSTIFY_DA_MVN_PATH", settings.mvnPath);
         } else {
-            System.clearProperty("EXHORT_MVN_PATH");
+            System.clearProperty("TRUSTIFY_DA_MVN_PATH");
         }
 
         if (settings.useMavenWrapper.equals("fallback")) {
             if (MavenSettingsUtil.isMavenWrapperSelected()) {
-                System.setProperty("EXHORT_PREFER_MVNW", settings.useMavenWrapper);
+                System.setProperty("TRUSTIFY_DA_PREFER_MVNW", settings.useMavenWrapper);
             } else {
-                System.clearProperty("EXHORT_PREFER_MVNW");
+                System.clearProperty("TRUSTIFY_DA_PREFER_MVNW");
             }
         } else if (settings.useMavenWrapper.equals("true")) {
-            System.setProperty("EXHORT_PREFER_MVNW", settings.useMavenWrapper);
+            System.setProperty("TRUSTIFY_DA_PREFER_MVNW", settings.useMavenWrapper);
         } else {
-            System.clearProperty("EXHORT_PREFER_MVNW");
+            System.clearProperty("TRUSTIFY_DA_PREFER_MVNW");
         }
 
         String userSettingsFile = MavenSettingsUtil.getUserSettingsFile();
         if (!userSettingsFile.isBlank()) {
-            System.setProperty("EXHORT_MVN_USER_SETTINGS", userSettingsFile);
+            System.setProperty("TRUSTIFY_DA_MVN_USER_SETTINGS", userSettingsFile);
         } else {
-            System.clearProperty("EXHORT_MVN_USER_SETTINGS");
+            System.clearProperty("TRUSTIFY_DA_MVN_USER_SETTINGS");
         }
 
         String localRepository = MavenSettingsUtil.getLocalRepository();
         if (!localRepository.isBlank()) {
-            System.setProperty("EXHORT_MVN_LOCAL_REPO", localRepository);
+            System.setProperty("TRUSTIFY_DA_MVN_LOCAL_REPO", localRepository);
         } else {
-            System.clearProperty("EXHORT_MVN_LOCAL_REPO");
+            System.clearProperty("TRUSTIFY_DA_MVN_LOCAL_REPO");
         }
 
         if (settings.gradlePath != null && !settings.gradlePath.isBlank()) {
-            System.setProperty("EXHORT_GRADLE_PATH", settings.gradlePath);
+            System.setProperty("TRUSTIFY_DA_GRADLE_PATH", settings.gradlePath);
         } else {
-            System.clearProperty("EXHORT_GRADLE_PATH");
+            System.clearProperty("TRUSTIFY_DA_GRADLE_PATH");
         }
 
         if (settings.javaPath != null && !settings.javaPath.isBlank()) {
@@ -173,14 +173,14 @@ public final class ApiService {
             System.clearProperty("JAVA_HOME");
         }
         if (settings.npmPath != null && !settings.npmPath.isBlank()) {
-            System.setProperty("EXHORT_NPM_PATH", settings.npmPath);
+            System.setProperty("TRUSTIFY_DA_NPM_PATH", settings.npmPath);
         } else {
-            System.clearProperty("EXHORT_NPM_PATH");
+            System.clearProperty("TRUSTIFY_DA_NPM_PATH");
         }
         if (settings.yarnPath != null && !settings.yarnPath.isBlank()) {
-            System.setProperty("EXHORT_YARN_PATH", settings.yarnPath);
+            System.setProperty("TRUSTIFY_DA_YARN_PATH", settings.yarnPath);
         } else {
-            System.clearProperty("EXHORT_YARN_PATH");
+            System.clearProperty("TRUSTIFY_DA_YARN_PATH");
         }
         if (settings.nodePath != null && !settings.nodePath.isBlank()) {
             System.setProperty("NODE_HOME", settings.nodePath);
@@ -188,14 +188,14 @@ public final class ApiService {
             System.clearProperty("NODE_HOME");
         }
         if (settings.pnpmPath != null && !settings.pnpmPath.isBlank()) {
-            System.setProperty("EXHORT_PNPM_PATH", settings.pnpmPath);
+            System.setProperty("TRUSTIFY_DA_PNPM_PATH", settings.pnpmPath);
         } else {
-            System.clearProperty("EXHORT_PNPM_PATH");
+            System.clearProperty("TRUSTIFY_DA_PNPM_PATH");
         }
         if (settings.goPath != null && !settings.goPath.isBlank()) {
-            System.setProperty("EXHORT_GO_PATH", settings.goPath);
+            System.setProperty("TRUSTIFY_DA_GO_PATH", settings.goPath);
         } else {
-            System.clearProperty("EXHORT_GO_PATH");
+            System.clearProperty("TRUSTIFY_DA_GO_PATH");
         }
         if ("go.mod".equals(manifestName)) {
             if (settings.goMatchManifestVersions) {
@@ -206,41 +206,41 @@ public final class ApiService {
         }
         if (settings.usePython2) {
             if (settings.pythonPath != null && !settings.pythonPath.isBlank()) {
-                System.setProperty("EXHORT_PYTHON_PATH", settings.pythonPath);
+                System.setProperty("TRUSTIFY_DA_PYTHON_PATH", settings.pythonPath);
             } else {
-                System.clearProperty("EXHORT_PYTHON_PATH");
+                System.clearProperty("TRUSTIFY_DA_PYTHON_PATH");
             }
             if (settings.pipPath != null && !settings.pipPath.isBlank()) {
-                System.setProperty("EXHORT_PIP_PATH", settings.pipPath);
+                System.setProperty("TRUSTIFY_DA_PIP_PATH", settings.pipPath);
             } else {
-                System.clearProperty("EXHORT_PIP_PATH");
+                System.clearProperty("TRUSTIFY_DA_PIP_PATH");
             }
-            System.clearProperty("EXHORT_PYTHON3_PATH");
-            System.clearProperty("EXHORT_PIP3_PATH");
+            System.clearProperty("TRUSTIFY_DA_PYTHON3_PATH");
+            System.clearProperty("TRUSTIFY_DA_PIP3_PATH");
         } else {
             if (settings.pythonPath != null && !settings.pythonPath.isBlank()) {
-                System.setProperty("EXHORT_PYTHON3_PATH", settings.pythonPath);
+                System.setProperty("TRUSTIFY_DA_PYTHON3_PATH", settings.pythonPath);
             } else {
-                System.clearProperty("EXHORT_PYTHON3_PATH");
+                System.clearProperty("TRUSTIFY_DA_PYTHON3_PATH");
             }
             if (settings.pipPath != null && !settings.pipPath.isBlank()) {
-                System.setProperty("EXHORT_PIP3_PATH", settings.pipPath);
+                System.setProperty("TRUSTIFY_DA_PIP3_PATH", settings.pipPath);
             } else {
-                System.clearProperty("EXHORT_PIP3_PATH");
+                System.clearProperty("TRUSTIFY_DA_PIP3_PATH");
             }
-            System.clearProperty("EXHORT_PYTHON_PATH");
-            System.clearProperty("EXHORT_PIP_PATH");
+            System.clearProperty("TRUSTIFY_DA_PYTHON_PATH");
+            System.clearProperty("TRUSTIFY_DA_PIP_PATH");
         }
         if (settings.usePythonVirtualEnv) {
-            System.setProperty("EXHORT_PYTHON_VIRTUAL_ENV", "true");
+            System.setProperty("TRUSTIFY_DA_PYTHON_VIRTUAL_ENV", "true");
             if (settings.pythonInstallBestEfforts) {
-                System.setProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS", "true");
+                System.setProperty("TRUSTIFY_DA_PYTHON_INSTALL_BEST_EFFORTS", "true");
             } else {
-                System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
+                System.clearProperty("TRUSTIFY_DA_PYTHON_INSTALL_BEST_EFFORTS");
             }
         } else {
-            System.clearProperty("EXHORT_PYTHON_VIRTUAL_ENV");
-            System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
+            System.clearProperty("TRUSTIFY_DA_PYTHON_VIRTUAL_ENV");
+            System.clearProperty("TRUSTIFY_DA_PYTHON_INSTALL_BEST_EFFORTS");
         }
         if ("requirements.txt".equals(manifestName)) {
             if (settings.pythonMatchManifestVersions) {
@@ -254,9 +254,9 @@ public final class ApiService {
         }
         Optional<String> proxyUrlOpt = getProxyUrl();
         if (proxyUrlOpt.isPresent()) {
-            System.setProperty("EXHORT_PROXY_URL", proxyUrlOpt.get());
+            System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());
         } else {
-            System.clearProperty("EXHORT_PROXY_URL");
+            System.clearProperty("TRUSTIFY_DA_PROXY_URL");
         }
     }
 

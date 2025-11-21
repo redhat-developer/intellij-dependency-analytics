@@ -230,28 +230,28 @@
         <br> You can specify a specific path to these binaries, and others by settings the following parameters as
         environment variables or system properties:
         <ul>
-            <li><code>EXHORT_SYFT_PATH</code> : Specify the absolute path of <code>syft</code> executable.</li>
-            <li><code>EXHORT_SYFT_CONFIG_PATH</code> : Specify the absolute path to the Syft configuration file.</li>
-            <li><code>EXHORT_SKOPEO_PATH</code> : Specify the absolute path of <code>skopeo</code> executable.</li>
-            <li><code>EXHORT_SKOPEO_CONFIG_PATH</code> : Specify the absolute path to the authentication file used by
+            <li><code>TRUSTIFY_DA_SYFT_PATH</code> : Specify the absolute path of <code>syft</code> executable.</li>
+            <li><code>TRUSTIFY_DA_SYFT_CONFIG_PATH</code> : Specify the absolute path to the Syft configuration file.</li>
+            <li><code>TRUSTIFY_DA_SKOPEO_PATH</code> : Specify the absolute path of <code>skopeo</code> executable.</li>
+            <li><code>TRUSTIFY_DA_SKOPEO_CONFIG_PATH</code> : Specify the absolute path to the authentication file used by
             the <code>skopeo inspect</code> command.</li>
-            <li><code>EXHORT_DOCKER_PATH</code> : Specify the absolute path of <code>docker</code> executable.</li>
-            <li><code>EXHORT_PODMAN_PATH</code> : Specify the absolute path of <code>podman</code> executable.</li>
-            <li><code>EXHORT_IMAGE_PLATFORM</code> : Specify the platform used for multi-arch images.</li>
+            <li><code>TRUSTIFY_DA_DOCKER_PATH</code> : Specify the absolute path of <code>docker</code> executable.</li>
+            <li><code>TRUSTIFY_DA_PODMAN_PATH</code> : Specify the absolute path of <code>podman</code> executable.</li>
+            <li><code>TRUSTIFY_DA_IMAGE_PLATFORM</code> : Specify the platform used for multi-arch images.</li>
         </ul>
         <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/image-analysis.gif"
              alt="Animated screenshot showing the inline reporting feature of Image Analysis">
     </li>
     <li>
-        <b>Excluding dependencies with <code>exhortignore</code></b>
+        <b>Excluding dependencies with <code>trustify-da-ignore</code></b>
         <br>You can exclude a package from analysis by marking the package for exclusion.
         <br>
-        <br>If you wish to ignore vulnerabilities for a dependency in a <code>pom.xml</code> file, you must add <code>exhortignore</code>
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>pom.xml</code> file, you must add <code>trustify-da-ignore</code>
         as a comment against the dependency, group id, artifact id, or version scopes of that particular dependency in
         the manifest file.
         <br>For example:
         <code>
-            <br>&lt;dependency&gt; &lt;!--exhortignore--&gt;
+            <br>&lt;dependency&gt; &lt;!--trustify-da-ignore--&gt;
             <br>&nbsp;&nbsp;&lt;groupId&gt;...&lt;/groupId&gt;
             <br>&nbsp;&nbsp;&lt;artifactId&gt;...&lt;/artifactId&gt;
             <br>&nbsp;&nbsp;&lt;version&gt;...&lt;/version&gt;
@@ -259,7 +259,7 @@
         </code>
         <br>
         <br>If you wish to ignore vulnerabilities for a dependency in a <code>package.json</code> file, you must add
-        <code>exhortignore</code> as a attribute-value pair.
+        <code>trustify-da-ignore</code> as an attribute-value pair.
         <br>For example:
         <code>
             <br>{
@@ -276,26 +276,26 @@
             <br>&nbsp;&nbsp;&nbsp;&nbsp;"jsonwebtoken": "^8.5.1",
             <br>&nbsp;&nbsp;&nbsp;&nbsp;"mongoose": "^5.9.18"
             <br>&nbsp;&nbsp;},
-            <br>&nbsp;&nbsp;"exhortignore": [
+            <br>&nbsp;&nbsp;"trustify-da-ignore": [
             <br>&nbsp;&nbsp;&nbsp;&nbsp;"jsonwebtoken"
             <br>&nbsp;&nbsp;]
             <br>}
         </code>
         <br>
         <br>If you wish to ignore vulnerabilities for a dependency in a <code>go.mod</code> file, you must add
-        <code>exhortignore</code> as a comment against the dependency in the manifest file.
+        <code>trustify-da-ignore</code> as a comment against the dependency in the manifest file.
         <br>For example:
         <code>
             <br>require (
-            <br>&nbsp;&nbsp;golang.org/x/sys v1.6.7 // exhortignore
+            <br>&nbsp;&nbsp;golang.org/x/sys v1.6.7 // trustify-da-ignore
             <br>)
         </code>
         <br>
         <br>If you wish to ignore vulnerabilities for a dependency in a <code>requirements.txt</code> file, you must add
-        <code>exhortignore</code> as a comment against the dependency in the manifest file.
+        <code>trustify-da-ignore</code> as a comment against the dependency in the manifest file.
         <br>For example:
         <code>
-            <br>requests==2.28.1 # exhortignore
+            <br>requests==2.28.1 # trustify-da-ignore
         </code>
     </li>
     <li>
