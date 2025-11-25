@@ -55,13 +55,12 @@ public class GoCAAnnotator extends CAAnnotator {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
 
-            // Track require/replace blocks
-            if (line.startsWith("require")) {
-                inRequireBlock = line.contains("(");
+            if (line.startsWith("require") && isBlockStatement(line)) {
+                inRequireBlock = true;
                 continue;
             }
-            if (line.startsWith("replace")) {
-                inReplaceBlock = line.contains("(");
+            if (line.startsWith("replace") && isBlockStatement(line)) {
+                inReplaceBlock = true;
                 continue;
             }
             if (line.equals(")")) {
@@ -191,5 +190,21 @@ public class GoCAAnnotator extends CAAnnotator {
         }
 
         return new Dependency("golang", namespace, name, version);
+    }
+
+    /**
+     * Determines if a line represents a block statement (require/replace with opening parenthesis).
+     * Only considers "(" that appears at the end of the statement, ignoring any comments.
+     *
+     * Examples:
+     * - "require (" -> true
+     * - "require ( // comment" -> true
+     * - "require golang.org/x/net v1.0 // comment with (" -> false
+     * - "replace (" -> true
+     */
+    private static boolean isBlockStatement(String line) {
+        int commentIndex = line.indexOf("//");
+        String statementPart = commentIndex >= 0 ? line.substring(0, commentIndex).trim() : line;
+        return statementPart.endsWith("(");
     }
 }
