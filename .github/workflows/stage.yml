@@ -104,9 +104,16 @@ jobs:
       - name: Create SHA256 checksums for the binaries
         working-directory: distributions
         run: |
-          for pkg in *
-          do
-            sha256sum "$pkg" > "$pkg.sha256"
+          short_sha="${{ github.sha }}"
+          short_sha="${short_sha:0:7}"
+          # Rename plugin files to include short commit ID and create checksums
+          for pkg in *.zip; do
+            [ ! -f "$pkg" ] && continue
+            new_filename="${pkg%.zip}-${short_sha}.zip"
+            echo "Renaming $pkg to $new_filename"
+            mv "$pkg" "$new_filename"
+            echo "Creating checksum for $new_filename"
+            sha256sum "$new_filename" > "$new_filename.sha256"
           done
 
       - name: Upload packages and checksums as early-access release assets
