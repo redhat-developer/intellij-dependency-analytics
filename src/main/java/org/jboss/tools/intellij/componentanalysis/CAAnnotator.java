@@ -170,23 +170,24 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                         elements.forEach(e -> {
                             if (e != null) {
                                 if (!quickfixes.isEmpty() && this.isQuickFixApplicable(e)) {
-                                    quickfixes.forEach((source, report) ->{
-                                        AnnotationBuilder builder = holder
-                                                .newAnnotation(getHighlightSeverity(report, e), messageBuilder.toString())
-                                                .tooltip(tooltipBuilder.toString())
-                                                .range(e);
+                                    DependencyReport firstReport = quickfixes.values().iterator().next();
+                                    AnnotationBuilder builder = holder
+                                            .newAnnotation(getHighlightSeverity(firstReport, e), messageBuilder.toString())
+                                            .tooltip(tooltipBuilder.toString())
+                                            .range(e);
+
+                                    quickfixes.forEach((source, report) -> {
                                         if(CAIntentionAction.isQuickFixAvailable(report)) {
-                                            CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
                                             builder.withFix(this.createQuickFix(e, source, report));
+                                            CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
                                             if(Objects.nonNull(patchManifest)) {
                                                 builder.withFix(patchManifest);
                                             }
                                         }
-                                        builder.withFix(new SAIntentionAction());
-                                        builder.withFix(new ExcludeManifestIntentionAction());
-                                        builder.create();
-                                      }
-                                    );
+                                    });
+                                    builder.withFix(new SAIntentionAction());
+                                    builder.withFix(new ExcludeManifestIntentionAction());
+                                    builder.create();
                                 }
                             }
                         });
