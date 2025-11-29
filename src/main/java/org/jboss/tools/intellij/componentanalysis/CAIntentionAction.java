@@ -115,7 +115,7 @@ public abstract class CAIntentionAction implements IntentionAction {
     }
 
     private static boolean thereIsTcRemediation(DependencyReport dependency) {
-        Optional<Issue> issue = dependency.getIssues().stream().filter(iss -> iss.getRemediation().getTrustedContent() != null).findFirst();
+        Optional<Issue> issue = dependency.getIssues().stream().filter(iss -> iss.getRemediation() != null && iss.getRemediation().getTrustedContent() != null).findFirst();
         if(issue.isPresent()) {
             return issue.get().getRemediation().getTrustedContent() != null;
         }
