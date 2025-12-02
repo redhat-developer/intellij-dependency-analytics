@@ -411,6 +411,7 @@
 
     <change-notes><![CDATA[
   <p><b>1.2.0</b></p>
+  <p>Now integrates with RHTPA.</p>
   <p>Support exhortignore and trustify-da-ignore</p>
   <p>Default to MVS = true for go.</p>
   <p>Do not include go toolchain entries.</p>
