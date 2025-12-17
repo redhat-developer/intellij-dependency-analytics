@@ -14,6 +14,7 @@ package org.jboss.tools.intellij.image;
 import com.github.packageurl.MalformedPackageURLException;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.daemon.HighlightDisplayKey;
+import com.intellij.codeHighlighting.HighlightDisplayLevel;
 import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
@@ -234,6 +235,25 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .orElse(null);
     }
 
+    @NotNull
+    private static HighlightSeverity getHighlightSeverity(AnalysisReport report, String recommendation, boolean hasIssue, @NotNull PsiElement context) {
+        // Get the configured severity from the inspection settings
+        final InspectionProfileEntry inspection = getInspection(context);
+        if (inspection != null) {
+            final var profile = InspectionProjectProfileManager.getInstance(context.getProject()).getCurrentProfile();
+            final HighlightDisplayKey key = HighlightDisplayKey.find(DockerfileInspection.SHORT_NAME);
+            if (key != null) {
+                HighlightDisplayLevel level = profile.getErrorLevel(key, context);
+                return level.getSeverity();
+            }
+        }
+
+        // Fallback to original logic if inspection settings can't be determined
+        return hasIssue || recommendation == null ?
+                HighlightSeverity.ERROR :
+                HighlightSeverity.WEAK_WARNING;
+    }
+
     @Override
     public @Nullable Info collectInformation(@NotNull PsiFile file) {
         // Only process our custom Dockerfile type
@@ -318,11 +338,8 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         var message = generateMessage(key.getImageName(), report, recommendation);
                         var tooltip = generateTooltip(key.getImageName(), report, recommendation);
 
-                        var severity = hasIssue || recommendation == null ?
-                                HighlightSeverity.ERROR :
-                                HighlightSeverity.WEAK_WARNING;
-
                         elements.forEach(e -> {
+                            var severity = getHighlightSeverity(report, recommendation, hasIssue, e);
                             if (e != null) {
                                 var builder = holder
                                         .newAnnotation(severity, message)
