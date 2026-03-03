@@ -281,6 +281,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                 return "python";
             case "build.gradle":
                 return "gradle";
+            case "Cargo.toml":
+                return "cargo";
             default:
                 return null;
         }

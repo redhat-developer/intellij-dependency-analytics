@@ -206,6 +206,11 @@ public final class ApiService {
         } else {
             System.clearProperty("TRUSTIFY_DA_GO_PATH");
         }
+        if (settings.cargoPath != null && !settings.cargoPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_CARGO_PATH", settings.cargoPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_CARGO_PATH");
+        }
         if ("go.mod".equals(manifestName)) {
             if (settings.goMatchManifestVersions) {
                 System.setProperty("MATCH_MANIFEST_VERSIONS", "true");

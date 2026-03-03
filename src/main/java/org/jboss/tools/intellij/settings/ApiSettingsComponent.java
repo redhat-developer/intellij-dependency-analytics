@@ -50,6 +50,8 @@ public class ApiSettingsComponent {
             "<br>Specifies if comparing the resolved package versions with the versions defined in the manifest.</html>";
     private final static String gradlePathLabel = "<html>Gradle > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>gradle</b> executable.</html>";
+    private final static String cargoPathLabel = "<html>Cargo > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>cargo</b> executable.</html>";
     private final static String pythonPathLabel = "<html>Python > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>python</b> executable.</html>";
     private final static String pipPathLabel = "<html>Pip > Executable: <b>Path</b>"
@@ -102,6 +104,7 @@ public class ApiSettingsComponent {
     private final JBCheckBox pythonMatchManifestVersionsCheck;
 
     private final TextFieldWithBrowseButton gradlePathText;
+    private final TextFieldWithBrowseButton cargoPathText;
     private final TextFieldWithBrowseButton syftPathText;
     private final TextFieldWithBrowseButton syftConfigPathText;
 
@@ -199,6 +202,12 @@ public class ApiSettingsComponent {
                 FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
         );
+        cargoPathText = new TextFieldWithBrowseButton();
+        cargoPathText.addBrowseFolderListener(
+                null,
+                FileChooserDescriptorFactory.singleFile(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
         syftPathText = new TextFieldWithBrowseButton();
         syftPathText.addBrowseFolderListener(
                 null,
@@ -291,6 +300,8 @@ public class ApiSettingsComponent {
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(gradlePathLabel), gradlePathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(cargoPathLabel), cargoPathText, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(syftPathLabel), syftPathText, 1, true)
@@ -522,6 +533,15 @@ public class ApiSettingsComponent {
 
     public void setGradlePathText(@NotNull String text) {
         gradlePathText.setText(text);
+    }
+
+    @NotNull
+    public String getCargoPathText() {
+        return cargoPathText.getText();
+    }
+
+    public void setCargoPathText(@NotNull String text) {
+        cargoPathText.setText(text);
     }
 
     @NotNull

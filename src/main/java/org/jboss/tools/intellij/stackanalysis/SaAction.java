@@ -38,7 +38,8 @@ public class SaAction extends AnAction {
             "package.json",
             "go.mod",
             "requirements.txt",
-            "build.gradle"
+            "build.gradle",
+            "Cargo.toml"
     );
 
     public SaAction() {

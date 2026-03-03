@@ -20,6 +20,7 @@ while you build your application.
 - Yarn Berry and Classic (yarn)
 - Gradle Kotlin and Groovy (gradle)
 - Golang (go mod)
+- Rust (cargo)
 - Python (pip) ecosystems, and base images in Dockerfile.
 
 In future releases, Red Hat plans to support other package managers.
@@ -49,6 +50,7 @@ vulnerability report.
 - For Node projects, analyzing a `package.json` file, you must have one of the corresponding package manager `npm`, `pnpm` or `yarn`, `node` binaries in your IDE's `PATH`
   environment.
 - For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment.
+- For Rust projects, analyzing a `Cargo.toml` file, you must have the `cargo` binary in your IDE's `PATH` environment.
 - For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
   IDE's `PATH` environment.
 - For Gradle projects, analyzing a `build.gradle` file or `build.gradle.kts` file, you must have the `gradle` binary in your system's `PATH` environment.
@@ -107,6 +109,11 @@ according to your preferences.
   <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
   <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
   the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
+
+- **Rust** :
+  <br >Set the full path of the Cargo executable, which allows Exhort to locate and run the `cargo` command to resolve
+  dependencies for Rust projects.
+  <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
 
 - **Python** :
   <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
@@ -167,7 +174,7 @@ according to your preferences.
 ## Features
 
 - **Component analysis**
-  <br >Upon opening a manifest file, such as a `pom.xml`, `package.json`, `go.mod` or `requirements.txt` file, a scan
+  <br >Upon opening a manifest file, such as a `pom.xml`, `package.json`, `go.mod`, `Cargo.toml`, or `requirements.txt` file, a scan
   starts the analysis process.
   The scan provides immediate inline feedback on detected security vulnerabilities for your application's dependencies.
   Such dependencies are appropriately underlined in red, and hovering over it gives you a short summary of the security
@@ -309,6 +316,15 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   implementation group: 'log4j', name: 'log4j', version: '1.2.17' // trustify-da-ignore
   ```
 
+  If you want to ignore vulnerabilities for a dependency in a `Cargo.toml` file, you must add `trustify-da-ignore` as a comment
+  against the dependency in the manifest file.
+  For example:
+  ```toml
+  [dependencies]
+  serde = "1.0" # trustify-da-ignore
+  tokio = { version = "1.0", features = ["full"] } # trustify-da-ignore
+  ```
+
 - **Excluding developmental or test dependencies**
   <br >Red Hat Dependency Analytics does not analyze dependencies marked as `dev` or `test`, these dependencies are
   ignored.
@@ -372,6 +388,49 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   <br >The Red Hat Dependency Analytics report is a temporary HTML file that exist if the **Red Hat Dependency Analytics
   Report** tab remains open.
   Closing the tab removes the temporary HTML file.
+
+## Rust/Cargo Component Analysis Limitations
+
+The plugin provides vulnerability analysis for Rust projects using `Cargo.toml` manifest files. While stack analysis (full dependency report) works completely for all Cargo dependency formats, the component analysis feature (inline vulnerability detection) has some current limitations in version resolution and automatic fixes.
+
+### Component Analysis Version Resolution
+
+During inline component analysis, some dependency types cannot have their versions resolved directly from the manifest file and are marked as `UNRESOLVED_VERSION`. These dependencies will still appear in the full stack analysis report with correct version information.
+
+Dependencies that result in unresolved versions in component analysis:
+- **Workspace dependencies**: `workspace = true` (version inherited from workspace root)
+- **Git dependencies**: `git = "https://github.com/user/repo"` (version resolved at build time)
+- **Path dependencies**: `path = "../local"` (version from local Cargo.toml)
+- **Registry dependencies without explicit version**: Dependencies that rely on registry resolution
+
+Example:
+```toml
+[dependencies]
+# These will show UNRESOLVED_VERSION in inline component analysis
+workspace-dep = { workspace = true }
+git-dep = { git = "https://github.com/user/repo" }
+local-dep = { path = "../local" }
+registry-dep = { registry = "my-registry" }
+```
+
+### Component Analysis Quick-Fix Support
+
+The automatic version update feature (quick-fix suggestions) has varying support across different dependency declaration formats:
+
+**Supported formats:**
+- Simple string versions: `serde = "1.0"`
+
+**Unsupported formats:**
+- Complex inline tables: `tokio = { version = "1.0", features = ["full"] }`
+- Complex inline tables without version field: `tokio = { features = ["full"] }`
+- Standard table format:
+  ```toml
+  [dependencies.cratename]
+  version = "1.0"
+  features = ["derive"]
+  ```
+
+For unsupported formats, vulnerability detection still works and the full stack analysis report will contain complete information and recommendations. Manual updates to the manifest file are required for these cases.
 
 ## Know more about the Red Hat Dependency Analytics platform
 

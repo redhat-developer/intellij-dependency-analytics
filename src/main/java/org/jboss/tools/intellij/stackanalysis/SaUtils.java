@@ -25,7 +25,8 @@ public class SaUtils {
                 || "package.json".equals(manifestFile.getName())
                 || "go.mod".equals(manifestFile.getName())
                 || "requirements.txt".equals(manifestFile.getName())
-                || "build.gradle".equals(manifestFile.getName())) {
+                || "build.gradle".equals(manifestFile.getName())
+                || "Cargo.toml".equals(manifestFile.getName())) {
             ApiService apiService = ServiceManager.getService(ApiService.class);
             reportLink = apiService.getStackAnalysis(
                     determinePackageManagerName(manifestFile.getName()),
@@ -64,6 +65,9 @@ public class SaUtils {
                 break;
             case "build.gradle":
                 packageManager = "gradle";
+                break;
+            case "Cargo.toml":
+                packageManager = "cargo";
                 break;
 
             default:

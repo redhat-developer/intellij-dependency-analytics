@@ -44,11 +44,12 @@ public class ExcludeManifestIntentionAction implements IntentionAction {
         }
         
         String fileName = file.getName();
-        return "pom.xml".equals(fileName) || 
-               "package.json".equals(fileName) || 
-               "go.mod".equals(fileName) || 
-               "requirements.txt".equals(fileName) || 
-               "build.gradle".equals(fileName);
+        return "pom.xml".equals(fileName) ||
+               "package.json".equals(fileName) ||
+               "go.mod".equals(fileName) ||
+               "requirements.txt".equals(fileName) ||
+               "build.gradle".equals(fileName) ||
+               "Cargo.toml".equals(fileName);
     }
 
     @Override

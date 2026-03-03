@@ -27,7 +27,9 @@
     <li>Yarn Berry and Classic (yarn)</li>
     <li>Gradle Kotlin and Groovy (gradle)</li>
     <li>Golang (go mod)</li>
-    <li>Python (pip) ecosystems, and base images in Dockerfile.</li>
+    <li>Python (pip) ecosystems</li>
+    <li>Rust (cargo) - optional TOML plugin recommended</li>
+    <li>Base images in Dockerfile</li>
     <br>In future releases, Red Hat plans to support other package managers.</br>
 <p>
 
@@ -49,6 +51,10 @@
     </li>
     <li>
         For Gradle projects, analyzing a <code>build.gradle</code> file or <code>build.gradle.kts</code> file, you must have the <code>gradle</code> binary in your system's <code>PATH</code> environment.
+    </li>
+    <li>For Rust projects, analyzing a <code>Cargo.toml</code> file, install the <code><a
+            href="https://plugins.jetbrains.com/plugin/8195-toml" rel="noopener noreferrer"
+            target="_blank">TOML plugin</a></code> for enhanced syntax support (optional but recommended).
     </li>
     <li>For base images, analyzing a <code>Dockerfile</code>, you must have the <code><a
             href="https://github.com/anchore/syft?tab=readme-ov-file#installation" rel="noopener noreferrer"
@@ -202,7 +208,7 @@
 <ul>
     <li>
         <b>Component analysis</b>
-        <br>Upon opening a manifest file, such as a <code>pom.xml</code> or <code>package.json</code> file, a scan
+        <br>Upon opening a manifest file, such as a <code>pom.xml</code>, <code>package.json</code>, <code>go.mod</code>, <code>Cargo.toml</code>, or <code>requirements.txt</code> file, a scan
         starts the analysis
         process.
         <br>The scan provides immediate inline feedback on detected security vulnerabilities for your application's
@@ -297,6 +303,14 @@
         <code>
             <br>requests==2.28.1 # trustify-da-ignore
         </code>
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>Cargo.toml</code> file, you must add
+        <code>trustify-da-ignore</code> as a comment against the dependency in the manifest file.
+        <br>For example:
+        <code>
+            <br>[dependencies]
+            <br>serde = "1.0" # trustify-da-ignore
+            <br>tokio = { version = "1.0", features = ["full"] } # trustify-da-ignore
+        </code>
     </li>
     <li>
         <b>Excluding developmental or test dependencies</b>
@@ -360,7 +374,7 @@
         <br>Patterns are configured in the plugin settings under <b>Tools > Red Hat Dependency Analytics > Manifest
         Exclusion Patterns</b>.
         <br>Examples: <code>**/node_modules/**/package.json</code>, <code>test/**/pom.xml</code>,
-        <code>vendor/**/*.go.mod</code>
+        <code>vendor/**/*.go.mod</code>, <code>target/**/Cargo.toml</code>
         <br>Right-click on any manifest file and select <b>Exclude from Component Analysis</b> to quickly add an
         exclusion pattern for that specific file.
     </li>
@@ -485,6 +499,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.json</depends>
     <depends>com.intellij.java</depends>
+    <depends>org.toml.lang</depends>
     <depends>org.jetbrains.idea.maven</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
 
@@ -565,6 +580,15 @@
                          implementationClass="org.jboss.tools.intellij.image.DockerfileInspection"/>
         <externalAnnotator language="rhda-dockerfile"
                            implementationClass="org.jboss.tools.intellij.image.DockerfileAnnotator"/>
+
+        <!-- Cargo.toml support for Rust projects (requires TOML bundle plugin) -->
+        <localInspection language="TOML" shortName="CargoCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Rust" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.cargo.CargoCAInspection"/>
+
+        <externalAnnotator language="TOML"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.cargo.CargoCAAnnotator"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
