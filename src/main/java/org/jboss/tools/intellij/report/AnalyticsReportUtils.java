@@ -49,6 +49,16 @@ public class AnalyticsReportUtils {
             writer.write(manifestDetails.toString());
         }
 
+        // Save permanent copy of report to user-configured directory if specified
+        String htmlFilePath = manifestDetails.get("report_link").getAsString();
+        if (htmlFilePath.startsWith("file://")) {
+            String actualFilePath = htmlFilePath.substring(7); // Remove "file://" prefix
+            ReportFileManager.saveReportCopy(
+                actualFilePath,
+                manifestDetails.get("manifestName").getAsString()
+            );
+        }
+
         // Create a virtual file from report file
         VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(reportFile.getAbsolutePath());
 

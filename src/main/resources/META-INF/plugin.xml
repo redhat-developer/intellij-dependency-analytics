@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.jboss.tools.intellij.analytics</id>
     <name>Red Hat Dependency Analytics</name>
-    <version>0.9.0</version>
+    <version>1.3.0</version>
     <vendor email="developers@redhat.com" url="https://www.redhat.com">Red-Hat</vendor>
 
     <description><![CDATA[
@@ -410,6 +410,8 @@
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>1.3.0</b></p>
+  <p>Added Reports Save Directory configuration option to permanently save dependency analysis reports to a user-specified directory.</p>
   <p><b>1.2.0</b></p>
   <p>Now integrates with RHTPA.</p>
   <p>Support exhortignore and trustify-da-ignore</p>

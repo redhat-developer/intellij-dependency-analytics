@@ -154,6 +154,16 @@ according to your preferences.
   <br >You can exclude manifest files from component analysis using glob patterns. This is useful for excluding third-party dependencies, test files, or other manifests that should not be analyzed.
   <br >Enter one pattern per line. Examples: `**/node_modules/**/package.json` to exclude all package.json files in node_modules directories, or `test/**/pom.xml` to exclude all Maven files in test directories.
 
+- **Reports Save Directory** :
+  <br >You can configure a directory path where dependency analysis reports will be saved permanently. When configured, all generated stack analysis reports will be automatically saved to this directory in addition to being displayed in the IDE.
+  <br >Reports are saved with descriptive filenames following the pattern: `report_{manifest_name}_{timestamp}.html`
+  <br >Example filenames:
+  - `report_pom.xml_2026-03-03_14-30-15.html` - Maven project report
+  - `report_package.json_2026-03-03_14-35-22.html` - NPM project report
+  - `report_go.mod_2026-03-03_14-40-18.html` - Go project report
+  <br >If no directory is specified, reports will only exist temporarily while the report tab is open (existing behavior).
+  <br >This feature is useful for maintaining a persistent history of dependency analysis reports for documentation, compliance tracking, or security auditing purposes.
+
 ## Features
 
 - **Component analysis**
