@@ -47,32 +47,12 @@ public class ReportFileManager {
                 Path sourcePath = Paths.get(htmlFilePath);
                 Path targetDir = Paths.get(saveDirectory.trim());
 
-                if (!Files.exists(targetDir)) {
-                    Files.createDirectories(targetDir);
-                    LOG.info("Created report directory: " + targetDir);
-                }
-
-                if (!Files.isDirectory(targetDir)) {
-                    LOG.error("Report save path is not a directory: " + targetDir);
-                    return;
-                }
-
-                if (!Files.isWritable(targetDir)) {
-                    LOG.error("Report save directory is not writable: " + targetDir);
-                    return;
-                }
+                Files.createDirectories(targetDir);
 
                 String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMAT);
-                String baseFilename = String.format("report_%s_%s", manifestName, timestamp);
-                String filename = baseFilename + ".html";
-
+                String filename = String.format("report_%s_%s.html", manifestName, timestamp);
                 Path targetPath = targetDir.resolve(filename);
 
-                int counter = 1;
-                while (Files.exists(targetPath)) {
-                    filename = String.format("%s_%d.html", baseFilename, counter++);
-                    targetPath = targetDir.resolve(filename);
-                }
                 Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 LOG.info("Report successfully saved to: " + targetPath);
             } catch (IOException e) {
