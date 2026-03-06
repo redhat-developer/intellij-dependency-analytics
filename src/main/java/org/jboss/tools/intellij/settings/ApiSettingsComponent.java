@@ -79,6 +79,9 @@ public class ApiSettingsComponent {
     private final static String manifestExclusionPatternsLabel = "<html>Component Analysis > Exclusion Patterns"
             + "<br>Specifies glob patterns for manifest files to exclude from component analysis."
             + "<br>One pattern per line. Examples: <b>**/node_modules/**/package.json</b>, <b>test/**/pom.xml</b></html>";
+    private final static String reportFilePathLabel = "<html>Reports > Save Directory: <b>Path</b>"
+            + "<br>Specifies directory where stack analytics reports will be saved permanently."
+            + "<br>Leave empty to use temporary files only.</html>";
 
     private final JPanel mainPanel;
 
@@ -109,6 +112,7 @@ public class ApiSettingsComponent {
     private final JBTextField imagePlatformText;
     private final JBTextArea manifestExclusionPatternsText;
     private final JBScrollPane manifestExclusionPatternsScrollPane;
+    private final TextFieldWithBrowseButton reportFilePathText;
 
 
     public ApiSettingsComponent() {
@@ -244,6 +248,13 @@ public class ApiSettingsComponent {
         manifestExclusionPatternsText.setColumns(50);
         manifestExclusionPatternsScrollPane = new JBScrollPane(manifestExclusionPatternsText);
 
+        reportFilePathText = new TextFieldWithBrowseButton();
+        reportFilePathText.addBrowseFolderListener(
+                null,
+                FileChooserDescriptorFactory.singleDir(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
         mainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel(mvnPathLabel), mvnPathText, 1, true)
                 .addVerticalGap(10)
@@ -298,6 +309,8 @@ public class ApiSettingsComponent {
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(manifestExclusionPatternsLabel), manifestExclusionPatternsScrollPane, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(reportFilePathLabel), reportFilePathText, 1, true)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
@@ -518,5 +531,14 @@ public class ApiSettingsComponent {
 
     public void setManifestExclusionPatternsText(@NotNull String text) {
         manifestExclusionPatternsText.setText(text);
+    }
+
+    @NotNull
+    public String getReportFilePathText() {
+        return reportFilePathText.getText();
+    }
+
+    public void setReportFilePathText(@NotNull String text) {
+        reportFilePathText.setText(text);
     }
 }

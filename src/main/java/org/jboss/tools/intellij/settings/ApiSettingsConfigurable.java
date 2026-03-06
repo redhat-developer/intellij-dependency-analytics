@@ -71,6 +71,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
         modified |= !settingsComponent.getGradlePathText().equals(settings.gradlePath);
         modified |= !settingsComponent.getManifestExclusionPatternsText().equals(settings.manifestExclusionPatterns);
+        modified |= !settingsComponent.getReportFilePathText().equals(settings.reportFilePath);
         return modified;
     }
 
@@ -101,6 +102,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.podmanPath = settingsComponent.getPodmanPathText();
         settings.imagePlatform = settingsComponent.getImagePlatformText();
         settings.gradlePath = settingsComponent.getGradlePathText();
+        settings.reportFilePath = settingsComponent.getReportFilePathText();
 
         // Check if exclusion patterns changed
         String oldPatterns = settings.manifestExclusionPatterns;
@@ -152,6 +154,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setImagePlatformText(settings.imagePlatform);
         settingsComponent.setGradlePathText(settings.gradlePath != null ? settings.gradlePath : "");
         settingsComponent.setManifestExclusionPatternsText(settings.manifestExclusionPatterns != null ? settings.manifestExclusionPatterns : "");
+        settingsComponent.setReportFilePathText(settings.reportFilePath != null ? settings.reportFilePath : "");
     }
 
     @Override
