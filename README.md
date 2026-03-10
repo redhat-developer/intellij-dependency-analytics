@@ -46,15 +46,8 @@ vulnerability report.
 
 **Prerequisites**
 
-- For Maven projects, analyzing a `pom.xml` file, you must have the `mvn` binary in your IDE's `PATH` environment.
-- For Node projects, analyzing a `package.json` file, you must have one of the corresponding package manager `npm`, `pnpm` or `yarn`, `node` binaries in your IDE's `PATH`
-  environment.
-- For Golang projects, analyzing a `go.mod` file, you must have the `go` binary in your IDE's `PATH` environment.
-- For Rust projects, analyzing a `Cargo.toml` file, you must have the `cargo` binary in your IDE's `PATH` environment.
-- For Python projects, analyzing a `requirements.txt` file, you must have the `python3` and `pip3` binaries in your
-  IDE's `PATH` environment.
-- For Gradle projects, analyzing a `build.gradle` file or `build.gradle.kts` file, you must have the `gradle` binary in your system's `PATH` environment.
-- For base images, analyzing a `Dockerfile`, you must have the [`syft`](https://github.com/anchore/syft?tab=readme-ov-file#installation) and [`skopeo`](https://github.com/containers/skopeo/blob/main/install.md) binaries in your IDE's `PATH` environment.
+- You must have the package manager binary for your ecosystem available in your IDE's `PATH` environment.
+  See the [Configuration](#configuration) section for the full list of supported package managers, their manifest files, and binary path settings.
 
 **Procedure**
 
@@ -84,7 +77,7 @@ according to your preferences.
 
 **Configurable parameters**
 
-- **Maven** :
+- **Maven** (`pom.xml`) :
   <br >Set the full path of the Maven executable, which allows Exhort to locate and run the `mvn` command to resolve
   dependencies for Maven projects.
   <br >Path of the `JAVA_HOME` directory is required by the `mvn` executable.
@@ -97,25 +90,25 @@ according to your preferences.
   <br >`false`: Never use the wrapper regardless of `Build,Execution,Deployment › Build Tools > Maven: Maven home path` setting
   <br >`fallback`: Use IntelliJ's `Build,Execution,Deployment › Build Tools > Maven: Maven home path` setting (default behavior)
 
-- **Node** :
+- **Node** (`package.json`) :
   <br >Set the full path of the Node executable, which allows Exhort to locate and run one of the corresponding `npm`, `pnpm` or `yarn` command to resolve
   dependencies for Node projects.
   <br >Path of the directory containing the `node` executable is required by one of the corresponding `npm`, `pnpm` or `yarn` executable.
   <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
 
-- **Golang** :
+- **Golang** (`go.mod`) :
   <br >Set the full path of the Go executable, which allows Exhort to locate and run the `go` command to resolve
   dependencies for Go projects.
   <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
   <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
   the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
 
-- **Rust** :
+- **Rust** (`Cargo.toml`) :
   <br >Set the full path of the Cargo executable, which allows Exhort to locate and run the `cargo` command to resolve
   dependencies for Rust projects.
   <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
 
-- **Python** :
+- **Python** (`requirements.txt`) :
   <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
   and run the `pip3` commands to resolve dependencies for Python projects.
   <br >Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
@@ -127,13 +120,13 @@ according to your preferences.
   specified in the manifest file will be ignored, and dependency versions will be resolved dynamically instead (this
   feature cannot be enabled when `Strictly match package version` is selected).
 
-- **Gradle** :
+- **Gradle** (`build.gradle`, `build.gradle.kts`) :
   <br >Set the full path of the Gradle executable, which allows Exhort to locate and run the `gradle` command to resolve
   dependencies for Gradle projects.
   <br >By not setting a path to the gradle binary, IntelliJ IDEA uses its default path environment to locate the file.
 
 
-- **Image** :
+- **Image** (`Dockerfile`) :
   <br >Set the full path of the Syft executable, which allows Exhort to locate and run the `syft` command to
   generate Software Bill of Materials for the base images.
   <br >Optionally, set the full path of the Docker or Podman executable. Syft will attempt to find the images in the
@@ -174,7 +167,7 @@ according to your preferences.
 ## Features
 
 - **Component analysis**
-  <br >Upon opening a manifest file, such as a `pom.xml`, `package.json`, `go.mod`, `Cargo.toml`, or `requirements.txt` file, a scan
+  <br >Upon opening a supported manifest file (see [Configuration](#configuration) for the full list), a scan
   starts the analysis process.
   The scan provides immediate inline feedback on detected security vulnerabilities for your application's dependencies.
   Such dependencies are appropriately underlined in red, and hovering over it gives you a short summary of the security
