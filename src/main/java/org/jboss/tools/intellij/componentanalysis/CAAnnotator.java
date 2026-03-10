@@ -270,22 +270,15 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
     }
 
     public static String getPackageManager(String file) {
-        switch (file) {
-            case "pom.xml":
-                return "maven";
-            case "package.json":
-                return "npm";
-            case "go.mod":
-                return "go";
-            case "requirements.txt":
-                return "python";
-            case "build.gradle":
-                return "gradle";
-            case "Cargo.toml":
-                return "cargo";
-            default:
-                return null;
-        }
+        return switch (file) {
+            case "pom.xml" -> "maven";
+            case "package.json" -> "npm";
+            case "go.mod" -> "go";
+            case "requirements.txt" -> "python";
+            case "build.gradle", "build.gradle.kts" -> "gradle";
+            case "Cargo.toml" -> "cargo";
+            default -> null;
+        };
     }
 
     public static class Info {

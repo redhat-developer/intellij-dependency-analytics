@@ -61,6 +61,6 @@ public final class GradleCAIntentionAction extends CAIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return file != null && "build.gradle".equals(file.getName());
+        return file != null && ("build.gradle".equals(file.getName()) || "build.gradle.kts".equals(file.getName()));
     }
 }

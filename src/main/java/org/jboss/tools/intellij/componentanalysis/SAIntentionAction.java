@@ -48,6 +48,7 @@ public class SAIntentionAction implements IntentionAction {
                 || "go.mod".equals(file.getName())
                 || "requirements.txt".equals(file.getName())
                 || "build.gradle".equals(file.getName())
+                || "build.gradle.kts".equals(file.getName())
                 || "Cargo.toml".equals(file.getName());
     }
 

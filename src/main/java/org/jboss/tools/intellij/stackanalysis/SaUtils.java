@@ -26,6 +26,7 @@ public class SaUtils {
                 || "go.mod".equals(manifestFile.getName())
                 || "requirements.txt".equals(manifestFile.getName())
                 || "build.gradle".equals(manifestFile.getName())
+                || "build.gradle.kts".equals(manifestFile.getName())
                 || "Cargo.toml".equals(manifestFile.getName())) {
             ApiService apiService = ServiceManager.getService(ApiService.class);
             reportLink = apiService.getStackAnalysis(
@@ -63,7 +64,7 @@ public class SaUtils {
             case "requirements.txt":
                 packageManager = "python";
                 break;
-            case "build.gradle":
+            case "build.gradle", "build.gradle.kts":
                 packageManager = "gradle";
                 break;
             case "Cargo.toml":

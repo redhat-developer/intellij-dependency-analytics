@@ -308,7 +308,7 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   ```text
   requests==2.28.1 # trustify-da-ignore
   ```
-  If you want to ignore vulnerabilities for a dependency in a `build.gradle` file, you must add `trustify-da-ignore` as a
+  If you want to ignore vulnerabilities for a dependency in a `build.gradle` or `build.gradle.kts` file, you must add `trustify-da-ignore` as a
   comment against the dependency in the manifest file.
   For example:
   ```text
