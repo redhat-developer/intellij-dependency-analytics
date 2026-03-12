@@ -41,7 +41,7 @@ public class GradleCAAnnotator extends CAAnnotator {
 
     @Override
     protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file) {
-        if ("build.gradle".equals(file.getName())) {
+        if ("build.gradle".equals(file.getName()) || "build.gradle.kts".equals(file.getName())) {
             Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
             Arrays.stream(file.getChildren())
                     .filter(e -> e instanceof Artifact)

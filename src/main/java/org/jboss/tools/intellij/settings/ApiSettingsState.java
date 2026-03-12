@@ -63,6 +63,8 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
     public String imagePlatform;
     public String gradlePath;
 
+    public String cargoPath;
+
     public String manifestExclusionPatterns;
 
     public String reportFilePath;

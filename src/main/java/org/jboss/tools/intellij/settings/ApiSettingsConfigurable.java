@@ -12,9 +12,6 @@
 package org.jboss.tools.intellij.settings;
 
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -70,6 +67,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getPodmanPathText().equals(settings.podmanPath);
         modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
         modified |= !settingsComponent.getGradlePathText().equals(settings.gradlePath);
+        modified |= !Objects.equals(settingsComponent.getCargoPathText(), settings.cargoPath);
         modified |= !settingsComponent.getManifestExclusionPatternsText().equals(settings.manifestExclusionPatterns);
         modified |= !settingsComponent.getReportFilePathText().equals(settings.reportFilePath);
         return modified;
@@ -103,6 +101,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.imagePlatform = settingsComponent.getImagePlatformText();
         settings.gradlePath = settingsComponent.getGradlePathText();
         settings.reportFilePath = settingsComponent.getReportFilePathText();
+        settings.cargoPath = settingsComponent.getCargoPathText();
 
         // Check if exclusion patterns changed
         String oldPatterns = settings.manifestExclusionPatterns;
@@ -145,14 +144,15 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setUsePythonVirtualEnvCheck(settings.usePythonVirtualEnv);
         settingsComponent.setPythonInstallBestEffortsCheck(settings.pythonInstallBestEfforts);
         settingsComponent.setPythonMatchManifestVersionsCheck(settings.pythonMatchManifestVersions);
-        settingsComponent.setSyftPathText(settings.syftPath);
-        settingsComponent.setSyftConfigPathText(settings.syftConfigPath);
-        settingsComponent.setSkopeoPathText(settings.skopeoPath);
-        settingsComponent.setSkopeoConfigPathText(settings.skopeoConfigPath);
-        settingsComponent.setDockerPathText(settings.dockerPath);
-        settingsComponent.setPodmanPathText(settings.podmanPath);
-        settingsComponent.setImagePlatformText(settings.imagePlatform);
+        settingsComponent.setSyftPathText(settings.syftPath != null ? settings.syftPath : "");
+        settingsComponent.setSyftConfigPathText(settings.syftConfigPath != null ? settings.syftConfigPath : "");
+        settingsComponent.setSkopeoPathText(settings.skopeoPath != null ? settings.skopeoPath : "");
+        settingsComponent.setSkopeoConfigPathText(settings.skopeoConfigPath != null ? settings.skopeoConfigPath : "");
+        settingsComponent.setDockerPathText(settings.dockerPath != null ? settings.dockerPath : "");
+        settingsComponent.setPodmanPathText(settings.podmanPath != null ? settings.podmanPath : "");
+        settingsComponent.setImagePlatformText(settings.imagePlatform != null ? settings.imagePlatform : "");
         settingsComponent.setGradlePathText(settings.gradlePath != null ? settings.gradlePath : "");
+        settingsComponent.setCargoPathText(settings.cargoPath != null ? settings.cargoPath : "");
         settingsComponent.setManifestExclusionPatternsText(settings.manifestExclusionPatterns != null ? settings.manifestExclusionPatterns : "");
         settingsComponent.setReportFilePathText(settings.reportFilePath != null ? settings.reportFilePath : "");
     }

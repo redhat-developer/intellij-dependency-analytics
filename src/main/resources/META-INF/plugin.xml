@@ -27,7 +27,9 @@
     <li>Yarn Berry and Classic (yarn)</li>
     <li>Gradle Kotlin and Groovy (gradle)</li>
     <li>Golang (go mod)</li>
-    <li>Python (pip) ecosystems, and base images in Dockerfile.</li>
+    <li>Python (pip) ecosystems</li>
+    <li>Rust (cargo) - TOML plugin required</li>
+    <li>Base images in Dockerfile</li>
     <br>In future releases, Red Hat plans to support other package managers.</br>
 <p>
 
@@ -35,26 +37,9 @@
 <p>
     <b>Prerequisites:</b>
 <ul>
-    <li>For Maven projects, analyzing a <code>pom.xml</code> file, you must have the <code>mvn</code> binary in your
-        IDE's <code>PATH</code> environment.
-    </li>
-    <li>For Node projects, analyzing a <code>package.json</code> file, you must have one of the corresponding package manager <code>npm</code>, <code>pnpm</code> or <code>yarn</code> and
-        <code>node</code> binaries in your IDE's <code>PATH</code> environment. It also requires a corresponding lock file to be present in order to analyze package.json files.
-    </li>
-    <li>For Golang projects, analyzing a <code>go.mod</code> file, you must have the <code>go</code> binary in your
-        IDE's <code>PATH</code> environment.
-    </li>
-    <li>For Python projects, analyzing a <code>requirements.txt</code> file, you must have the <code>python3</code> and
-        <code>pip3</code> binaries in your IDE's <code>PATH</code> environment.
-    </li>
-    <li>
-        For Gradle projects, analyzing a <code>build.gradle</code> file or <code>build.gradle.kts</code> file, you must have the <code>gradle</code> binary in your system's <code>PATH</code> environment.
-    </li>
-    <li>For base images, analyzing a <code>Dockerfile</code>, you must have the <code><a
-            href="https://github.com/anchore/syft?tab=readme-ov-file#installation" rel="noopener noreferrer"
-            target="_blank">syft</a></code> and
-        <code><a href="https://github.com/containers/skopeo/blob/main/install.md" rel="noopener noreferrer"
-                 target="_blank">skopeo</a></code> binaries in your IDE's <code>PATH</code> environment.
+    <li>You must have the package manager binary for your ecosystem available in your IDE's
+        <code>PATH</code> environment. See the <b>Configuration</b> section below for the full list
+        of supported package managers, their manifest files, and binary path settings.
     </li>
 </ul>
 <p>
@@ -98,7 +83,7 @@
     <b>Configurable parameters</b>
 <ul>
     <li>
-        <b>Maven</b>:
+        <b>Maven</b> (<code>pom.xml</code>):
         <br>Set the full path of the Maven executable, which allows Exhort to locate and execute the <code>mvn</code>
         command to resolve dependencies forMaven projects.
         <br>Path of the <code>JAVA_HOME</code> directory is required by the <code>mvn</code> executable.
@@ -115,7 +100,7 @@
     </li>
 
     <li>
-        <b>Node</b>:
+        <b>Node</b> (<code>package.json</code>):
         <br>Set the full path of the Node executable, which allows Exhort to locate and execute one of the corresponding <code>npm</code>, <code>pnpm</code> or <code>yarn</code> command
         to resolve dependencies for Node projects.
         <br>Path of the directory containing the <code>node</code> executable is required by one of the corresponding package manager <code>npm</code>, <code>pnpm</code> or <code>yarn</code>
@@ -125,7 +110,7 @@
         <br>It also requires a corresponding lock file to be present in order to analyze package.json files.
     </li>
     <li>
-        <b>Golang</b>:
+        <b>Golang</b> (<code>go.mod</code>):
         <br>Set the full path of the Go executable, which allows Exhort to locate and execute the <code>go</code>
         command to resolve dependencies for Go projects.
         <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
@@ -134,7 +119,13 @@
         detected.
     </li>
     <li>
-        <b>Python</b>:
+        <b>Rust</b> (<code>Cargo.toml</code>):
+        <br>Set the full path of the Cargo executable, which allows Exhort to locate and run the <code>cargo</code>
+        command to resolve dependencies for Rust projects.
+        <br>If the path is not provided, your IDE's <code>PATH</code> environment will be used to locate the executable.
+    </li>
+    <li>
+        <b>Python</b> (<code>requirements.txt</code>):
         <br>Set the full paths of the Python and the package installer for Python executables, which allows Exhort to
         locate and execute the <code>pip3</code> commands to resolve dependencies for Python projects.
         <br>Python 2 executables <code>python</code> and <code>pip</code> can be used instead, if the <code>Use python
@@ -152,14 +143,14 @@
         selected.
     </li>
     <li>
-        <b>Gradle</b>:
+        <b>Gradle</b> (<code>build.gradle</code>, <code>build.gradle.kts</code>):
         <br>Set the full path of the Gradle executable, which allows Exhort to locate and run the <code>gradle</code>
         command to resolve dependencies for Gradle projects.
         <br>By not setting a path to the gradle binary, IntelliJ IDEA uses its default path environment to locate
         the file.
     </li>
     <li>
-        <b>Image</b>:
+        <b>Image</b> (<code>Dockerfile</code>):
         <br>Set the full path of the Syft executable, which allows Exhort to locate and execute the <code>syft</code>
         command to generate Software Bill of Materials for the base images.
         <br>Optionally, set the full path of the Docker or Podman executable. Syft will attempt to find the images in
@@ -202,7 +193,7 @@
 <ul>
     <li>
         <b>Component analysis</b>
-        <br>Upon opening a manifest file, such as a <code>pom.xml</code> or <code>package.json</code> file, a scan
+        <br>Upon opening a supported manifest file (see <b>Configuration</b> section for the full list), a scan
         starts the analysis
         process.
         <br>The scan provides immediate inline feedback on detected security vulnerabilities for your application's
@@ -297,6 +288,14 @@
         <code>
             <br>requests==2.28.1 # trustify-da-ignore
         </code>
+        <br>If you wish to ignore vulnerabilities for a dependency in a <code>Cargo.toml</code> file, you must add
+        <code>trustify-da-ignore</code> as a comment against the dependency in the manifest file.
+        <br>For example:
+        <code>
+            <br>[dependencies]
+            <br>serde = "1.0" # trustify-da-ignore
+            <br>tokio = { version = "1.0", features = ["full"] } # trustify-da-ignore
+        </code>
     </li>
     <li>
         <b>Excluding developmental or test dependencies</b>
@@ -360,7 +359,7 @@
         <br>Patterns are configured in the plugin settings under <b>Tools > Red Hat Dependency Analytics > Manifest
         Exclusion Patterns</b>.
         <br>Examples: <code>**/node_modules/**/package.json</code>, <code>test/**/pom.xml</code>,
-        <code>vendor/**/*.go.mod</code>
+        <code>vendor/**/*.go.mod</code>, <code>target/**/Cargo.toml</code>
         <br>Right-click on any manifest file and select <b>Exclude from Component Analysis</b> to quickly add an
         exclusion pattern for that specific file.
     </li>
@@ -485,6 +484,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.json</depends>
     <depends>com.intellij.java</depends>
+    <depends>org.toml.lang</depends>
     <depends>org.jetbrains.idea.maven</depends>
     <depends>com.redhat.devtools.intellij.telemetry</depends>
 
@@ -565,6 +565,15 @@
                          implementationClass="org.jboss.tools.intellij.image.DockerfileInspection"/>
         <externalAnnotator language="rhda-dockerfile"
                            implementationClass="org.jboss.tools.intellij.image.DockerfileAnnotator"/>
+
+        <!-- Cargo.toml support for Rust projects (requires TOML bundle plugin) -->
+        <localInspection language="TOML" shortName="CargoCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Rust" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.cargo.CargoCAInspection"/>
+
+        <externalAnnotator language="TOML"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.cargo.CargoCAAnnotator"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
