@@ -23,10 +23,12 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
+import io.github.guacsec.trustifyda.ComponentAnalysisResult;
 import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import io.github.guacsec.trustifyda.api.v5.ProviderReport;
 import io.github.guacsec.trustifyda.api.v5.Source;
+import io.github.guacsec.trustifyda.license.LicenseCheck.LicenseSummary;
 import org.jboss.tools.intellij.exhort.ApiService;
 
 import java.util.Collections;
@@ -56,12 +58,22 @@ public final class CAService {
             .maximumSize(100)
             .build();
 
+    private final Cache<String, LicenseSummary> licenseCache = Caffeine.newBuilder()
+            .maximumSize(100)
+            .build();
+
     public static Map<Dependency, Map<VulnerabilitySource, DependencyReport>> getReports(String filePath) {
         return Collections.unmodifiableMap(getInstance().vulnerabilityCache.get(filePath, p -> Collections.emptyMap()));
     }
 
     public static void deleteReports(String filePath) {
         getInstance().vulnerabilityCache.invalidate(filePath);
+        getInstance().licenseCache.invalidate(filePath);
+        getInstance().dependencyCache.invalidate(filePath);
+    }
+
+    public static LicenseSummary getLicenseSummary(String filePath) {
+        return getInstance().licenseCache.getIfPresent(filePath);
     }
 
     public static boolean dependenciesModified(String filePath, Set<Dependency> dependencies) {
@@ -90,9 +102,21 @@ public final class CAService {
                 );
             }
 
-            AnalysisReport report = apiService.getComponentAnalysis(packageManager, fileName, filePath);
-            if (report == null) {
+            ComponentAnalysisResult analysisResult = apiService.getComponentAnalysis(packageManager, fileName, filePath);
+            if (analysisResult == null) {
                 throw new RuntimeException("Failed to perform component analysis, result is invalid.");
+            }
+            AnalysisReport report = analysisResult.report();
+            if (report == null) {
+                throw new RuntimeException("Failed to perform component analysis, report is invalid.");
+            }
+
+            // Cache license summary
+            LicenseSummary licenseSummary = analysisResult.licenseSummary();
+            if (licenseSummary != null) {
+                getInstance().licenseCache.put(filePath, licenseSummary);
+            } else {
+                getInstance().licenseCache.invalidate(filePath);
             }
 
             Map<Dependency, Map<VulnerabilitySource, DependencyReport>> resultMap = new ConcurrentHashMap<>();

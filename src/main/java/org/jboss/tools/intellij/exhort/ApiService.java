@@ -20,7 +20,7 @@ import com.intellij.openapi.extensions.PluginId;
 import com.intellij.util.net.ProxyConfiguration;
 import com.intellij.util.net.ProxySettings;
 import io.github.guacsec.trustifyda.Api;
-import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
+import io.github.guacsec.trustifyda.ComponentAnalysisResult;
 import io.github.guacsec.trustifyda.impl.ExhortApi;
 import org.jboss.tools.intellij.settings.ApiSettingsState;
 import org.jboss.tools.intellij.settings.MavenSettingsUtil;
@@ -28,7 +28,6 @@ import org.jboss.tools.intellij.settings.MavenSettingsUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -88,7 +87,7 @@ public final class ApiService {
         }
     }
 
-    public AnalysisReport getComponentAnalysis(final String packageManager, final String manifestName, final String manifestPath) {
+    public ComponentAnalysisResult getComponentAnalysis(final String packageManager, final String manifestName, final String manifestPath) {
         var telemetryMsg = TelemetryService.instance().action("component-analysis");
         telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
         telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
@@ -97,16 +96,11 @@ public final class ApiService {
 
         try {
             setRequestProperties(manifestName);
-            CompletableFuture<AnalysisReport> componentReport;
-            if ("go.mod".equals(manifestName) || "requirements.txt".equals(manifestName)) {
-                var manifestContent = Files.readAllBytes(Paths.get(manifestPath));
-                componentReport = exhortApi.componentAnalysis(manifestPath, manifestContent);
-            } else {
-                componentReport = exhortApi.componentAnalysis(manifestPath);
-            }
-            AnalysisReport report = componentReport.get();
+            CompletableFuture<ComponentAnalysisResult> componentReport =
+                    exhortApi.componentAnalysisWithLicense(manifestPath);
+            ComponentAnalysisResult result = componentReport.get();
             telemetryMsg.send();
-            return report;
+            return result;
         } catch (IOException | InterruptedException | ExecutionException ex) {
             telemetryMsg.error(ex);
             telemetryMsg.send();
@@ -266,6 +260,12 @@ public final class ApiService {
         if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
             System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
+        if (settings.licenseCheckEnabled) {
+            System.setProperty("TRUSTIFY_DA_LICENSE_CHECK", "true");
+        } else {
+            System.setProperty("TRUSTIFY_DA_LICENSE_CHECK", "false");
+        }
+
         Optional<String> proxyUrlOpt = getProxyUrl();
         if (proxyUrlOpt.isPresent()) {
             System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());
@@ -286,9 +286,7 @@ public final class ApiService {
         // This API only works in 2024.2+ versions.
         ProxyConfiguration proxyConfiguration = ProxySettings.getInstance().getProxyConfiguration();
 
-        if (proxyConfiguration instanceof ProxyConfiguration.StaticProxyConfiguration) {
-            ProxyConfiguration.StaticProxyConfiguration staticProxyConfiguration =
-                    (ProxyConfiguration.StaticProxyConfiguration) proxyConfiguration;
+        if (proxyConfiguration instanceof ProxyConfiguration.StaticProxyConfiguration staticProxyConfiguration) {
 
             String protocol = staticProxyConfiguration.getProtocol().toString().toLowerCase(); // e.g., "http" or "socks"
             String host = staticProxyConfiguration.getHost();

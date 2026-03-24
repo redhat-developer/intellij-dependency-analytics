@@ -18,7 +18,9 @@ import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.LicenseUpdateIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -140,6 +142,17 @@ public class GoCAAnnotator extends CAAnnotator {
     @Override
     protected boolean isQuickFixApplicable(PsiElement element) {
         return element != null && element.getContainingFile().getName().equals("go.mod");
+    }
+
+    // go.mod has no license field; license detection relies on the LICENSE file
+    @Override
+    protected @Nullable PsiElement getLicenseFieldPsiElement(PsiFile file) {
+        return null;
+    }
+
+    @Override
+    protected @Nullable LicenseUpdateIntentionAction createLicenseUpdateFix(PsiElement element, String newLicense) {
+        return null;
     }
 
     private PsiElement findElementAtLine(PsiFile file, int lineNumber) {

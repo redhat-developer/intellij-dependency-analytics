@@ -11,6 +11,8 @@
 
 package org.jboss.tools.intellij.componentanalysis.npm;
 
+import com.intellij.json.psi.JsonElementGenerator;
+import com.intellij.json.psi.JsonObject;
 import com.intellij.json.psi.JsonProperty;
 import com.intellij.json.psi.JsonStringLiteral;
 import com.intellij.psi.PsiElement;
@@ -20,8 +22,11 @@ import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.LicenseUpdateIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,5 +57,28 @@ public class NpmCAAnnotator extends CAAnnotator {
     @Override
     protected boolean isQuickFixApplicable(PsiElement element) {
         return element instanceof JsonProperty && ((JsonProperty) element).getValue() instanceof JsonStringLiteral;
+    }
+
+    @Override
+    protected @Nullable PsiElement getLicenseFieldPsiElement(PsiFile file) {
+        return Arrays.stream(file.getChildren())
+                .filter(e -> e instanceof JsonObject)
+                .flatMap(e -> Arrays.stream(e.getChildren()))
+                .filter(e -> e instanceof JsonProperty && "license".equals(((JsonProperty) e).getName()))
+                .map(e -> ((JsonProperty) e).getValue())
+                .filter(v -> v instanceof JsonStringLiteral)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    protected @Nullable LicenseUpdateIntentionAction createLicenseUpdateFix(PsiElement element, String newLicense) {
+        if (!(element instanceof JsonStringLiteral)) {
+            return null;
+        }
+        return new LicenseUpdateIntentionAction(element, newLicense, (el, license) -> {
+            JsonStringLiteral newValue = new JsonElementGenerator(el.getProject()).createStringLiteral(license);
+            el.replace(newValue);
+        });
     }
 }

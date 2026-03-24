@@ -71,6 +71,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !Objects.equals(settingsComponent.getCargoPathText(), settings.cargoPath);
         modified |= !settingsComponent.getManifestExclusionPatternsText().equals(settings.manifestExclusionPatterns);
         modified |= !settingsComponent.getReportFilePathText().equals(settings.reportFilePath);
+        modified |= settingsComponent.getLicenseCheckEnabledCheck() != settings.licenseCheckEnabled;
         return modified;
     }
 
@@ -104,14 +105,18 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.reportFilePath = settingsComponent.getReportFilePathText();
         settings.cargoPath = settingsComponent.getCargoPathText();
 
+        // Check if license check setting changed
+        boolean licenseCheckChanged = settingsComponent.getLicenseCheckEnabledCheck() != settings.licenseCheckEnabled;
+        settings.licenseCheckEnabled = settingsComponent.getLicenseCheckEnabledCheck();
+
         // Check if exclusion patterns changed
         String oldPatterns = settings.manifestExclusionPatterns;
         String newPatterns = settingsComponent.getManifestExclusionPatternsText();
         boolean patternsChanged = !Objects.equals(oldPatterns, newPatterns);
         settings.manifestExclusionPatterns = newPatterns;
 
-        // Trigger re-analysis if exclusion patterns changed
-        if (patternsChanged) {
+        // Trigger re-analysis if exclusion patterns or license check changed
+        if (patternsChanged || licenseCheckChanged) {
             refreshComponentAnalysis();
         }
     }
@@ -160,6 +165,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setCargoPathText(settings.cargoPath != null ? settings.cargoPath : "");
         settingsComponent.setManifestExclusionPatternsText(settings.manifestExclusionPatterns != null ? settings.manifestExclusionPatterns : "");
         settingsComponent.setReportFilePathText(settings.reportFilePath != null ? settings.reportFilePath : "");
+        settingsComponent.setLicenseCheckEnabledCheck(settings.licenseCheckEnabled);
     }
 
     @Override
