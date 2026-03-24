@@ -40,7 +40,15 @@ public final class PyprojectCAIntentionAction extends CAIntentionAction {
             return;
         }
 
-        if (element instanceof TomlKeyValue keyValue) {
+        if (element instanceof TomlLiteral literal) {
+            // PEP 621: string literal in dependencies array like "anyio==3.6.2"
+            String depString = PyprojectCAAnnotator.unquote(literal.getText());
+            String name = PyprojectCAAnnotator.extractPep508Name(depString);
+            if (name != null) {
+                replaceVersionLiteral(project, file, literal, name + "==" + version);
+            }
+        } else if (element instanceof TomlKeyValue keyValue) {
+            // Poetry: key-value pair like anyio = "^3.6.2"
             TomlLiteral valueLiteral = findVersionLiteral(keyValue);
             if (valueLiteral != null) {
                 replaceVersionLiteral(project, file, valueLiteral, "==" + version);
@@ -50,12 +58,11 @@ public final class PyprojectCAIntentionAction extends CAIntentionAction {
 
     private TomlLiteral findVersionLiteral(TomlKeyValue keyValue) {
         if (keyValue.getValue() instanceof TomlLiteral literal) {
-            // Simple string: "anyio==3.6.2" — this is a PEP 508 array entry, version is embedded in the string
-            // For array entries, the whole literal is the dependency string
+            // Poetry simple string: anyio = "^3.6.2"
             return literal;
         }
         if (keyValue.getValue() instanceof TomlInlineTable inlineTable) {
-            // Poetry format: anyio = {version = "^3.6.2"}
+            // Poetry inline table: anyio = {version = "^3.6.2"}
             for (TomlKeyValue entry : PsiTreeUtil.getChildrenOfTypeAsList(inlineTable, TomlKeyValue.class)) {
                 if ("version".equals(entry.getKey().getText()) && entry.getValue() instanceof TomlLiteral) {
                     return (TomlLiteral) entry.getValue();
@@ -94,6 +101,7 @@ public final class PyprojectCAIntentionAction extends CAIntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
-        return file != null && "pyproject.toml".equals(file.getName()) && element instanceof TomlKeyValue;
+        return file != null && "pyproject.toml".equals(file.getName())
+                && (element instanceof TomlKeyValue || element instanceof TomlLiteral);
     }
 }

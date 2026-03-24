@@ -380,9 +380,9 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   You can create an alternative file to `requirements.txt`, for example, a `requirements-dev.txt` or
   a `requirements-test.txt` file where you can add the development or test dependencies there.
 
-  For `pyproject.toml`, only production dependencies from `[project.dependencies]` (PEP 621) and
-  `[tool.poetry.dependencies]` are analyzed. Optional dependencies (`[project.optional-dependencies]`)
-  and Poetry group dependencies (`[tool.poetry.group.*.dependencies]`) are excluded.
+  For `pyproject.toml`, dependencies from `[project.dependencies]` (PEP 621),
+  `[project.optional-dependencies]`, and `[tool.poetry.dependencies]` are analyzed.
+  Poetry group dependencies (`[tool.poetry.group.*.dependencies]`) are excluded.
 
 
 - **Excluding manifest files with patterns**

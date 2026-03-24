@@ -80,6 +80,8 @@ public class PyprojectCAAnnotator extends CAAnnotator {
             String tablePath = getTablePath(header);
             if ("project".equals(tablePath)) {
                 parsePep621Dependencies(table, ignoredDeps, resultMap);
+            } else if ("project.optional-dependencies".equals(tablePath)) {
+                parseOptionalDependencies(table, ignoredDeps, resultMap);
             } else if ("tool.poetry.dependencies".equals(tablePath)) {
                 parsePoetryDependencies(table, ignoredDeps, resultMap);
             }
@@ -100,15 +102,17 @@ public class PyprojectCAAnnotator extends CAAnnotator {
 
     @Override
     protected boolean isQuickFixApplicable(PsiElement element) {
-        return element instanceof TomlKeyValue &&
-               element.getContainingFile() != null &&
-               PYPROJECT_TOML.equals(element.getContainingFile().getName());
+        if (element.getContainingFile() == null || !PYPROJECT_TOML.equals(element.getContainingFile().getName())) {
+            return false;
+        }
+        // Poetry: key-value pair like anyio = "^3.6.2"
+        if (element instanceof TomlKeyValue) {
+            return true;
+        }
+        // PEP 621: string literal in dependencies array like "anyio==3.6.2"
+        return element instanceof TomlLiteral;
     }
 
-    /**
-     * Parses PEP 621 [project] dependencies array.
-     * Format: dependencies = ["anyio==3.6.2", "flask>=2.0.3"]
-     */
     private void parsePep621Dependencies(TomlTable projectTable, Set<String> ignoredDeps,
                                           Map<Dependency, List<PsiElement>> resultMap) {
         List<TomlKeyValue> keyValues = PsiTreeUtil.getChildrenOfTypeAsList(projectTable, TomlKeyValue.class);
@@ -131,10 +135,35 @@ public class PyprojectCAAnnotator extends CAAnnotator {
                 }
                 String version = extractPep508Version(depString);
                 Dependency dp = new Dependency(PYPI, null, name.toLowerCase(), version);
-                // Use the parent TomlKeyValue of the array as element for annotation,
-                // but we need to find or create a suitable element. Use the literal itself
-                // wrapped through the array's parent key-value.
-                resultMap.computeIfAbsent(dp, k -> new LinkedList<>()).add(kv);
+                resultMap.computeIfAbsent(dp, k -> new LinkedList<>()).add(literal);
+            }
+        }
+    }
+
+    /**
+     * Parses PEP 621 [project.optional-dependencies] table.
+     * Format: dev = ["pytest>=7.0", "black"], security = ["certifi>=2023.7"]
+     */
+    private void parseOptionalDependencies(TomlTable optDepsTable, Set<String> ignoredDeps,
+                                            Map<Dependency, List<PsiElement>> resultMap) {
+        List<TomlKeyValue> groups = PsiTreeUtil.getChildrenOfTypeAsList(optDepsTable, TomlKeyValue.class);
+        for (TomlKeyValue group : groups) {
+            TomlValue value = group.getValue();
+            if (!(value instanceof TomlArray array)) {
+                continue;
+            }
+            for (TomlValue element : array.getElements()) {
+                if (!(element instanceof TomlLiteral literal)) {
+                    continue;
+                }
+                String depString = unquote(literal.getText());
+                String name = extractPep508Name(depString);
+                if (name == null || ignoredDeps.contains(name.toLowerCase())) {
+                    continue;
+                }
+                String version = extractPep508Version(depString);
+                Dependency dp = new Dependency(PYPI, null, name.toLowerCase(), version);
+                resultMap.computeIfAbsent(dp, k -> new LinkedList<>()).add(literal);
             }
         }
     }
@@ -280,7 +309,7 @@ public class PyprojectCAAnnotator extends CAAnnotator {
         return keyText;
     }
 
-    private static String unquote(String text) {
+    static String unquote(String text) {
         if (text != null && text.length() >= 2) {
             if ((text.startsWith("\"") && text.endsWith("\"")) ||
                     (text.startsWith("'") && text.endsWith("'"))) {
