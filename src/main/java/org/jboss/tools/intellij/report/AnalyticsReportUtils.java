@@ -69,17 +69,17 @@ public class AnalyticsReportUtils {
         }
 
         // refreshAndFindFileByPath is a slow VFS operation prohibited on EDT.
-        // Dispatch to a background thread; once the VirtualFile is obtained,
-        // trigger an async refresh whose callback opens the file back on the EDT.
+        // Dispatch to a background thread; once the VirtualFile is obtained, switch back to EDT to open it.
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(reportFile.getAbsolutePath());
             if (virtualFile == null) {
                 LOG.error("Dependency Analytics Report file is not created.");
                 return;
             }
-            // refresh(async=true) runs the refresh on a background thread and
-            // invokes the callback on the EDT when done.
-            virtualFile.refresh(true, true, () -> instance.openFile(virtualFile, true, false));
+            // refreshAndFindFileByPath already performed a synchronous refresh and fully
+            // registered the file with the VFS — no second refresh is needed.
+            // Switch to EDT to open the editor tab.
+            ApplicationManager.getApplication().invokeLater(() -> instance.openFile(virtualFile, true, false));
         });
     }
 

@@ -24,6 +24,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.intellij.serviceContainer.AlreadyDisposedException;
 import org.jboss.tools.intellij.report.AnalyticsReportUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,10 +83,15 @@ public class SaAction extends AnAction {
 
                     if (manifestDetails != null) {
                         ApplicationManager.getApplication().invokeLater(() -> {
+                            if (project.isDisposed()) {
+                                return;
+                            }
                             try {
                                 AnalyticsReportUtils analyticsReportUtils = new AnalyticsReportUtils();
                                 // Open custom editor window which will load SA Report in browser attached to it.
                                 analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                            } catch (AlreadyDisposedException e) {
+                                // Project was disposed between the isDisposed() check and getInstance() — ignore silently.
                             } catch (Exception e) {
                                 logger.error(e);
                                 Messages.showErrorDialog(event.getProject(),
