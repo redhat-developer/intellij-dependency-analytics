@@ -232,7 +232,7 @@ public final class ImageService {
                             ApplicationManager.getApplication().invokeLater(() -> {
                                 try {
                                     var analyticsReportUtils = new AnalyticsReportUtils();
-                                    analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                                    analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails, project);
                                 } catch (Exception e) {
                                     LOGGER.error(e);
                                     Messages.showErrorDialog(project,

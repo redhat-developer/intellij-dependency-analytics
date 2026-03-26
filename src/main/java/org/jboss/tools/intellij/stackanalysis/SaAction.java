@@ -89,7 +89,7 @@ public class SaAction extends AnAction {
                             try {
                                 AnalyticsReportUtils analyticsReportUtils = new AnalyticsReportUtils();
                                 // Open custom editor window which will load SA Report in browser attached to it.
-                                analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                                analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails, project);
                             } catch (AlreadyDisposedException e) {
                                 // Project was disposed between the isDisposed() check and getInstance() — ignore silently.
                             } catch (Exception e) {

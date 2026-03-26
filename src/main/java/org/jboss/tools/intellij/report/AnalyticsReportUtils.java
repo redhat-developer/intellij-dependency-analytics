@@ -13,11 +13,15 @@ package org.jboss.tools.intellij.report;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.serviceContainer.AlreadyDisposedException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -40,9 +44,10 @@ public class AnalyticsReportUtils {
      *
      * @param instance        An instance of FileEditorManager.
      * @param manifestDetails Manifest file details.
+     * @param project         The project owning the editor; used as a disposal guard.
      * @throws IOException In case of process failure
      */
-    public void openCustomEditor(FileEditorManager instance, JsonObject manifestDetails) throws IOException {
+    public void openCustomEditor(FileEditorManager instance, JsonObject manifestDetails, Project project) throws IOException {
 
         // Close custom editor if already opened in previous run,
         // if it's a different manifest file with same name then don't close existing one and open a new tab.
@@ -71,15 +76,29 @@ public class AnalyticsReportUtils {
         // refreshAndFindFileByPath is a slow VFS operation prohibited on EDT.
         // Dispatch to a background thread; once the VirtualFile is obtained, switch back to EDT to open it.
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            if (project.isDisposed()) {
+                return;
+            }
             VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(reportFile.getAbsolutePath());
             if (virtualFile == null) {
                 LOG.error("Dependency Analytics Report file is not created.");
+                ApplicationManager.getApplication().invokeLater(() ->
+                        Messages.showErrorDialog(project,
+                                "Dependency Analytics Report file could not be created.",
+                                "Error"),
+                        ModalityState.defaultModalityState());
                 return;
             }
             // refreshAndFindFileByPath already performed a synchronous refresh and fully
             // registered the file with the VFS — no second refresh is needed.
-            // Switch to EDT to open the editor tab.
-            ApplicationManager.getApplication().invokeLater(() -> instance.openFile(virtualFile, true, false));
+            // Switch to EDT to open the editor tab, guarded by project disposal.
+            ApplicationManager.getApplication().invokeLater(() -> {
+                try {
+                    instance.openFile(virtualFile, true, false);
+                } catch (AlreadyDisposedException e) {
+                    // Project was disposed after the runnable was scheduled — ignore.
+                }
+            }, ModalityState.defaultModalityState(), project.getDisposed());
         });
     }
 
