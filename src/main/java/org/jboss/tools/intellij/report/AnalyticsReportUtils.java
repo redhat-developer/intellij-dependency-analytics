@@ -12,6 +12,8 @@ package org.jboss.tools.intellij.report;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
@@ -26,10 +28,15 @@ import java.io.Writer;
 
 public class AnalyticsReportUtils {
 
+    private static final Logger LOG = Logger.getInstance(AnalyticsReportUtils.class);
+
     /**
      * <p>Open a custom editor window.</p>
      *
      * <p>The custom editor window will open a file which will have browser attached to it.</p>
+     *
+     * <p>Must be called on the EDT. The slow VFS operation ({@code refreshAndFindFileByPath})
+     * is dispatched internally to a background thread to avoid blocking the EDT.</p>
      *
      * @param instance        An instance of FileEditorManager.
      * @param manifestDetails Manifest file details.
@@ -39,9 +46,11 @@ public class AnalyticsReportUtils {
 
         // Close custom editor if already opened in previous run,
         // if it's a different manifest file with same name then don't close existing one and open a new tab.
+        // NOTE: must run before file creation so that showParent flag is included in the written content.
         manifestDetails = closeCustomEditor(instance, manifestDetails);
 
         // Create a temp file in which is registered with AnalyticsReportEditorProvider.
+        // Standard Java file I/O — not a VFS operation, safe on EDT.
         File reportFile = File.createTempFile("exhort-", "_" + manifestDetails.get("manifestName").getAsString() + ".ar");
 
         //Save the Analytics Report URL in file, which will be loaded in browser
@@ -59,18 +68,18 @@ public class AnalyticsReportUtils {
             );
         }
 
-        // Create a virtual file from report file
-        VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(reportFile.getAbsolutePath());
-
-        // Refresh the cached file from the physical file system.
-        // if Virtual file is already opened in editor window from previous run then refresh file from physical file
-        // else old web page will be shown in editor window.
-        if (virtualFile == null) {
-            throw new PlatformDetectionException("Dependency Analytics Report file is not created.");
-        }
-        virtualFile.refresh(true, true, () -> {
-            // Open the virtual file in editor window, which will show the analytics report.
-            instance.openFile(virtualFile, true, false);
+        // refreshAndFindFileByPath is a slow VFS operation prohibited on EDT.
+        // Dispatch to a background thread; once the VirtualFile is obtained,
+        // trigger an async refresh whose callback opens the file back on the EDT.
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            VirtualFile virtualFile = LocalFileSystem.getInstance().refreshAndFindFileByPath(reportFile.getAbsolutePath());
+            if (virtualFile == null) {
+                LOG.error("Dependency Analytics Report file is not created.");
+                return;
+            }
+            // refresh(async=true) runs the refresh on a background thread and
+            // invokes the callback on the EDT when done.
+            virtualFile.refresh(true, true, () -> instance.openFile(virtualFile, true, false));
         });
     }
 
