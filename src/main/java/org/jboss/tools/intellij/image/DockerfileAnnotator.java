@@ -287,7 +287,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
 
                     var updated = imageService.performAnalysis(new HashSet<>(images), info.getFile().getProject());
 
-                    ApplicationManager.getApplication().runReadAction(() -> {
+                    ApplicationManager.getApplication().invokeLater(() -> {
                         if (updated) {
                             LOG.info("Refresh vulnerabilities");
                             try {

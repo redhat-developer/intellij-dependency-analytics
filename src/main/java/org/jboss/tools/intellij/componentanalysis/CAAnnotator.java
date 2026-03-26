@@ -79,7 +79,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, Ma
                                 dependencies,
                                 info.getFile());
 
-                        ApplicationManager.getApplication().runReadAction(() -> {
+                        ApplicationManager.getApplication().invokeLater(() -> {
                             if (updated) {
                                 LOG.info("Refresh dependencies");
                                 try {

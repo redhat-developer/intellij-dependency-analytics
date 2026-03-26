@@ -62,7 +62,7 @@ public class SAIntentionAction implements IntentionAction {
             if (manifestDetails != null) {
                 try {
                     AnalyticsReportUtils analyticsReportUtils = new AnalyticsReportUtils();
-                    analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails);
+                    analyticsReportUtils.openCustomEditor(FileEditorManager.getInstance(project), manifestDetails, project);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }

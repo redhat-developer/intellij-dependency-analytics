@@ -16,6 +16,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
+import com.intellij.serviceContainer.AlreadyDisposedException;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
@@ -116,11 +117,15 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
     }
 
     private void refreshComponentAnalysis() {
-        ApplicationManager.getApplication().runReadAction(() -> {
+        ApplicationManager.getApplication().invokeLater(() -> {
             Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
             for (Project project : openProjects) {
                 if (!project.isDisposed()) {
-                    DaemonCodeAnalyzer.getInstance(project).restart();
+                    try {
+                        DaemonCodeAnalyzer.getInstance(project).restart();
+                    } catch (AlreadyDisposedException e) {
+                        // Project was disposed between the isDisposed() check and restart() — ignore.
+                    }
                 }
             }
         });
