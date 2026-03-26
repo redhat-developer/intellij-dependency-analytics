@@ -116,7 +116,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
     }
 
     private void refreshComponentAnalysis() {
-        ApplicationManager.getApplication().runReadAction(() -> {
+        ApplicationManager.getApplication().invokeLater(() -> {
             Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
             for (Project project : openProjects) {
                 if (!project.isDisposed()) {
