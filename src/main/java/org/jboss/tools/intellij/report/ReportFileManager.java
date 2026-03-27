@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.jboss.tools.intellij.report;
 
+import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jboss.tools.intellij.settings.ApiSettingsState;
@@ -26,6 +28,7 @@ public class ReportFileManager {
 
     private static final Logger LOG = Logger.getInstance(ReportFileManager.class);
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+    private static final String NOTIFICATION_GROUP_ID = "Red Hat Dependency Analytics";
 
     /**
      * Save a copy of the report to user-configured directory if specified.
@@ -47,7 +50,33 @@ public class ReportFileManager {
                 Path sourcePath = Paths.get(htmlFilePath);
                 Path targetDir = Paths.get(saveDirectory.trim());
 
-                Files.createDirectories(targetDir);
+                if (!Files.exists(targetDir)) {
+                    String message = "Report save directory does not exist: " + targetDir;
+                    LOG.warn(message);
+                    NotificationGroupManager.getInstance()
+                            .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                            .createNotification(
+                                    "Dependency Analytics Report",
+                                    message + ". Please create the directory or update the path in Settings > Tools > Red Hat Dependency Analytics.",
+                                    NotificationType.WARNING
+                            )
+                            .notify(null);
+                    return;
+                }
+
+                if (!Files.isDirectory(targetDir)) {
+                    String message = "Report save path is not a directory: " + targetDir;
+                    LOG.warn(message);
+                    NotificationGroupManager.getInstance()
+                            .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                            .createNotification(
+                                    "Dependency Analytics Report",
+                                    message + ". Please update the path in Settings > Tools > Red Hat Dependency Analytics.",
+                                    NotificationType.WARNING
+                            )
+                            .notify(null);
+                    return;
+                }
 
                 String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMAT);
                 String filename = String.format("report_%s_%s.html", manifestName, timestamp);
@@ -57,8 +86,24 @@ public class ReportFileManager {
                 LOG.info("Report successfully saved to: " + targetPath);
             } catch (IOException e) {
                 LOG.error("Failed to save report copy", e);
+                NotificationGroupManager.getInstance()
+                        .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                        .createNotification(
+                                "Dependency Analytics Report",
+                                "Failed to save report: " + e.getMessage(),
+                                NotificationType.WARNING
+                        )
+                        .notify(null);
             } catch (Exception e) {
                 LOG.error("Unexpected error during report save", e);
+                NotificationGroupManager.getInstance()
+                        .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                        .createNotification(
+                                "Dependency Analytics Report",
+                                "Unexpected error saving report: " + e.getMessage(),
+                                NotificationType.WARNING
+                        )
+                        .notify(null);
             }
         });
     }
