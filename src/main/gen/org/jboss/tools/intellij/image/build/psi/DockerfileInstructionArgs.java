@@ -14,6 +14,9 @@ public interface DockerfileInstructionArgs extends PsiElement {
   PsiElement getAnyChar();
 
   @Nullable
+  PsiElement getComment();
+
+  @Nullable
   PsiElement getIdentifier();
 
   @Nullable

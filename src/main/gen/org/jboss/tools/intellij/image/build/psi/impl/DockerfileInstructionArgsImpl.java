@@ -41,6 +41,12 @@ public class DockerfileInstructionArgsImpl extends ASTWrapperPsiElement implemen
 
   @Override
   @Nullable
+  public PsiElement getComment() {
+    return findChildByType(COMMENT);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getIdentifier() {
     return findChildByType(IDENTIFIER);
   }

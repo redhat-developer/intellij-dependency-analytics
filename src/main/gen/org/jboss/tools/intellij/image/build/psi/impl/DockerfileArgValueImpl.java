@@ -41,6 +41,12 @@ public class DockerfileArgValueImpl extends ASTWrapperPsiElement implements Dock
 
   @Override
   @Nullable
+  public PsiElement getImageNameToken() {
+    return findChildByType(IMAGE_NAME_TOKEN);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getString() {
     return findChildByType(STRING);
   }
