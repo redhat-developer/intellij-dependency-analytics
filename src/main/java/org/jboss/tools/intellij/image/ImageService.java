@@ -200,7 +200,7 @@ public final class ImageService {
     }
 
     JsonObject performImageAnalysis(List<BaseImage> images, VirtualFile dockerfile) {
-        if (DockerfileFileType.INSTANCE.equals(dockerfile.getFileType())) {
+        if (DockerfileFileType.isDockerfile(dockerfile)) {
             var reportLink = generateAnalysisHtmlReport(new HashSet<>(images)).toUri().toString();
 
             var manifestDetails = new JsonObject();

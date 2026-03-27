@@ -40,7 +40,7 @@ public class UBIIntentionAction implements IntentionAction {
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile psiFile) {
-        return DockerfileFileType.INSTANCE.equals(psiFile.getFileType());
+        return DockerfileFileType.isDockerfile(psiFile);
     }
 
     @Override
