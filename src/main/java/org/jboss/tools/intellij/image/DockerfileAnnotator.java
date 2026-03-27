@@ -256,8 +256,8 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
 
     @Override
     public @Nullable Info collectInformation(@NotNull PsiFile file) {
-        // Only process our custom Dockerfile type
-        if (!DockerfileFileType.INSTANCE.equals(file.getFileType())) {
+        // Only process Dockerfile files
+        if (!DockerfileFileType.isDockerfile(file)) {
             return null;
         }
 

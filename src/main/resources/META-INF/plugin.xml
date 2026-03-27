@@ -560,6 +560,11 @@
                   implementationClass="org.jboss.tools.intellij.image.build.filetype.DockerfileFileType"/>
         <lang.parserDefinition language="rhda-dockerfile"
                                implementationClass="org.jboss.tools.intellij.image.build.psi.DockerfileParserDefinition"/>
+        <!-- Override file type detection so Dockerfiles always use our custom parser
+             instead of the bundled TextMate Docker grammar. The TextMate file type
+             implements PlainTextLikeFileType which causes IntelliJ to skip
+             ExternalAnnotator execution, preventing vulnerability analysis. -->
+        <fileTypeOverrider implementation="org.jboss.tools.intellij.image.build.filetype.DockerfileFileTypeOverrider"/>
 
         <localInspection language="rhda-dockerfile" shortName="DockerfileInspection"
                          displayName="Red Hat Dependency Analytics dockerfile analysis"

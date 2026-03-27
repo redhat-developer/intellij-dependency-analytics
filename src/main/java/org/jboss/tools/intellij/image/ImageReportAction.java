@@ -37,7 +37,7 @@ public class ImageReportAction extends AnAction {
     @Override
     public void update(@NotNull AnActionEvent event) {
         var psiFile = event.getData(CommonDataKeys.PSI_FILE);
-        if (psiFile != null && DockerfileFileType.INSTANCE.equals(psiFile.getFileType())) {
+        if (DockerfileFileType.isDockerfile(psiFile)) {
             event.getPresentation().setEnabledAndVisible(true);
         } else {
             event.getPresentation().setEnabledAndVisible(false);

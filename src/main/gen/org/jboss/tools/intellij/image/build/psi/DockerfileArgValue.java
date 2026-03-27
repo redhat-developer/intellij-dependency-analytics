@@ -14,6 +14,9 @@ public interface DockerfileArgValue extends PsiElement {
   PsiElement getIdentifier();
 
   @Nullable
+  PsiElement getImageNameToken();
+
+  @Nullable
   PsiElement getString();
 
   @Nullable

@@ -21,11 +21,12 @@ import com.intellij.psi.TokenType;
 %}
 
 // Whitespace and line endings
+LINE_CONTINUATION = "\\"[ \t]*\r?\n
 WHITESPACE = [ \t\f]+
 NEWLINE = \r?\n
 
-// Comments
-COMMENT = "#"[^\r\n]*
+// Comments (include trailing newline so comments inside multi-line instructions don't break continuation)
+COMMENT = "#"[^\r\n]*(\r?\n)?
 
 // Keywords (case insensitive)
 FROM = [Ff][Rr][Oo][Mm]
@@ -42,6 +43,11 @@ EXPOSE = [Ee][Xx][Pp][Oo][Ss][Ee]
 VOLUME = [Vv][Oo][Ll][Uu][Mm][Ee]
 USER = [Uu][Ss][Ee][Rr]
 LABEL = [Ll][Aa][Bb][Ee][Ll]
+MAINTAINER = [Mm][Aa][Ii][Nn][Tt][Aa][Ii][Nn][Ee][Rr]
+HEALTHCHECK = [Hh][Ee][Aa][Ll][Tt][Hh][Cc][Hh][Ee][Cc][Kk]
+SHELL = [Ss][Hh][Ee][Ll][Ll]
+STOPSIGNAL = [Ss][Tt][Oo][Pp][Ss][Ii][Gg][Nn][Aa][Ll]
+ONBUILD = [Oo][Nn][Bb][Uu][Ii][Ll][Dd]
 
 // Platform option
 PLATFORM_FLAG = "--platform"
@@ -74,6 +80,7 @@ IMAGE_NAME_TOKEN = [a-zA-Z0-9._\-/]+
 %%
 
 <YYINITIAL> {
+  {LINE_CONTINUATION}  { return TokenType.WHITE_SPACE; }
   {WHITESPACE}        { return TokenType.WHITE_SPACE; }
   {NEWLINE}           { return DockerfileTypes.NEWLINE; }
   {COMMENT}           { return DockerfileTypes.COMMENT; }
@@ -92,6 +99,11 @@ IMAGE_NAME_TOKEN = [a-zA-Z0-9._\-/]+
   {VOLUME}            { return DockerfileTypes.VOLUME; }
   {USER}              { return DockerfileTypes.USER; }
   {LABEL}             { return DockerfileTypes.LABEL; }
+  {MAINTAINER}        { return DockerfileTypes.MAINTAINER; }
+  {HEALTHCHECK}       { return DockerfileTypes.HEALTHCHECK; }
+  {SHELL}             { return DockerfileTypes.SHELL; }
+  {STOPSIGNAL}        { return DockerfileTypes.STOPSIGNAL; }
+  {ONBUILD}           { return DockerfileTypes.ONBUILD; }
 
   {PLATFORM_FLAG}     { return DockerfileTypes.PLATFORM_FLAG; }
 
@@ -101,13 +113,13 @@ IMAGE_NAME_TOKEN = [a-zA-Z0-9._\-/]+
   {LBRACE}            { return DockerfileTypes.LBRACE; }
   {RBRACE}            { return DockerfileTypes.RBRACE; }
 
-  {ANY_CHAR}          { return DockerfileTypes.ANY_CHAR; }
-
   {STRING}            { return DockerfileTypes.STRING; }
   {PLATFORM}          { return DockerfileTypes.PLATFORM; }
   {VERSION}           { return DockerfileTypes.VERSION; }
   {IDENTIFIER}        { return DockerfileTypes.IDENTIFIER; }
   {IMAGE_NAME_TOKEN}  { return DockerfileTypes.IMAGE_NAME_TOKEN; }
+
+  {ANY_CHAR}          { return DockerfileTypes.ANY_CHAR; }
 
   [^]                 { return TokenType.BAD_CHARACTER; }
 }

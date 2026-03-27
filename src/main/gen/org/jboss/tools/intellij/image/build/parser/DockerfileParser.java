@@ -80,7 +80,7 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STRING | IDENTIFIER | VERSION | variableRef
+  // STRING | IDENTIFIER | VERSION | IMAGE_NAME_TOKEN | variableRef
   public static boolean argValue(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "argValue")) return false;
     boolean r;
@@ -88,6 +88,7 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, STRING);
     if (!r) r = consumeToken(b, IDENTIFIER);
     if (!r) r = consumeToken(b, VERSION);
+    if (!r) r = consumeToken(b, IMAGE_NAME_TOKEN);
     if (!r) r = variableRef(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -235,7 +236,7 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STRING | IDENTIFIER | VERSION | IMAGE_NAME_TOKEN | OTHER_TOKEN | COLON | EQUALS | DOLLAR | LBRACE | RBRACE | PLATFORM_FLAG | PLATFORM | ANY_CHAR | variableRef
+  // STRING | IDENTIFIER | VERSION | IMAGE_NAME_TOKEN | OTHER_TOKEN | COLON | EQUALS | DOLLAR | LBRACE | RBRACE | PLATFORM_FLAG | PLATFORM | ANY_CHAR | COMMENT | variableRef
   public static boolean instructionArgs(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "instructionArgs")) return false;
     boolean r;
@@ -253,13 +254,14 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, PLATFORM_FLAG);
     if (!r) r = consumeToken(b, PLATFORM);
     if (!r) r = consumeToken(b, ANY_CHAR);
+    if (!r) r = consumeToken(b, COMMENT);
     if (!r) r = variableRef(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // instruction | COMMENT | NEWLINE
+  // instruction | COMMENT | NEWLINE | unknownLine
   public static boolean item(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "item")) return false;
     boolean r;
@@ -267,12 +269,29 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
     r = instruction(b, l + 1);
     if (!r) r = consumeToken(b, COMMENT);
     if (!r) r = consumeToken(b, NEWLINE);
+    if (!r) r = unknownLine(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // (RUN | COPY | ADD | WORKDIR | CMD | ENTRYPOINT | ENV | EXPOSE | VOLUME | USER | LABEL) instructionArgs*
+  // instructionArgs+
+  private static boolean unknownLine(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "unknownLine")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = instructionArgs(b, l + 1);
+    while (r) {
+      int c = current_position_(b);
+      if (!instructionArgs(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "unknownLine", c)) break;
+    }
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (RUN | COPY | ADD | WORKDIR | CMD | ENTRYPOINT | ENV | EXPOSE | VOLUME | USER | LABEL | MAINTAINER | HEALTHCHECK | SHELL | STOPSIGNAL | ONBUILD) instructionArgs*
   public static boolean otherInstruction(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "otherInstruction")) return false;
     boolean r;
@@ -283,7 +302,7 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // RUN | COPY | ADD | WORKDIR | CMD | ENTRYPOINT | ENV | EXPOSE | VOLUME | USER | LABEL
+  // RUN | COPY | ADD | WORKDIR | CMD | ENTRYPOINT | ENV | EXPOSE | VOLUME | USER | LABEL | MAINTAINER | HEALTHCHECK | SHELL | STOPSIGNAL | ONBUILD
   private static boolean otherInstruction_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "otherInstruction_0")) return false;
     boolean r;
@@ -298,6 +317,11 @@ public class DockerfileParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, VOLUME);
     if (!r) r = consumeToken(b, USER);
     if (!r) r = consumeToken(b, LABEL);
+    if (!r) r = consumeToken(b, MAINTAINER);
+    if (!r) r = consumeToken(b, HEALTHCHECK);
+    if (!r) r = consumeToken(b, SHELL);
+    if (!r) r = consumeToken(b, STOPSIGNAL);
+    if (!r) r = consumeToken(b, ONBUILD);
     return r;
   }
 
