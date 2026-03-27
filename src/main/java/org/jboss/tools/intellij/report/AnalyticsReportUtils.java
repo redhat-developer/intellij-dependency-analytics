@@ -69,7 +69,8 @@ public class AnalyticsReportUtils {
             String actualFilePath = htmlFilePath.substring(7); // Remove "file://" prefix
             ReportFileManager.saveReportCopy(
                 actualFilePath,
-                manifestDetails.get("manifestName").getAsString()
+                manifestDetails.get("manifestName").getAsString(),
+                project
             );
         }
 

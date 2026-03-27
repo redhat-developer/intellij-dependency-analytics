@@ -490,6 +490,7 @@
     <depends>com.redhat.devtools.intellij.telemetry</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Red Hat Dependency Analytics" displayType="BALLOON"/>
         <fileEditorProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorProvider"/>
         <editorTabTitleProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorTabTitleProvider"
                                 order="first"/>

@@ -10,8 +10,12 @@
  ******************************************************************************/
 package org.jboss.tools.intellij.report;
 
+import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.Nullable;
 import org.jboss.tools.intellij.settings.ApiSettingsState;
 
 import java.io.IOException;
@@ -26,14 +30,16 @@ public class ReportFileManager {
 
     private static final Logger LOG = Logger.getInstance(ReportFileManager.class);
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+    private static final String NOTIFICATION_GROUP_ID = "Red Hat Dependency Analytics";
 
     /**
      * Save a copy of the report to user-configured directory if specified.
      *
      * @param htmlFilePath Path to the temporary HTML report file
      * @param manifestName Name of the manifest file (e.g., "pom.xml")
+     * @param project      The project context for scoping notifications (maybe null)
      */
-    public static void saveReportCopy(String htmlFilePath, String manifestName) {
+    public static void saveReportCopy(String htmlFilePath, String manifestName, @Nullable Project project) {
         ApiSettingsState settings = ApiSettingsState.getInstance();
         String saveDirectory = settings.reportFilePath;
 
@@ -42,12 +48,51 @@ public class ReportFileManager {
             return;
         }
 
+        Project effectiveProject = project != null && !project.isDisposed() ? project : null;
+
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             try {
                 Path sourcePath = Paths.get(htmlFilePath);
                 Path targetDir = Paths.get(saveDirectory.trim());
 
-                Files.createDirectories(targetDir);
+                if (!Files.exists(targetDir)) {
+                    String message = "Report save directory does not exist: " + targetDir;
+                    NotificationGroupManager.getInstance()
+                            .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                            .createNotification(
+                                    "Dependency Analytics Report",
+                                    message + ". Please create the directory or update the path in Settings > Tools > Red Hat Dependency Analytics.",
+                                    NotificationType.ERROR
+                            )
+                            .notify(effectiveProject);
+                    return;
+                }
+
+                if (!Files.isDirectory(targetDir)) {
+                    String message = "Report save path is not a directory: " + targetDir;
+                    NotificationGroupManager.getInstance()
+                            .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                            .createNotification(
+                                    "Dependency Analytics Report",
+                                    message + ". Please update the path in Settings > Tools > Red Hat Dependency Analytics.",
+                                    NotificationType.ERROR
+                            )
+                            .notify(effectiveProject);
+                    return;
+                }
+
+                if (!Files.isWritable(targetDir)) {
+                    String message = "Report save directory is not writable: " + targetDir;
+                    NotificationGroupManager.getInstance()
+                            .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                            .createNotification(
+                                    "Dependency Analytics Report",
+                                    message + ". Please check directory permissions or update the path in Settings > Tools > Red Hat Dependency Analytics.",
+                                    NotificationType.ERROR
+                            )
+                            .notify(effectiveProject);
+                    return;
+                }
 
                 String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMAT);
                 String filename = String.format("report_%s_%s.html", manifestName, timestamp);
@@ -56,9 +101,23 @@ public class ReportFileManager {
                 Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 LOG.info("Report successfully saved to: " + targetPath);
             } catch (IOException e) {
-                LOG.error("Failed to save report copy", e);
+                NotificationGroupManager.getInstance()
+                        .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                        .createNotification(
+                                "Dependency Analytics Report",
+                                "Failed to save report: " + e.getMessage(),
+                                NotificationType.ERROR
+                        )
+                        .notify(effectiveProject);
             } catch (Exception e) {
-                LOG.error("Unexpected error during report save", e);
+                NotificationGroupManager.getInstance()
+                        .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                        .createNotification(
+                                "Dependency Analytics Report",
+                                "Unexpected error saving report: " + e.getMessage(),
+                                NotificationType.ERROR
+                        )
+                        .notify(effectiveProject);
             }
         });
     }
