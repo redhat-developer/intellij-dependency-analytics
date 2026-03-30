@@ -17,6 +17,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.NlsContexts;
 import com.intellij.serviceContainer.AlreadyDisposedException;
+import org.jboss.tools.intellij.componentanalysis.CAService;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JComponent;
@@ -117,6 +118,9 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
 
         // Trigger re-analysis if exclusion patterns or license check changed
         if (patternsChanged || licenseCheckChanged) {
+            if (licenseCheckChanged) {
+                CAService.invalidateAllCaches();
+            }
             refreshComponentAnalysis();
         }
     }

@@ -72,6 +72,12 @@ public final class CAService {
         getInstance().dependencyCache.invalidate(filePath);
     }
 
+    public static void invalidateAllCaches() {
+        getInstance().vulnerabilityCache.invalidateAll();
+        getInstance().licenseCache.invalidateAll();
+        getInstance().dependencyCache.invalidateAll();
+    }
+
     public static LicenseSummary getLicenseSummary(String filePath) {
         return getInstance().licenseCache.getIfPresent(filePath);
     }

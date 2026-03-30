@@ -39,6 +39,7 @@ import org.jboss.tools.intellij.settings.ApiSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -266,10 +267,12 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                 .tooltip(tooltip)
                 .range(licenseElement);
 
-        // Use the SPDX ID for replacement so the manifest matches what the client compares against
-        LicenseUpdateIntentionAction fix = createLicenseUpdateFix(licenseElement, fileSpdxId);
-        if (fix != null) {
-            builder.withFix(fix);
+        // Only offer quick-fix when a real SPDX ID is available
+        if (fileSpdxId != null) {
+            LicenseUpdateIntentionAction fix = createLicenseUpdateFix(licenseElement, fileSpdxId);
+            if (fix != null) {
+                builder.withFix(fix);
+            }
         }
 
         builder.create();
@@ -333,8 +336,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
         Map<Dependency, List<PsiElement>> noVersionMap = allDependencies.entrySet().stream()
                 .collect(Collectors.toMap(
                         e -> new Dependency(e.getKey(), false),
-                        Map.Entry::getValue,
-                        (o1, o2) -> o1));
+                        e -> new ArrayList<>(e.getValue()),
+                        (l1, l2) -> { l1.addAll(l2); return l1; }));
 
         for (IncompatibleDependency incompatible : licenseSummary.incompatibleDependencies()) {
             try {
@@ -363,10 +366,11 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                 String message = buildLicenseWarningMessage(licenseNames, projectLicenseName, reason);
                 String tooltip = buildLicenseWarningTooltip(licenseNames, projectLicenseName, reason);
 
+                String wrappedTooltip = "<html>" + tooltip + "</html>";
                 for (PsiElement element : elements) {
                     if (element != null) {
                         holder.newAnnotation(HighlightSeverity.WARNING, message)
-                                .tooltip(tooltip)
+                                .tooltip(wrappedTooltip)
                                 .range(element)
                                 .create();
                     }
@@ -392,12 +396,13 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
             return nameNode.asText();
         }
         // Fall back to SPDX ID
-        return extractSpdxId(licenseDetails);
+        String spdxId = extractSpdxId(licenseDetails);
+        return spdxId != null ? spdxId : "unknown";
     }
 
-    private static String extractSpdxId(@Nullable JsonNode licenseDetails) {
+    private static @Nullable String extractSpdxId(@Nullable JsonNode licenseDetails) {
         if (licenseDetails == null) {
-            return "unknown";
+            return null;
         }
         // Try identifiers array for the SPDX ID (e.g., "Apache-2.0", "MIT")
         JsonNode identifiers = licenseDetails.get("identifiers");
@@ -408,12 +413,12 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                 return idNode.asText();
             }
         }
-        // Fall back to name
-        JsonNode nameNode = licenseDetails.get("name");
-        if (nameNode != null && !nameNode.isNull() && !nameNode.asText().isBlank()) {
-            return nameNode.asText();
+        // Fall back to SPDX expression if available
+        JsonNode exprNode = licenseDetails.get("expression");
+        if (exprNode != null && !exprNode.isNull() && !exprNode.asText().isBlank()) {
+            return exprNode.asText();
         }
-        return "unknown";
+        return null;
     }
 
     private static String buildLicenseWarningMessage(String depLicense, String projectLicense, String reason) {
