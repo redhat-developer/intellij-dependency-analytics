@@ -146,7 +146,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                         String name = getDependencyString(reportOptional.get().getRef().purl());
 
                         StringBuilder messageBuilder = new StringBuilder(name);
-                        StringBuilder tooltipBuilder = new StringBuilder("<html>").append("<p>").append(name).append("</p>");
+                        StringBuilder tooltipBuilder = new StringBuilder("<html>").append("<p>").append(escapeHtml(name)).append("</p>");
                         Map<VulnerabilitySource, DependencyReport> quickfixes = new HashMap<>();
 
                         reports.forEach((source, report) -> {
@@ -158,7 +158,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                                     messageBuilder.append(source.getProvider())
                                             .append(" vulnerability info: ");
                                     tooltipBuilder.append("<p>")
-                                            .append(source.getProvider())
+                                            .append(escapeHtml(source.getProvider()))
                                             .append(" vulnerability info:</p>");
                                 } else {
                                     messageBuilder.append(source.getSource())
@@ -166,9 +166,9 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                                             .append(source.getProvider())
                                             .append(") vulnerability info: ");
                                     tooltipBuilder.append("<p>")
-                                            .append(source.getSource())
+                                            .append(escapeHtml(source.getSource()))
                                             .append(" (")
-                                            .append(source.getProvider())
+                                            .append(escapeHtml(source.getProvider()))
                                             .append(") vulnerability info:</p>");
                                 }
 
@@ -184,7 +184,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                                     messageBuilder.append(", Highest severity: ")
                                             .append(severity);
                                     tooltipBuilder.append("<p>Highest severity: ")
-                                            .append(severity)
+                                            .append(escapeHtml(severity))
                                             .append("</p>");
                                 }
                             }
@@ -258,8 +258,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
         String message = "License mismatch: manifest declares \"" + manifestLicense
                 + "\" but LICENSE file contains \"" + fileLicense + "\"";
         String tooltip = "<html><p>License mismatch:</p>"
-                + "<p>Manifest declares: <b>" + manifestLicense + "</b></p>"
-                + "<p>LICENSE file contains: <b>" + fileLicense + "</b></p></html>";
+                + "<p>Manifest declares: <b>" + escapeHtml(manifestLicense) + "</b></p>"
+                + "<p>LICENSE file contains: <b>" + escapeHtml(fileLicense) + "</b></p></html>";
 
         AnnotationBuilder builder = holder
                 .newAnnotation(HighlightSeverity.ERROR, message)
@@ -425,9 +425,17 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
 
     private static String buildLicenseWarningTooltip(String depLicense, String projectLicense, String reason) {
         return "<p>License compatibility warning:</p>"
-                + "<p>Dependency license: " + depLicense + "</p>"
-                + "<p>Project license: " + projectLicense + "</p>"
-                + "<p>" + reason + "</p>";
+                + "<p>Dependency license: " + escapeHtml(depLicense) + "</p>"
+                + "<p>Project license: " + escapeHtml(projectLicense) + "</p>"
+                + "<p>" + escapeHtml(reason) + "</p>";
+    }
+
+    private static String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;");
     }
 
     @NotNull
@@ -555,8 +563,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
     }
 
     public static class AnnotationData {
-        Map<Dependency, Result> results;
-        Map<Dependency, List<PsiElement>> allDependencies;
+        private final Map<Dependency, Result> results;
+        private final Map<Dependency, List<PsiElement>> allDependencies;
 
         public AnnotationData(Map<Dependency, Result> results, Map<Dependency, List<PsiElement>> allDependencies) {
             this.results = results;
