@@ -330,6 +330,36 @@ public class PyprojectCAAnnotator extends CAAnnotator {
         return null;
     }
 
+    static String extractPep508Extras(String depString) {
+        if (depString == null || depString.isEmpty()) {
+            return null;
+        }
+        Matcher nameMatcher = PEP508_NAME_PATTERN.matcher(depString.trim());
+        if (!nameMatcher.find()) {
+            return null;
+        }
+        String afterName = depString.substring(nameMatcher.end()).trim();
+        if (afterName.startsWith("[")) {
+            int closeBracket = afterName.indexOf(']');
+            if (closeBracket >= 0) {
+                return afterName.substring(0, closeBracket + 1);
+            }
+        }
+        return null;
+    }
+
+    static String extractPep508Markers(String depString) {
+        if (depString == null || depString.isEmpty()) {
+            return null;
+        }
+        int semiColon = depString.indexOf(';');
+        if (semiColon >= 0) {
+            String markers = depString.substring(semiColon).trim();
+            return markers.isEmpty() ? null : markers;
+        }
+        return null;
+    }
+
     static String extractPep508Version(String depString) {
         if (depString == null || depString.isEmpty()) {
             return null;
@@ -346,6 +376,11 @@ public class PyprojectCAAnnotator extends CAAnnotator {
             if (closeBracket >= 0) {
                 afterName = afterName.substring(closeBracket + 1).trim();
             }
+        }
+        // Strip environment markers (everything after ';')
+        int semiColon = afterName.indexOf(';');
+        if (semiColon >= 0) {
+            afterName = afterName.substring(0, semiColon).trim();
         }
         if (afterName.isEmpty()) {
             return null;

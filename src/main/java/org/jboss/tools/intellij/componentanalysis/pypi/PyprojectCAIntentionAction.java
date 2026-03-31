@@ -45,7 +45,17 @@ public final class PyprojectCAIntentionAction extends CAIntentionAction {
             String depString = PyprojectCAAnnotator.unquote(literal.getText());
             String name = PyprojectCAAnnotator.extractPep508Name(depString);
             if (name != null) {
-                replaceVersionLiteral(project, file, literal, name + "==" + version);
+                String extras = PyprojectCAAnnotator.extractPep508Extras(depString);
+                String markers = PyprojectCAAnnotator.extractPep508Markers(depString);
+                StringBuilder newDep = new StringBuilder(name);
+                if (extras != null) {
+                    newDep.append(extras);
+                }
+                newDep.append("==").append(version);
+                if (markers != null) {
+                    newDep.append(" ").append(markers);
+                }
+                replaceVersionLiteral(project, file, literal, newDep.toString());
             }
         } else if (element instanceof TomlKeyValue keyValue) {
             // Poetry: key-value pair like anyio = "^3.6.2"
