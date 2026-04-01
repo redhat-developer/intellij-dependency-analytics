@@ -70,6 +70,10 @@ public class CargoCAAnnotator extends CAAnnotator {
 
     @Override
     protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file) {
+        if (!"Cargo.toml".equals(file.getName())) {
+            return Map.of();
+        }
+
         Map<Dependency, List<PsiElement>> resultMap = new HashMap<>();
 
         Set<String> commentIgnoredDeps = getIgnoredDependencies(file);
