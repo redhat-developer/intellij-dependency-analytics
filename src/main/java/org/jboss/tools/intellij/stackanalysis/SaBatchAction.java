@@ -21,8 +21,9 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.notification.NotificationGroupManager;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.serviceContainer.AlreadyDisposedException;
 import org.jboss.tools.intellij.componentanalysis.ManifestExclusionManager;
 import org.jboss.tools.intellij.exhort.ApiService;
@@ -39,6 +40,7 @@ import java.util.List;
  */
 public class SaBatchAction extends AnAction {
     private static final Logger logger = Logger.getInstance(SaBatchAction.class);
+    private static final String NOTIFICATION_GROUP_ID = "Red Hat Dependency Analytics";
 
     @Override
     public @NotNull ActionUpdateThread getActionUpdateThread() {
@@ -60,18 +62,25 @@ public class SaBatchAction extends AnAction {
 
         String basePath = project.getBasePath();
         if (basePath == null) {
-            Messages.showErrorDialog(project, "Cannot determine project base path.", "Error");
+            NotificationGroupManager.getInstance()
+                    .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                    .createNotification(
+                            "Batch Workspace Analysis",
+                            "Cannot determine project base path.",
+                            NotificationType.ERROR)
+                    .notify(project);
             return;
         }
 
         Path baseDirPath = Path.of(basePath);
         if (!isSupportedWorkspace(baseDirPath)) {
-            Messages.showWarningDialog(project,
-                    "No supported workspace detected in the project root.\n\n"
-                            + "Batch analysis requires one of:\n"
-                            + "  • JS/TS workspace (package.json + lock file)\n"
-                            + "  • Cargo workspace (Cargo.toml + Cargo.lock)",
-                    "Batch Analysis Not Available");
+            NotificationGroupManager.getInstance()
+                    .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                    .createNotification(
+                            "Batch Workspace Analysis",
+                            "No supported workspace detected. Batch analysis requires a JS/TS workspace (package.json + lock file) or a Cargo workspace (Cargo.toml + Cargo.lock).",
+                            NotificationType.WARNING)
+                    .notify(project);
             return;
         }
 
@@ -110,17 +119,25 @@ public class SaBatchAction extends AnAction {
                             // Project was disposed — ignore silently.
                         } catch (Exception e) {
                             logger.error(e);
-                            Messages.showErrorDialog(project,
-                                    "Can't open report: " + e.getLocalizedMessage(),
-                                    "Error");
+                            NotificationGroupManager.getInstance()
+                                    .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                                    .createNotification(
+                                            "Batch Workspace Analysis",
+                                            "Can't open report: " + e.getLocalizedMessage(),
+                                            NotificationType.ERROR)
+                                    .notify(project);
                         }
                     });
                 } catch (RuntimeException ex) {
                     logger.error(ex);
                     ApplicationManager.getApplication().invokeLater(() ->
-                            Messages.showErrorDialog(project,
-                                    "Batch analysis failed: " + ex.getLocalizedMessage(),
-                                    "Error"));
+                            NotificationGroupManager.getInstance()
+                                    .getNotificationGroup(NOTIFICATION_GROUP_ID)
+                                    .createNotification(
+                                            "Batch Workspace Analysis",
+                                            "Batch analysis failed: " + ex.getLocalizedMessage(),
+                                            NotificationType.ERROR)
+                                    .notify(project));
                 }
             }
         });
