@@ -65,6 +65,10 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
 
     public String cargoPath;
 
+    public String batchConcurrency = "10";
+    public boolean batchContinueOnError = true;
+    public boolean batchMetadata = true;
+
     public String manifestExclusionPatterns;
 
     public String reportFilePath;

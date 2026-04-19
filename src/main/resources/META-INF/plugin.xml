@@ -597,6 +597,17 @@
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </group>
 
+        <group id="saBatchAnalysis-group">
+            <action id="saBatchAnalysis" text="Batch Workspace Analysis Report"
+                    class="org.jboss.tools.intellij.stackanalysis.SaBatchAction"
+                    icon="/images/report-icon.png"/>
+
+            <separator/>
+
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </group>
+
         <group id="imageAnalysis-group">
             <action id="imageAnalysis" text="Image Analytics Report"
                     class="org.jboss.tools.intellij.image.ImageReportAction"

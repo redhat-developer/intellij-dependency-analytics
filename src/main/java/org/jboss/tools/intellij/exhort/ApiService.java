@@ -29,7 +29,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -76,6 +79,36 @@ public final class ApiService {
             setRequestProperties(manifestName);
             var htmlContent = exhortApi.stackAnalysisHtml(manifestPath);
             var tmpFile = Files.createTempFile("exhort_", ".html");
+            Files.write(tmpFile, htmlContent.get());
+
+            telemetryMsg.send();
+            return tmpFile;
+
+        } catch (IOException | InterruptedException | ExecutionException exc) {
+            telemetryMsg.error(exc);
+            telemetryMsg.send();
+            throw new RuntimeException(exc);
+        }
+    }
+
+    /**
+     * Performs batch stack analysis on all workspace members in the given directory,
+     * returning the path to a temporary HTML report file.
+     *
+     * @param workspacePath the workspace root directory path
+     * @param ignorePatterns glob patterns for paths to exclude from workspace discovery
+     * @return the path to the generated HTML report file
+     */
+    public Path getBatchStackAnalysis(final String workspacePath, final List<String> ignorePatterns) {
+        var telemetryMsg = TelemetryService.instance().action("batch-stack-analysis");
+        telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
+        telemetryMsg.property(TelemetryKeys.TRUST_DA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
+
+        try {
+            setBatchRequestProperties();
+            Set<String> ignorePatternsSet = new HashSet<>(ignorePatterns);
+            var htmlContent = exhortApi.stackAnalysisBatchHtml(Path.of(workspacePath), ignorePatternsSet);
+            var tmpFile = Files.createTempFile("exhort_batch_", ".html");
             Files.write(tmpFile, htmlContent.get());
 
             telemetryMsg.send();
@@ -266,6 +299,64 @@ public final class ApiService {
         if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
             System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
+        Optional<String> proxyUrlOpt = getProxyUrl();
+        if (proxyUrlOpt.isPresent()) {
+            System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());
+        } else {
+            System.clearProperty("TRUSTIFY_DA_PROXY_URL");
+        }
+    }
+
+    void setBatchRequestProperties() {
+        String ideName = ApplicationInfo.getInstance().getFullApplicationName();
+        PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
+        if (pluginDescriptor != null) {
+            String pluginName = pluginDescriptor.getName() + " " + pluginDescriptor.getVersion();
+            System.setProperty("TRUST_DA_SOURCE", ideName + " / " + pluginName);
+        } else {
+            System.setProperty("TRUST_DA_SOURCE", ideName);
+        }
+
+        ApiSettingsState settings = ApiSettingsState.getInstance();
+        System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
+
+        setBackendUrl();
+
+        if (settings.batchConcurrency != null && !settings.batchConcurrency.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_BATCH_CONCURRENCY", settings.batchConcurrency);
+        } else {
+            System.setProperty("TRUSTIFY_DA_BATCH_CONCURRENCY", "10");
+        }
+        System.setProperty("TRUSTIFY_DA_CONTINUE_ON_ERROR", String.valueOf(settings.batchContinueOnError));
+        System.setProperty("TRUSTIFY_DA_BATCH_METADATA", String.valueOf(settings.batchMetadata));
+
+        // Set tool paths needed for batch analysis
+        if (settings.npmPath != null && !settings.npmPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_NPM_PATH", settings.npmPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_NPM_PATH");
+        }
+        if (settings.yarnPath != null && !settings.yarnPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_YARN_PATH", settings.yarnPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_YARN_PATH");
+        }
+        if (settings.nodePath != null && !settings.nodePath.isBlank()) {
+            System.setProperty("NODE_HOME", settings.nodePath);
+        } else {
+            System.clearProperty("NODE_HOME");
+        }
+        if (settings.pnpmPath != null && !settings.pnpmPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_PNPM_PATH", settings.pnpmPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_PNPM_PATH");
+        }
+        if (settings.cargoPath != null && !settings.cargoPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_CARGO_PATH", settings.cargoPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_CARGO_PATH");
+        }
+
         Optional<String> proxyUrlOpt = getProxyUrl();
         if (proxyUrlOpt.isPresent()) {
             System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());

@@ -69,6 +69,9 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getImagePlatformText().equals(settings.imagePlatform);
         modified |= !settingsComponent.getGradlePathText().equals(settings.gradlePath);
         modified |= !Objects.equals(settingsComponent.getCargoPathText(), settings.cargoPath);
+        modified |= !Objects.equals(settingsComponent.getBatchConcurrencyText(), settings.batchConcurrency);
+        modified |= settingsComponent.getBatchContinueOnErrorCheck() != settings.batchContinueOnError;
+        modified |= settingsComponent.getBatchMetadataCheck() != settings.batchMetadata;
         modified |= !settingsComponent.getManifestExclusionPatternsText().equals(settings.manifestExclusionPatterns);
         modified |= !settingsComponent.getReportFilePathText().equals(settings.reportFilePath);
         return modified;
@@ -103,6 +106,9 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.gradlePath = settingsComponent.getGradlePathText();
         settings.reportFilePath = settingsComponent.getReportFilePathText();
         settings.cargoPath = settingsComponent.getCargoPathText();
+        settings.batchConcurrency = settingsComponent.getBatchConcurrencyText();
+        settings.batchContinueOnError = settingsComponent.getBatchContinueOnErrorCheck();
+        settings.batchMetadata = settingsComponent.getBatchMetadataCheck();
 
         // Check if exclusion patterns changed
         String oldPatterns = settings.manifestExclusionPatterns;
@@ -158,6 +164,9 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setImagePlatformText(settings.imagePlatform != null ? settings.imagePlatform : "");
         settingsComponent.setGradlePathText(settings.gradlePath != null ? settings.gradlePath : "");
         settingsComponent.setCargoPathText(settings.cargoPath != null ? settings.cargoPath : "");
+        settingsComponent.setBatchConcurrencyText(settings.batchConcurrency != null ? settings.batchConcurrency : "10");
+        settingsComponent.setBatchContinueOnErrorCheck(settings.batchContinueOnError);
+        settingsComponent.setBatchMetadataCheck(settings.batchMetadata);
         settingsComponent.setManifestExclusionPatternsText(settings.manifestExclusionPatterns != null ? settings.manifestExclusionPatterns : "");
         settingsComponent.setReportFilePathText(settings.reportFilePath != null ? settings.reportFilePath : "");
     }
