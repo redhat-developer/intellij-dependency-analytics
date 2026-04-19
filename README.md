@@ -150,6 +150,12 @@ according to your preferences.
 - **Proxy Configuration** :
   <br >From IntelliJ IDEA Appearance & Behavior > System Settings > HTTP Proxy, you can configure a static proxy for all HTTP requests made by the plugin. This is useful when your environment requires going through a proxy to access external services. For example:`http://proxy.example.com:8080`
 
+- **Batch Analysis** :
+  <br >Configure settings for batch workspace analysis, which analyzes all packages in a JS/TS monorepo or Cargo workspace at once.
+  <br >**Concurrency**: Maximum number of concurrent analyses during batch workspace analysis (default: 10).
+  <br >**Continue on Error**: Continue analyzing remaining packages when one package analysis fails (default: enabled).
+  <br >**Include Metadata**: Include additional metadata in batch analysis results (default: enabled).
+
 - **Manifest Exclusion Patterns** :
   <br >You can exclude manifest files from component analysis using glob patterns. This is useful for excluding third-party dependencies, test files, or other manifests that should not be analyzed.
   <br >Enter one pattern per line. Examples: `**/node_modules/**/package.json` to exclude all package.json files in node_modules directories, or `test/**/pom.xml` to exclude all Maven files in test directories.
@@ -376,6 +382,16 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   - `**/build.gradle` - Excludes all Gradle build files
     <br >Right-click on any manifest file and select **Exclude from Component Analysis** to quickly add an exclusion pattern for that specific file.
 
+
+- **Batch Workspace Analysis**
+  <br >For JS/TS monorepos (npm, pnpm, yarn workspaces) and Cargo workspaces, you can run a batch analysis that scans
+  all packages in the workspace at once and generates a combined vulnerability report.
+  <br >To run a batch analysis, right-click in the **Project** window and click **Batch Workspace Analysis Report**.
+  <br >The workspace root must contain a supported workspace layout:
+  - JS/TS workspace: `package.json` with a lock file (`package-lock.json`, `pnpm-lock.yaml`, or `yarn.lock`)
+  - Cargo workspace: `Cargo.toml` with `Cargo.lock`
+  <br >Exclusion patterns configured in **Manifest Exclusion Patterns** are applied during workspace discovery to skip
+  specific packages from the batch analysis.
 
 - **Red Hat Dependency Analytics report**
   <br >The Red Hat Dependency Analytics report is a temporary HTML file that exist if the **Red Hat Dependency Analytics

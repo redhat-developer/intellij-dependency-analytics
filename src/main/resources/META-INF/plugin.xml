@@ -61,6 +61,9 @@
             <li>Right click on a manifest file in the <b>Project</b> window, and click <b>Dependency Analytics
                 Report</b>.
             </li>
+            <li>For JS/TS monorepos or Cargo workspaces, right click in the <b>Project</b> window and click
+                <b>Batch Workspace Analysis Report</b> to analyze all packages at once.
+            </li>
         </ul>
     </li>
 </ol>
