@@ -22,7 +22,9 @@ import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.LicenseUpdateIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jetbrains.annotations.Nullable;
 import org.toml.lang.psi.TomlArray;
 import org.toml.lang.psi.TomlInlineTable;
 import org.toml.lang.psi.TomlKey;
@@ -111,6 +113,16 @@ public class PyprojectCAAnnotator extends CAAnnotator {
         }
         // PEP 621: string literal in dependencies array like "anyio==3.6.2"
         return element instanceof TomlLiteral;
+    }
+
+    @Override
+    protected @Nullable PsiElement getLicenseFieldPsiElement(PsiFile file) {
+        return null;
+    }
+
+    @Override
+    protected @Nullable LicenseUpdateIntentionAction createLicenseUpdateFix(PsiElement element, String newLicense) {
+        return null;
     }
 
     private void parsePep621Dependencies(TomlTable projectTable, Set<String> ignoredDeps,
