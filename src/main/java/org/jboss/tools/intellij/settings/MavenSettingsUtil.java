@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import org.jetbrains.idea.maven.project.MavenGeneralSettings;
 import org.jetbrains.idea.maven.project.MavenHomeType;
+import org.jetbrains.idea.maven.project.MavenProjectsManager;
 import org.jetbrains.idea.maven.project.MavenWorkspaceSettingsComponent;
 import org.jetbrains.idea.maven.project.MavenWrapper;
 
@@ -15,16 +16,17 @@ public final class MavenSettingsUtil {
         // no‑op
     }
 
+    private static Project getProject() {
+        Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
+        if (openProjects.length > 0) {
+            return openProjects[0];
+        }
+        return ProjectManager.getInstance().getDefaultProject();
+    }
+
     private static MavenGeneralSettings getMavenGeneralSettings() {
         if (mavenGeneralSettings == null) {
-            Project project;
-            Project[] openProjects = ProjectManager.getInstance().getOpenProjects();
-            if (openProjects.length > 0) {
-                project = openProjects[0];
-            } else {
-                project = ProjectManager.getInstance().getDefaultProject();
-            }
-            mavenGeneralSettings = MavenWorkspaceSettingsComponent.getInstance(project).getSettings().getGeneralSettings();
+            mavenGeneralSettings = MavenWorkspaceSettingsComponent.getInstance(getProject()).getSettings().getGeneralSettings();
         }
         return mavenGeneralSettings;
     }
@@ -41,7 +43,6 @@ public final class MavenSettingsUtil {
     }
 
     public static String getLocalRepository() {
-        MavenGeneralSettings settings = getMavenGeneralSettings();
-        return settings.getLocalRepository();
+        return MavenProjectsManager.getInstance(getProject()).getRepositoryPath().toString();
     }
 }
