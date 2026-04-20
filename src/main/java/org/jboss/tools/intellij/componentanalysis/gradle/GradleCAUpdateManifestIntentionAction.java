@@ -46,7 +46,7 @@ public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestInten
 
     private static @NotNull PsiElement getRepositoriesFromBuildGradle(PsiFile file) {
         PsiElement repositories = Arrays.stream(file.getChildren()).filter(psi -> psi instanceof LeafPsiElement)
-                .filter(psi -> ((LeafPsiElement) psi).getElementType().getDebugName().equals(BuildGradleTypes.REPOSITORIES.getDebugName())).findFirst().get();
+                .filter(psi -> ((LeafPsiElement) psi).getElementType() == BuildGradleTypes.REPOSITORIES).findFirst().get();
         return repositories;
     }
 
