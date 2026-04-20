@@ -69,6 +69,8 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
 
     public String reportFilePath;
 
+    public boolean licenseCheckEnabled = true;
+
     public static ApiSettingsState getInstance() {
         ApiSettingsState state = ApplicationManager.getApplication().getService(ApiSettingsState.class);
         if (state.rhdaToken == null || state.rhdaToken.isBlank()) {

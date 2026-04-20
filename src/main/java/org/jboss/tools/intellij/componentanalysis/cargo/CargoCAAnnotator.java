@@ -18,7 +18,9 @@ import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.LicenseUpdateIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -318,6 +320,48 @@ public class CargoCAAnnotator extends CAAnnotator {
         }
 
         return UNRESOLVED_VERSION;
+    }
+
+    @Override
+    protected @Nullable PsiElement getLicenseFieldPsiElement(PsiFile file) {
+        // Find [package] table, then "license" key-value
+        List<TomlTable> tables = PsiTreeUtil.getChildrenOfTypeAsList(file, TomlTable.class);
+        for (TomlTable table : tables) {
+            TomlTableHeader header = table.getHeader();
+            TomlKey key = header.getKey();
+            if (key == null) continue;
+            List<TomlKeySegment> segments = key.getSegments();
+            if (segments.size() == 1 && "package".equals(segments.get(0).getName())) {
+                List<TomlKeyValue> keyValues = PsiTreeUtil.getChildrenOfTypeAsList(table, TomlKeyValue.class);
+                for (TomlKeyValue kv : keyValues) {
+                    if ("license".equals(normalizeKeyName(kv.getKey().getText()))) {
+                        TomlValue value = kv.getValue();
+                        if (value instanceof TomlLiteral) {
+                            return value;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected @Nullable LicenseUpdateIntentionAction createLicenseUpdateFix(PsiElement element, String newLicense) {
+        if (!(element instanceof TomlLiteral)) {
+            return null;
+        }
+        return new LicenseUpdateIntentionAction(element, newLicense, (el, license) -> {
+            // Replace the TOML literal text (including quotes), matching CargoCAIntentionAction pattern
+            Document doc = PsiDocumentManager.getInstance(el.getProject())
+                    .getDocument(el.getContainingFile());
+            if (doc != null) {
+                int start = el.getTextRange().getStartOffset();
+                int end = el.getTextRange().getEndOffset();
+                doc.replaceString(start, end, "\"" + license + "\"");
+                PsiDocumentManager.getInstance(el.getProject()).commitDocument(doc);
+            }
+        });
     }
 
     private void parseFlatDependencies(TomlTable table, Set<String> ignoredDeps, Map<Dependency, List<PsiElement>> resultMap) {
