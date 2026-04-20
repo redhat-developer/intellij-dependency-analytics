@@ -12,6 +12,7 @@ import org.jboss.tools.intellij.componentanalysis.gradle.build.filetype.BuildGra
 import org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildGradleFile;
 import org.jboss.tools.intellij.componentanalysis.gradle.build.psi.BuildGradleTypes;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -28,6 +29,9 @@ public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestInten
     @Override
     protected void updateManifest(Project project, Editor editor, PsiFile file, DependencyReport dependency) {
         PsiElement repositories = getRepositoriesFromBuildGradle(file);
+        if (repositories == null) {
+            return;
+        }
         String repositoriesBlock = repositories.getText();
         int lastRightCurlyBracket = repositoriesBlock.lastIndexOf("}");
         repositoriesBlock = repositoriesBlock.substring(0,lastRightCurlyBracket);
@@ -44,10 +48,9 @@ public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestInten
 
     }
 
-    private static @NotNull PsiElement getRepositoriesFromBuildGradle(PsiFile file) {
-        PsiElement repositories = Arrays.stream(file.getChildren()).filter(psi -> psi instanceof LeafPsiElement)
-                .filter(psi -> ((LeafPsiElement) psi).getElementType() == BuildGradleTypes.REPOSITORIES).findFirst().get();
-        return repositories;
+    private static @Nullable PsiElement getRepositoriesFromBuildGradle(PsiFile file) {
+        return Arrays.stream(file.getChildren()).filter(psi -> psi instanceof LeafPsiElement)
+                .filter(psi -> ((LeafPsiElement) psi).getElementType() == BuildGradleTypes.REPOSITORIES).findFirst().orElse(null);
     }
 
     private static @NotNull String formatArtifactsRepository(String repositoryUrl) {
@@ -56,9 +59,12 @@ public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestInten
 
     @Override
     public boolean isAvailable(@NotNull Project project, Editor editor, PsiFile file) {
+        PsiElement repositoriesFromBuildGradle = getRepositoriesFromBuildGradle(file);
+        if (repositoriesFromBuildGradle == null) {
+            return false;
+        }
         final String mavenRhGa = "https://maven.repository.redhat.com/ga/";
         String mavenGaRepo = formatArtifactsRepository(mavenRhGa);
-        PsiElement repositoriesFromBuildGradle = getRepositoriesFromBuildGradle(file);
         return !(repositoriesFromBuildGradle.getText().contains(mavenGaRepo) || repositoriesFromBuildGradle.getText().contains(mavenRhGa));
     }
 }
