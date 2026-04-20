@@ -1,6 +1,7 @@
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+import org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask
 
 plugins {
     id("java") // Java support
@@ -99,6 +100,10 @@ val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
 
 intellijPlatform {
     pluginVerification {
+        failureLevel = listOf(
+            VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
+            VerifyPluginTask.FailureLevel.INTERNAL_API_USAGES
+        )
         ides {
             select {
                 types = listOf(IntelliJPlatformType.IntellijIdeaCommunity)
