@@ -41,7 +41,8 @@ public class SaAction extends AnAction {
             "requirements.txt",
             "build.gradle",
             "build.gradle.kts",
-            "Cargo.toml"
+            "Cargo.toml",
+            "pyproject.toml"
     );
 
     public SaAction() {

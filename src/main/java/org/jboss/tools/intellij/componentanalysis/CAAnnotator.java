@@ -524,7 +524,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
             case "pom.xml" -> "maven";
             case "package.json" -> "npm";
             case "go.mod" -> "go";
-            case "requirements.txt" -> "python";
+            case "requirements.txt", "pyproject.toml" -> "python";
             case "build.gradle", "build.gradle.kts" -> "gradle";
             case "Cargo.toml" -> "cargo";
             default -> null;
