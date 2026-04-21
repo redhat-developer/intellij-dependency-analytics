@@ -228,16 +228,12 @@ public class PyprojectCAAnnotator extends CAAnnotator {
     }
 
     private String findAssociatedDependency(PsiFile file, PsiComment comment) {
-        // Check if comment is on same line as a TomlKeyValue
         TomlKeyValue keyValue = findKeyValueOnSameLine(file, comment);
         if (keyValue != null) {
-            String keyName = keyValue.getKey().getText();
-            // If in [tool.poetry.dependencies], the key IS the dependency name
             if (isInPoetryDependencies(keyValue)) {
-                return normalizeKeyName(keyName);
+                TomlKeyValue depEntry = resolvePoetryDependencyEntry(keyValue);
+                return normalizeKeyName(depEntry.getKey().getText());
             }
-            // If key is "dependencies" in [project], check if on same line as an array element
-            // For PEP 621 array entries, the ignore comment is typically on the same line as the string literal
         }
 
         // Check array elements — PEP 621 format where comment is on the same line as a literal in the array
@@ -260,6 +256,19 @@ public class PyprojectCAAnnotator extends CAAnnotator {
             return "tool.poetry.dependencies".equals(tablePath);
         }
         return false;
+    }
+
+    private TomlKeyValue resolvePoetryDependencyEntry(TomlKeyValue keyValue) {
+        // When the comment is on an inner key of a multi-line inline table,
+        // walk up to the outer TomlKeyValue that is the actual dependency entry.
+        TomlInlineTable inlineTable = PsiTreeUtil.getParentOfType(keyValue, TomlInlineTable.class);
+        if (inlineTable != null) {
+            PsiElement parent = inlineTable.getParent();
+            if (parent instanceof TomlKeyValue outerKv) {
+                return outerKv;
+            }
+        }
+        return keyValue;
     }
 
     private TomlKeyValue findKeyValueOnSameLine(PsiFile file, PsiComment comment) {

@@ -331,6 +331,86 @@ public class PyprojectCAAnnotatorTest extends BasePlatformTestCase {
         assertTrue("Should return empty map when no dependency sections exist", deps.isEmpty());
     }
 
+    // ── Ignore comment tests ────────────────────────────────────────────────────
+
+    /** Verifies that a Poetry single-line ignore comment excludes the dependency. */
+    @Test
+    public void testPoetryIgnoreCommentSingleLine() {
+        String content = """
+                [tool.poetry.dependencies]
+                python = "^3.8"
+                anyio = "^3.6.2" # trustify-da-ignore
+                flask = ">=2.0"
+                """;
+
+        TestablePyprojectCAAnnotator annotator = new TestablePyprojectCAAnnotator();
+        PsiFile file = myFixture.configureByText("pyproject.toml", content);
+        Map<Dependency, List<PsiElement>> deps = annotator.getDependencies(file);
+
+        assertFalse("anyio should be ignored", containsDependency(deps, "anyio", "^3.6.2"));
+        assertTrue("flask should still be present", containsDependency(deps, "flask", ">=2.0"));
+    }
+
+    /** Verifies that a Poetry inline-table ignore comment on the same line excludes the dependency. */
+    @Test
+    public void testPoetryIgnoreCommentInlineTableSingleLine() {
+        String content = """
+                [tool.poetry.dependencies]
+                python = "^3.8"
+                requests = {version = "^2.28.0", optional = true} # trustify-da-ignore
+                flask = ">=2.0"
+                """;
+
+        TestablePyprojectCAAnnotator annotator = new TestablePyprojectCAAnnotator();
+        PsiFile file = myFixture.configureByText("pyproject.toml", content);
+        Map<Dependency, List<PsiElement>> deps = annotator.getDependencies(file);
+
+        assertFalse("requests should be ignored", containsDependency(deps, "requests", "^2.28.0"));
+        assertTrue("flask should still be present", containsDependency(deps, "flask", ">=2.0"));
+    }
+
+    /** Verifies that a Poetry multi-line inline-table ignore comment on an inner key excludes the dependency. */
+    @Test
+    public void testPoetryIgnoreCommentMultiLineInlineTable() {
+        String content = """
+                [tool.poetry.dependencies]
+                python = "^3.8"
+                requests = {
+                    version = "^2.28.0",  # trustify-da-ignore
+                    optional = true
+                }
+                flask = ">=2.0"
+                """;
+
+        TestablePyprojectCAAnnotator annotator = new TestablePyprojectCAAnnotator();
+        PsiFile file = myFixture.configureByText("pyproject.toml", content);
+        Map<Dependency, List<PsiElement>> deps = annotator.getDependencies(file);
+
+        assertFalse("requests should be ignored via multi-line inline table comment",
+                containsDependency(deps, "requests", "^2.28.0"));
+        assertTrue("flask should still be present", containsDependency(deps, "flask", ">=2.0"));
+    }
+
+    /** Verifies that a PEP 621 ignore comment excludes the dependency. */
+    @Test
+    public void testPep621IgnoreComment() {
+        String content = """
+                [project]
+                name = "my-app"
+                dependencies = [
+                    "anyio==3.6.2",  # trustify-da-ignore
+                    "flask>=2.0",
+                ]
+                """;
+
+        TestablePyprojectCAAnnotator annotator = new TestablePyprojectCAAnnotator();
+        PsiFile file = myFixture.configureByText("pyproject.toml", content);
+        Map<Dependency, List<PsiElement>> deps = annotator.getDependencies(file);
+
+        assertFalse("anyio should be ignored", containsDependency(deps, "anyio", "==3.6.2"));
+        assertTrue("flask should still be present", containsDependency(deps, "flask", ">=2.0"));
+    }
+
     // ── SaAction / SaUtils recognition tests ────────────────────────────────────
 
     /** Verifies that SaAction.supportedManifestFiles contains pyproject.toml. */
