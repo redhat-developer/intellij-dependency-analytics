@@ -21,7 +21,7 @@ while you build your application.
 - Gradle Kotlin and Groovy (gradle)
 - Golang (go mod)
 - Rust (cargo)
-- Python (pip) ecosystems, and base images in Dockerfile.
+- Python (pip, pyproject.toml) ecosystems, and base images in Dockerfile.
 
 In future releases, Red Hat plans to support other package managers.
 
@@ -108,7 +108,7 @@ according to your preferences.
   dependencies for Rust projects.
   <br >If the path is not provided, your IDE's `PATH` environment will be used to locate the executable.
 
-- **Python** (`requirements.txt`) :
+- **Python** (`requirements.txt`, `pyproject.toml`) :
   <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
   and run the `pip3` commands to resolve dependencies for Python projects.
   <br >Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
@@ -324,6 +324,21 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   tokio = { version = "1.0", features = ["full"] } # trustify-da-ignore
   ```
 
+  If you want to ignore vulnerabilities for a dependency in a `pyproject.toml` file, you must add `trustify-da-ignore` as a comment
+  against the dependency in the manifest file.
+  For PEP 621 format:
+  ```toml
+  [project]
+  dependencies = [
+      "anyio==3.6.2",  # trustify-da-ignore
+  ]
+  ```
+  For Poetry format:
+  ```toml
+  [tool.poetry.dependencies]
+  anyio = "^3.6.2"  # trustify-da-ignore
+  ```
+
 - **Excluding developmental or test dependencies**
   <br >Red Hat Dependency Analytics does not analyze dependencies marked as `dev` or `test`, these dependencies are
   ignored.
@@ -370,6 +385,10 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
 
   You can create an alternative file to `requirements.txt`, for example, a `requirements-dev.txt` or
   a `requirements-test.txt` file where you can add the development or test dependencies there.
+
+  For `pyproject.toml`, dependencies from `[project.dependencies]` (PEP 621),
+  `[project.optional-dependencies]`, and `[tool.poetry.dependencies]` are analyzed.
+  Poetry group dependencies (`[tool.poetry.group.*.dependencies]`) are excluded.
 
 
 - **Excluding manifest files with patterns**

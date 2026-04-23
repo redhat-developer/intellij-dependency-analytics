@@ -49,7 +49,8 @@ public class SAIntentionAction implements IntentionAction {
                 || "requirements.txt".equals(file.getName())
                 || "build.gradle".equals(file.getName())
                 || "build.gradle.kts".equals(file.getName())
-                || "Cargo.toml".equals(file.getName());
+                || "Cargo.toml".equals(file.getName())
+                || "pyproject.toml".equals(file.getName());
     }
 
     @Override

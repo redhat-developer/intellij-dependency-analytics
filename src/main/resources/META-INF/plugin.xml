@@ -584,6 +584,15 @@
 
         <externalAnnotator language="TOML"
                            implementationClass="org.jboss.tools.intellij.componentanalysis.cargo.CargoCAAnnotator"/>
+
+        <!-- pyproject.toml support for Python projects (requires TOML bundle plugin) -->
+        <localInspection language="TOML" shortName="PyprojectCAInspection"
+                         displayName="Red Hat Dependency Analytics component analysis"
+                         groupName="Python" enabledByDefault="true" level="ERROR"
+                         implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PyprojectCAInspection"/>
+
+        <externalAnnotator language="TOML"
+                           implementationClass="org.jboss.tools.intellij.componentanalysis.pypi.PyprojectCAAnnotator"/>
     </extensions>
 
     <!-- Action for running SA added in Editor window, Navigation Bar and Project View-->
