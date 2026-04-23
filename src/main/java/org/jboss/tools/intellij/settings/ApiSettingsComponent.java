@@ -90,6 +90,8 @@ public class ApiSettingsComponent {
     private final static String reportFilePathLabel = "<html>Reports > Save Directory: <b>Path</b>"
             + "<br>Specifies directory where stack analytics reports will be saved permanently."
             + "<br>Leave empty to use temporary files only.</html>";
+    private final static String licenseCheckEnabledLabel = "<html>Component Analysis > License Check"
+            + "<br>Enables license compatibility checking and notifications for incompatible dependencies.</html>";
 
     private final JPanel mainPanel;
 
@@ -125,6 +127,7 @@ public class ApiSettingsComponent {
     private final JBTextArea manifestExclusionPatternsText;
     private final JBScrollPane manifestExclusionPatternsScrollPane;
     private final TextFieldWithBrowseButton reportFilePathText;
+    private final JBCheckBox licenseCheckEnabledCheck;
 
 
     public ApiSettingsComponent() {
@@ -265,6 +268,8 @@ public class ApiSettingsComponent {
         batchContinueOnErrorCheck = new JBCheckBox("Continue analyzing when a package fails");
         batchMetadataCheck = new JBCheckBox("Include metadata in batch results");
 
+        licenseCheckEnabledCheck = new JBCheckBox("Enable license compatibility checking");
+
         manifestExclusionPatternsText = new JBTextArea();
         manifestExclusionPatternsText.setRows(5);
         manifestExclusionPatternsText.setColumns(50);
@@ -337,6 +342,9 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(batchContinueOnErrorLabel), batchContinueOnErrorCheck, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(batchMetadataLabel), batchMetadataCheck, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(licenseCheckEnabledLabel), licenseCheckEnabledCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(manifestExclusionPatternsLabel), manifestExclusionPatternsScrollPane, 1, true)
@@ -605,5 +613,13 @@ public class ApiSettingsComponent {
 
     public void setReportFilePathText(@NotNull String text) {
         reportFilePathText.setText(text);
+    }
+
+    public boolean getLicenseCheckEnabledCheck() {
+        return licenseCheckEnabledCheck.isSelected();
+    }
+
+    public void setLicenseCheckEnabledCheck(boolean selected) {
+        licenseCheckEnabledCheck.setSelected(selected);
     }
 }

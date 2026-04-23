@@ -22,7 +22,9 @@ import org.jboss.tools.intellij.componentanalysis.CAAnnotator;
 import org.jboss.tools.intellij.componentanalysis.CAIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.CAUpdateManifestIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.Dependency;
+import org.jboss.tools.intellij.componentanalysis.LicenseUpdateIntentionAction;
 import org.jboss.tools.intellij.componentanalysis.VulnerabilitySource;
+import org.jetbrains.annotations.Nullable;
 
 
 import java.util.Arrays;
@@ -145,5 +147,33 @@ public class MavenCAAnnotator extends CAAnnotator {
                     .anyMatch(c -> c instanceof XmlText);
         }
         return false;
+    }
+
+    @Override
+    protected @Nullable PsiElement getLicenseFieldPsiElement(PsiFile file) {
+        // Find <project><licenses><license><name> text element
+        return Arrays.stream(file.getChildren())
+                .filter(e -> e instanceof XmlDocument)
+                .flatMap(e -> Arrays.stream(e.getChildren()))
+                .filter(e -> e instanceof XmlTag && "project".equals(((XmlTag) e).getName()))
+                .flatMap(e -> Arrays.stream(e.getChildren()))
+                .filter(e -> e instanceof XmlTag && "licenses".equals(((XmlTag) e).getName()))
+                .flatMap(e -> Arrays.stream(e.getChildren()))
+                .filter(e -> e instanceof XmlTag && "license".equals(((XmlTag) e).getName()))
+                .flatMap(e -> Arrays.stream(e.getChildren()))
+                .filter(e -> e instanceof XmlTag && "name".equals(((XmlTag) e).getName()))
+                .flatMap(e -> Arrays.stream(((XmlTag) e).getValue().getChildren()))
+                .filter(e -> e instanceof XmlText)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    protected @Nullable LicenseUpdateIntentionAction createLicenseUpdateFix(PsiElement element, String newLicense) {
+        if (!(element instanceof XmlText)) {
+            return null;
+        }
+        return new LicenseUpdateIntentionAction(element, newLicense, (el, license) ->
+                ((XmlText) el).setValue(license));
     }
 }
