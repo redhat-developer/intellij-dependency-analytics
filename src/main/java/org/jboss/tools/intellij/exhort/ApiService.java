@@ -151,7 +151,15 @@ public final class ApiService {
         return null;
     }
 
-    private void setRequestProperties(final String manifestName) {
+    /**
+     * Sets up common request properties shared across all analysis types (stack, batch, image).
+     * Configures the plugin descriptor, backend connection, all tool paths, and proxy settings.
+     * Not all analysis types use every property configured here (e.g., batch analysis does not use
+     * Maven/Gradle/Python-specific properties, and image analysis does not use any of the package
+     * manager tool paths), but setting them unconditionally is harmless as unused properties are
+     * simply ignored by the backend.
+     */
+    public static void setCommonRequestProperties() {
         String ideName = ApplicationInfo.getInstance().getFullApplicationName();
         PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
         if (pluginDescriptor != null) {
@@ -239,13 +247,6 @@ public final class ApiService {
         } else {
             System.clearProperty("TRUSTIFY_DA_CARGO_PATH");
         }
-        if ("go.mod".equals(manifestName)) {
-            if (settings.goMatchManifestVersions) {
-                System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
-            } else {
-                System.clearProperty("MATCH_MANIFEST_VERSIONS");
-            }
-        }
         if (settings.usePython2) {
             if (settings.pythonPath != null && !settings.pythonPath.isBlank()) {
                 System.setProperty("TRUSTIFY_DA_PYTHON_PATH", settings.pythonPath);
@@ -284,16 +285,6 @@ public final class ApiService {
             System.clearProperty("TRUSTIFY_DA_PYTHON_VIRTUAL_ENV");
             System.clearProperty("TRUSTIFY_DA_PYTHON_INSTALL_BEST_EFFORTS");
         }
-        if ("requirements.txt".equals(manifestName)) {
-            if (settings.pythonMatchManifestVersions) {
-                System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
-            } else {
-                System.setProperty("MATCH_MANIFEST_VERSIONS","false");
-            }
-        }
-        if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
-            System.clearProperty("MATCH_MANIFEST_VERSIONS");
-        }
         if (settings.licenseCheckEnabled) {
             System.setProperty("TRUSTIFY_DA_LICENSE_CHECK", "true");
         } else {
@@ -308,21 +299,32 @@ public final class ApiService {
         }
     }
 
-    void setBatchRequestProperties() {
-        String ideName = ApplicationInfo.getInstance().getFullApplicationName();
-        PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
-        if (pluginDescriptor != null) {
-            String pluginName = pluginDescriptor.getName() + " " + pluginDescriptor.getVersion();
-            System.setProperty("TRUST_DA_SOURCE", ideName + " / " + pluginName);
+    private void setRequestProperties(final String manifestName) {
+        setCommonRequestProperties();
+
+        if ("go.mod".equals(manifestName)) {
+            ApiSettingsState settings = ApiSettingsState.getInstance();
+            if (settings.goMatchManifestVersions) {
+                System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
+            } else {
+                System.clearProperty("MATCH_MANIFEST_VERSIONS");
+            }
+        } else if ("requirements.txt".equals(manifestName)) {
+            ApiSettingsState settings = ApiSettingsState.getInstance();
+            if (settings.pythonMatchManifestVersions) {
+                System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
+            } else {
+                System.setProperty("MATCH_MANIFEST_VERSIONS", "false");
+            }
         } else {
-            System.setProperty("TRUST_DA_SOURCE", ideName);
+            System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
+    }
+
+    void setBatchRequestProperties() {
+        setCommonRequestProperties();
 
         ApiSettingsState settings = ApiSettingsState.getInstance();
-        System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
-
-        setBackendUrl();
-
         if (settings.batchConcurrency != null && !settings.batchConcurrency.isBlank()) {
             System.setProperty("TRUSTIFY_DA_BATCH_CONCURRENCY", settings.batchConcurrency);
         } else {
@@ -330,40 +332,6 @@ public final class ApiService {
         }
         System.setProperty("TRUSTIFY_DA_CONTINUE_ON_ERROR", String.valueOf(settings.batchContinueOnError));
         System.setProperty("TRUSTIFY_DA_BATCH_METADATA", String.valueOf(settings.batchMetadata));
-
-        // Set tool paths needed for batch analysis
-        if (settings.npmPath != null && !settings.npmPath.isBlank()) {
-            System.setProperty("TRUSTIFY_DA_NPM_PATH", settings.npmPath);
-        } else {
-            System.clearProperty("TRUSTIFY_DA_NPM_PATH");
-        }
-        if (settings.yarnPath != null && !settings.yarnPath.isBlank()) {
-            System.setProperty("TRUSTIFY_DA_YARN_PATH", settings.yarnPath);
-        } else {
-            System.clearProperty("TRUSTIFY_DA_YARN_PATH");
-        }
-        if (settings.nodePath != null && !settings.nodePath.isBlank()) {
-            System.setProperty("NODE_HOME", settings.nodePath);
-        } else {
-            System.clearProperty("NODE_HOME");
-        }
-        if (settings.pnpmPath != null && !settings.pnpmPath.isBlank()) {
-            System.setProperty("TRUSTIFY_DA_PNPM_PATH", settings.pnpmPath);
-        } else {
-            System.clearProperty("TRUSTIFY_DA_PNPM_PATH");
-        }
-        if (settings.cargoPath != null && !settings.cargoPath.isBlank()) {
-            System.setProperty("TRUSTIFY_DA_CARGO_PATH", settings.cargoPath);
-        } else {
-            System.clearProperty("TRUSTIFY_DA_CARGO_PATH");
-        }
-
-        Optional<String> proxyUrlOpt = getProxyUrl();
-        if (proxyUrlOpt.isPresent()) {
-            System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());
-        } else {
-            System.clearProperty("TRUSTIFY_DA_PROXY_URL");
-        }
     }
 
     public static void setBackendUrl() {
