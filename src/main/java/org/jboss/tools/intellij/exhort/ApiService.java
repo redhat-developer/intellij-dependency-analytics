@@ -274,6 +274,11 @@ public final class ApiService {
             System.clearProperty("TRUSTIFY_DA_PYTHON_PATH");
             System.clearProperty("TRUSTIFY_DA_PIP_PATH");
         }
+        if (settings.uvPath != null && !settings.uvPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_UV_PATH", settings.uvPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_UV_PATH");
+        }
         if (settings.usePythonVirtualEnv) {
             System.setProperty("TRUSTIFY_DA_PYTHON_VIRTUAL_ENV", "true");
             if (settings.pythonInstallBestEfforts) {

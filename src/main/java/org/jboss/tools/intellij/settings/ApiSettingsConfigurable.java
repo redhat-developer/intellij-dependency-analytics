@@ -57,6 +57,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= settingsComponent.getGoMatchManifestVersionsCheck() != settings.goMatchManifestVersions;
         modified |= !settingsComponent.getPythonPathText().equals(settings.pythonPath);
         modified |= !settingsComponent.getPipPathText().equals(settings.pipPath);
+        modified |= !Objects.equals(settingsComponent.getUvPathText(), settings.uvPath);
         modified |= settingsComponent.getUsePython2Check() != settings.usePython2;
         modified |= settingsComponent.getUsePythonVirtualEnvCheck() != settings.usePythonVirtualEnv;
         modified |= settingsComponent.getPythonInstallBestEffortsCheck() != settings.pythonInstallBestEfforts;
@@ -94,6 +95,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.goMatchManifestVersions = settingsComponent.getGoMatchManifestVersionsCheck();
         settings.pythonPath = settingsComponent.getPythonPathText();
         settings.pipPath = settingsComponent.getPipPathText();
+        settings.uvPath = settingsComponent.getUvPathText();
         settings.usePython2 = settingsComponent.getUsePython2Check();
         settings.usePythonVirtualEnv = settingsComponent.getUsePythonVirtualEnvCheck();
         settings.pythonInstallBestEfforts = settingsComponent.getPythonInstallBestEffortsCheck();
@@ -160,6 +162,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setGoMatchManifestVersionsCheck(settings.goMatchManifestVersions);
         settingsComponent.setPythonPathText(settings.pythonPath != null ? settings.pythonPath : "");
         settingsComponent.setPipPathText(settings.pipPath != null ? settings.pipPath : "");
+        settingsComponent.setUvPathText(settings.uvPath != null ? settings.uvPath : "");
         settingsComponent.setUsePython2Check(settings.usePython2);
         settingsComponent.setUsePythonVirtualEnvCheck(settings.usePythonVirtualEnv);
         settingsComponent.setPythonInstallBestEffortsCheck(settings.pythonInstallBestEfforts);

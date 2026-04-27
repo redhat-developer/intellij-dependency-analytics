@@ -56,6 +56,8 @@ public class ApiSettingsComponent {
             + "<br>Specifies absolute path of <b>python</b> executable.</html>";
     private final static String pipPathLabel = "<html>Pip > Executable: <b>Path</b>"
             + "<br>Specifies absolute path of <b>pip</b> executable.</html>";
+    private final static String uvPathLabel = "<html>uv > Executable: <b>Path</b>"
+            + "<br>Specifies absolute path of <b>uv</b> executable.</html>";
     private final static String usePython2Label = "<html>Python > Executable: <b>Version</b>"
             + "<br>Specifies if using python 2.x.</html>";
     private final static String usePythonVirtualEnvLabel = "<html>Python > Virtual Environment"
@@ -106,6 +108,7 @@ public class ApiSettingsComponent {
     private final JBCheckBox goMatchManifestVersionsCheck;
     private final TextFieldWithBrowseButton pythonPathText;
     private final TextFieldWithBrowseButton pipPathText;
+    private final TextFieldWithBrowseButton uvPathText;
     private final JBCheckBox usePython2Check;
     private final JBCheckBox usePythonVirtualEnvCheck;
     private final JBCheckBox pythonInstallBestEffortsCheck;
@@ -195,6 +198,13 @@ public class ApiSettingsComponent {
 
         pipPathText = new TextFieldWithBrowseButton();
         pipPathText.addBrowseFolderListener(
+                null,
+                FileChooserDescriptorFactory.singleFile(),
+                TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
+        );
+
+        uvPathText = new TextFieldWithBrowseButton();
+        uvPathText.addBrowseFolderListener(
                 null,
                 FileChooserDescriptorFactory.singleFile(),
                 TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT
@@ -307,6 +317,8 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(pythonPathLabel), pythonPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(pipPathLabel), pipPathText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(uvPathLabel), uvPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(usePython2Label), usePython2Check, 1, true)
                 .addVerticalGap(10)
@@ -457,6 +469,15 @@ public class ApiSettingsComponent {
 
     public void setPipPathText(@NotNull String text) {
         pipPathText.setText(text);
+    }
+
+    @NotNull
+    public String getUvPathText() {
+        return uvPathText.getText();
+    }
+
+    public void setUvPathText(@NotNull String text) {
+        uvPathText.setText(text);
     }
 
     public boolean getUsePython2Check() {
