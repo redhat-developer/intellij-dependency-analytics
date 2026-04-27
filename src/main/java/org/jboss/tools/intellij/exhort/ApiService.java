@@ -239,6 +239,11 @@ public final class ApiService {
             System.clearProperty("TRUSTIFY_DA_PYTHON_PATH");
             System.clearProperty("TRUSTIFY_DA_PIP_PATH");
         }
+        if (settings.uvPath != null && !settings.uvPath.isBlank()) {
+            System.setProperty("TRUSTIFY_DA_UV_PATH", settings.uvPath);
+        } else {
+            System.clearProperty("TRUSTIFY_DA_UV_PATH");
+        }
         if (settings.usePythonVirtualEnv) {
             System.setProperty("TRUSTIFY_DA_PYTHON_VIRTUAL_ENV", "true");
             if (settings.pythonInstallBestEfforts) {
@@ -250,14 +255,14 @@ public final class ApiService {
             System.clearProperty("TRUSTIFY_DA_PYTHON_VIRTUAL_ENV");
             System.clearProperty("TRUSTIFY_DA_PYTHON_INSTALL_BEST_EFFORTS");
         }
-        if ("requirements.txt".equals(manifestName)) {
+        if ("requirements.txt".equals(manifestName) || "pyproject.toml".equals(manifestName)) {
             if (settings.pythonMatchManifestVersions) {
                 System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
             } else {
                 System.setProperty("MATCH_MANIFEST_VERSIONS","false");
             }
         }
-        if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName)) {
+        if (!"go.mod".equals(manifestName) && !"requirements.txt".equals(manifestName) && !"pyproject.toml".equals(manifestName)) {
             System.clearProperty("MATCH_MANIFEST_VERSIONS");
         }
         if (settings.licenseCheckEnabled) {

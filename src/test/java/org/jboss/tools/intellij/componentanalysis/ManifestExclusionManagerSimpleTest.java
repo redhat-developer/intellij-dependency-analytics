@@ -104,7 +104,7 @@ public class ManifestExclusionManagerSimpleTest {
 
     @Test
     public void testGlobPatternBehavior_MultipleFileTypes() {
-        String[] manifestFiles = {"pom.xml", "package.json", "go.mod", "requirements.txt", "build.gradle", "build.gradle.kts"};
+        String[] manifestFiles = {"pom.xml", "package.json", "go.mod", "requirements.txt", "pyproject.toml", "build.gradle", "build.gradle.kts"};
         
         for (String fileName : manifestFiles) {
             PathMatcher exactMatcher = FileSystems.getDefault().getPathMatcher("glob:" + fileName);

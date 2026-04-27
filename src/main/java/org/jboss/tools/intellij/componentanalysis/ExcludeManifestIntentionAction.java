@@ -48,6 +48,7 @@ public class ExcludeManifestIntentionAction implements IntentionAction {
                 "package.json".equals(fileName) ||
                 "go.mod".equals(fileName) ||
                 "requirements.txt".equals(fileName) ||
+                "pyproject.toml".equals(fileName) ||
                 "build.gradle".equals(fileName) ||
                 "build.gradle.kts".equals(fileName) ||
                 "Cargo.toml".equals(fileName);

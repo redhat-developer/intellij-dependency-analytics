@@ -25,6 +25,7 @@ public class SaUtils {
                 || "package.json".equals(manifestFile.getName())
                 || "go.mod".equals(manifestFile.getName())
                 || "requirements.txt".equals(manifestFile.getName())
+                || "pyproject.toml".equals(manifestFile.getName())
                 || "build.gradle".equals(manifestFile.getName())
                 || "build.gradle.kts".equals(manifestFile.getName())
                 || "Cargo.toml".equals(manifestFile.getName())) {
@@ -62,6 +63,7 @@ public class SaUtils {
                 packageManager = "go";
                 break;
             case "requirements.txt":
+            case "pyproject.toml":
                 packageManager = "python";
                 break;
             case "build.gradle", "build.gradle.kts":

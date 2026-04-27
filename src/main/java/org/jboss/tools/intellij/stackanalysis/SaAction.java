@@ -39,6 +39,7 @@ public class SaAction extends AnAction {
             "package.json",
             "go.mod",
             "requirements.txt",
+            "pyproject.toml",
             "build.gradle",
             "build.gradle.kts",
             "Cargo.toml"
