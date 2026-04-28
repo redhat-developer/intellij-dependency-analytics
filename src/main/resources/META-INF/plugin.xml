@@ -616,6 +616,18 @@
 
             <separator/>
 
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </group>
+
+        <group id="generateSbom-group">
+            <action id="generateSbom" text="Generate SBOM"
+                    class="org.jboss.tools.intellij.stackanalysis.GenerateSbomAction"
+                    icon="/images/report-icon.png"/>
+            <separator/>
+
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <add-to-group group-id="NavBarToolBar" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </group>

@@ -415,6 +415,13 @@ When modifying the grammar or lexer files, you need to regenerate the parser cla
   <br >Exclusion patterns configured in **Manifest Exclusion Patterns** are applied during workspace discovery to skip
   specific packages from the batch analysis.
 
+- **Generate SBOM**
+  <br >You can generate a CycloneDX SBOM (Software Bill of Materials) from any supported manifest file.
+  Right-click on a manifest file in the editor or **Project** window, and click **Generate SBOM**.
+  A native Save File dialog will open with a default filename of `bom.json`. Choose a location to save the SBOM.
+  The generated SBOM is in CycloneDX JSON format and contains the full dependency tree of your project.
+  This operation is performed locally and does not send any data to the backend.
+
 - **Red Hat Dependency Analytics report**
   <br >The Red Hat Dependency Analytics report is a temporary HTML file that exist if the **Red Hat Dependency Analytics
   Report** tab remains open.
