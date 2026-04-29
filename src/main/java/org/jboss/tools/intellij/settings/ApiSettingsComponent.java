@@ -81,6 +81,12 @@ public class ApiSettingsComponent {
     private final static String manifestExclusionPatternsLabel = "<html>Component Analysis > Exclusion Patterns"
             + "<br>Specifies glob patterns for manifest files to exclude from component analysis."
             + "<br>One pattern per line. Examples: <b>**/node_modules/**/package.json</b>, <b>test/**/pom.xml</b></html>";
+    private final static String batchConcurrencyLabel = "<html>Batch Analysis > <b>Concurrency</b>"
+            + "<br>Maximum number of concurrent analyses during batch workspace analysis.</html>";
+    private final static String batchContinueOnErrorLabel = "<html>Batch Analysis > <b>Continue on Error</b>"
+            + "<br>Continue analyzing remaining packages when one package analysis fails.</html>";
+    private final static String batchMetadataLabel = "<html>Batch Analysis > <b>Include Metadata</b>"
+            + "<br>Include additional metadata in batch analysis results.</html>";
     private final static String reportFilePathLabel = "<html>Reports > Save Directory: <b>Path</b>"
             + "<br>Specifies directory where stack analytics reports will be saved permanently."
             + "<br>Leave empty to use temporary files only.</html>";
@@ -115,6 +121,9 @@ public class ApiSettingsComponent {
     private final TextFieldWithBrowseButton dockerPathText;
     private final TextFieldWithBrowseButton podmanPathText;
     private final JBTextField imagePlatformText;
+    private final JBTextField batchConcurrencyText;
+    private final JBCheckBox batchContinueOnErrorCheck;
+    private final JBCheckBox batchMetadataCheck;
     private final JBTextArea manifestExclusionPatternsText;
     private final JBScrollPane manifestExclusionPatternsScrollPane;
     private final TextFieldWithBrowseButton reportFilePathText;
@@ -255,6 +264,10 @@ public class ApiSettingsComponent {
 
         imagePlatformText = new JBTextField();
 
+        batchConcurrencyText = new JBTextField();
+        batchContinueOnErrorCheck = new JBCheckBox("Continue analyzing when a package fails");
+        batchMetadataCheck = new JBCheckBox("Include metadata in batch results");
+
         licenseCheckEnabledCheck = new JBCheckBox("Enable license compatibility checking");
 
         manifestExclusionPatternsText = new JBTextArea();
@@ -322,6 +335,13 @@ public class ApiSettingsComponent {
                 .addLabeledComponent(new JBLabel(podmanPathLabel), podmanPathText, 1, true)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(imagePlatformLabel), imagePlatformText, 1, true)
+                .addSeparator(10)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(batchConcurrencyLabel), batchConcurrencyText, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(batchContinueOnErrorLabel), batchContinueOnErrorCheck, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(batchMetadataLabel), batchMetadataCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(licenseCheckEnabledLabel), licenseCheckEnabledCheck, 1, true)
@@ -550,6 +570,31 @@ public class ApiSettingsComponent {
 
     public void setCargoPathText(@NotNull String text) {
         cargoPathText.setText(text);
+    }
+
+    @NotNull
+    public String getBatchConcurrencyText() {
+        return batchConcurrencyText.getText();
+    }
+
+    public void setBatchConcurrencyText(@NotNull String text) {
+        batchConcurrencyText.setText(text);
+    }
+
+    public boolean getBatchContinueOnErrorCheck() {
+        return batchContinueOnErrorCheck.isSelected();
+    }
+
+    public void setBatchContinueOnErrorCheck(boolean selected) {
+        batchContinueOnErrorCheck.setSelected(selected);
+    }
+
+    public boolean getBatchMetadataCheck() {
+        return batchMetadataCheck.isSelected();
+    }
+
+    public void setBatchMetadataCheck(boolean selected) {
+        batchMetadataCheck.setSelected(selected);
     }
 
     @NotNull

@@ -61,6 +61,9 @@
             <li>Right click on a manifest file in the <b>Project</b> window, and click <b>Dependency Analytics
                 Report</b>.
             </li>
+            <li>For JS/TS monorepos or Cargo workspaces, right click in the <b>Project</b> window and click
+                <b>Batch Workspace Analysis Report</b> to analyze all packages at once.
+            </li>
         </ul>
     </li>
 </ol>
@@ -602,6 +605,17 @@
             <separator/>
 
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <add-to-group group-id="NavBarToolBar" anchor="first"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </group>
+
+        <group id="saBatchAnalysis-group">
+            <action id="saBatchAnalysis" text="Batch Workspace Analysis Report"
+                    class="org.jboss.tools.intellij.stackanalysis.SaBatchAction"
+                    icon="/images/report-icon.png"/>
+
+            <separator/>
+
             <add-to-group group-id="NavBarToolBar" anchor="first"/>
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
         </group>

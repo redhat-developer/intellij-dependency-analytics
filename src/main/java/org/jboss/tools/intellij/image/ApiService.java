@@ -11,13 +11,9 @@
 
 package org.jboss.tools.intellij.image;
 
-import com.intellij.ide.plugins.PluginManagerCore;
-import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.extensions.PluginDescriptor;
-import com.intellij.openapi.extensions.PluginId;
 import io.github.guacsec.trustifyda.Api;
 import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
 import io.github.guacsec.trustifyda.image.ImageRef;
@@ -29,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
@@ -37,8 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.jboss.tools.intellij.exhort.ApiService.createExhortApiWithBackendUrl;
-import static org.jboss.tools.intellij.exhort.ApiService.getProxyUrl;
-import static org.jboss.tools.intellij.exhort.ApiService.setBackendUrl;
+import static org.jboss.tools.intellij.exhort.ApiService.setCommonRequestProperties;
 
 @Service(Service.Level.APP)
 public final class ApiService {
@@ -114,19 +108,9 @@ public final class ApiService {
     }
 
     private void setServiceEnvironment() {
-        var ideName = ApplicationInfo.getInstance().getFullApplicationName();
-        PluginDescriptor pluginDescriptor = PluginManagerCore.getPlugin(PluginId.getId("org.jboss.tools.intellij.analytics"));
-        if (pluginDescriptor != null) {
-            var pluginName = pluginDescriptor.getName() + " " + pluginDescriptor.getVersion();
-            System.setProperty("TRUST_DA_SOURCE", ideName + " / " + pluginName);
-        } else {
-            System.setProperty("TRUST_DA_SOURCE", ideName);
-        }
+        setCommonRequestProperties();
 
         var settings = ApiSettingsState.getInstance();
-        System.setProperty("TRUST_DA_TOKEN", settings.rhdaToken);
-
-        setBackendUrl();
 
         if (settings.syftPath != null && !settings.syftPath.isBlank()) {
             System.setProperty("TRUSTIFY_DA_SYFT_PATH", settings.syftPath);
@@ -168,13 +152,6 @@ public final class ApiService {
             System.setProperty("TRUSTIFY_DA_IMAGE_PLATFORM", settings.imagePlatform);
         } else {
             System.clearProperty("TRUSTIFY_DA_IMAGE_PLATFORM");
-        }
-
-        Optional<String> proxyUrlOpt = getProxyUrl();
-        if (proxyUrlOpt.isPresent()) {
-            System.setProperty("TRUSTIFY_DA_PROXY_URL", proxyUrlOpt.get());
-        } else {
-            System.clearProperty("TRUSTIFY_DA_PROXY_URL");
         }
     }
 }
