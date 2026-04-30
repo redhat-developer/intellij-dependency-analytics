@@ -151,6 +151,25 @@ public final class ApiService {
         return null;
     }
 
+    public String generateSbom(final String packageManager, final String manifestName, final String manifestPath) {
+        var telemetryMsg = TelemetryService.instance().action("sbom-generation");
+        telemetryMsg.property(TelemetryKeys.ECOSYSTEM.toString(), packageManager);
+        telemetryMsg.property(TelemetryKeys.PLATFORM.toString(), System.getProperty("os.name"));
+        telemetryMsg.property(TelemetryKeys.MANIFEST.toString(), manifestName);
+        telemetryMsg.property(TelemetryKeys.TRUST_DA_TOKEN.toString(), ApiSettingsState.getInstance().rhdaToken);
+
+        try {
+            setRequestProperties(manifestName);
+            String sbomJson = exhortApi.generateSbom(manifestPath);
+            telemetryMsg.send();
+            return sbomJson;
+        } catch (IOException exc) {
+            telemetryMsg.error(exc);
+            telemetryMsg.send();
+            throw new RuntimeException(exc);
+        }
+    }
+
     /**
      * Sets up common request properties shared across all analysis types (stack, batch, image).
      * Configures the plugin descriptor, backend connection, all tool paths, and proxy settings.

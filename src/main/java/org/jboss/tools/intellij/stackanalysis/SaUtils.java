@@ -16,7 +16,20 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jboss.tools.intellij.exhort.ApiService;
 
+import java.util.List;
+
 public class SaUtils {
+
+    public static final List<String> SUPPORTED_MANIFEST_FILES = List.of(
+            "pom.xml",
+            "package.json",
+            "go.mod",
+            "requirements.txt",
+            "build.gradle",
+            "build.gradle.kts",
+            "Cargo.toml",
+            "pyproject.toml"
+    );
 
     public JsonObject performSA(VirtualFile manifestFile) {
         // Get SA report for given manifest file.
