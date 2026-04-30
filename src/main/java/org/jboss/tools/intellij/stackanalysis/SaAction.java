@@ -28,22 +28,8 @@ import com.intellij.serviceContainer.AlreadyDisposedException;
 import org.jboss.tools.intellij.report.AnalyticsReportUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class SaAction extends AnAction {
     private static final Logger logger = Logger.getInstance(SaAction.class);
-
-    private static final List<String> supportedManifestFiles = Arrays.asList(
-            "pom.xml",
-            "package.json",
-            "go.mod",
-            "requirements.txt",
-            "build.gradle",
-            "build.gradle.kts",
-            "Cargo.toml",
-            "pyproject.toml"
-    );
 
     public SaAction() {
 
@@ -123,7 +109,7 @@ public class SaAction extends AnAction {
         // Check if file where context menu is opened is type of supported extension.
         // If yes then show the action for SA in menu
         if (psiFile != null) {
-            event.getPresentation().setEnabledAndVisible(supportedManifestFiles
+            event.getPresentation().setEnabledAndVisible(SaUtils.SUPPORTED_MANIFEST_FILES
                     .contains(psiFile.getName()));
         } else {
             event.getPresentation().setEnabledAndVisible(false);

@@ -35,8 +35,8 @@ public class ApiServiceTest {
 
     @Test
     public void apiServiceHasGenerateSbomMethod() throws NoSuchMethodException {
-        Method method = ApiService.class.getMethod("generateSbom", String.class, String.class);
-        assertNotNull("ApiService should have generateSbom(String, String) method", method);
+        Method method = ApiService.class.getMethod("generateSbom", String.class, String.class, String.class);
+        assertNotNull("ApiService should have generateSbom(String, String, String) method", method);
         assertEquals("generateSbom should return String", String.class, method.getReturnType());
     }
 

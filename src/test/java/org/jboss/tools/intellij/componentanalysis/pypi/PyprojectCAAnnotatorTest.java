@@ -413,20 +413,11 @@ public class PyprojectCAAnnotatorTest extends BasePlatformTestCase {
 
     // ── SaAction / SaUtils recognition tests ────────────────────────────────────
 
-    /** Verifies that SaAction.supportedManifestFiles contains pyproject.toml. */
+    /** Verifies that SUPPORTED_MANIFEST_FILES contains pyproject.toml. */
     @Test
-    public void testSaActionRecognizesPyprojectToml() throws Exception {
-        // Given the SaAction class
-        Field field = org.jboss.tools.intellij.stackanalysis.SaAction.class
-                .getDeclaredField("supportedManifestFiles");
-        field.setAccessible(true);
-
-        // When reading the supported manifest files list
-        @SuppressWarnings("unchecked")
-        List<String> manifests = (List<String>) field.get(null);
-
-        // Then pyproject.toml should be included
-        assertTrue("SaAction should recognize pyproject.toml", manifests.contains("pyproject.toml"));
+    public void testSaActionRecognizesPyprojectToml() {
+        assertTrue("SUPPORTED_MANIFEST_FILES should contain pyproject.toml",
+                org.jboss.tools.intellij.stackanalysis.SaUtils.SUPPORTED_MANIFEST_FILES.contains("pyproject.toml"));
     }
 
     /** Verifies that SaUtils.determinePackageManagerName maps pyproject.toml to python. */
