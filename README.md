@@ -112,6 +112,8 @@ according to your preferences.
   <br >Set the full paths of the Python and the package installer for Python executables, which allows Exhort to locate
   and run the `pip3` commands to resolve dependencies for Python projects.
   <br >Python 2 executables `python` and `pip` can be used instead, if the `Use python 2.x` option is selected.
+  <br >Optionally, set the full path of the `uv` executable, which allows Exhort to use `uv` as the package resolver
+  for Python projects.
   <br >If the paths are not provided, your IDE's `PATH` environment will be used to locate the executables.
   <br >When option `Strictly match package version` is selected, the resolved dependency versions will be compared to
   the versions specified in the manifest file, and users will be alerted if any mismatch is detected.
@@ -204,6 +206,7 @@ according to your preferences.
     * `TRUSTIFY_DA_DOCKER_PATH` : Specify the absolute path of `docker` executable.
     * `TRUSTIFY_DA_PODMAN_PATH` : Specify the absolute path of `podman` executable.
     * `TRUSTIFY_DA_IMAGE_PLATFORM` : Specify the platform used for multi-arch images.
+    * `TRUSTIFY_DA_UV_PATH` : Specify the absolute path of `uv` executable.
     * `TRUSTIFY_DA_MVN_USER_SETTINGS` : Specify the absolute path to the Maven user settings file.
     * `TRUSTIFY_DA_MVN_LOCAL_REPO` : Specify the absolute path to the Maven local repository.
 
