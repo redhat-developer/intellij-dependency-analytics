@@ -49,6 +49,7 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
 
     public String pythonPath;
     public String pipPath;
+    public String uvPath;
     public boolean usePython2;
     public boolean usePythonVirtualEnv;
     public boolean pythonMatchManifestVersions;
