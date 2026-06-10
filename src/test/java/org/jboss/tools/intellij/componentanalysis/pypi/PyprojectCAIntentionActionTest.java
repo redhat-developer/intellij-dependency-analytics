@@ -33,6 +33,7 @@ public class PyprojectCAIntentionActionTest extends BasePlatformTestCase {
 
     private DependencyReport createReportWithRecommendation() {
         DependencyReport report = new DependencyReport();
+        report.setRef(new PackageRef("pkg:pypi/test-package@3.0.0"));
         report.setRecommendation(new PackageRef("pkg:pypi/test-package@" + NEW_VERSION));
         return report;
     }
@@ -261,4 +262,5 @@ public class PyprojectCAIntentionActionTest extends BasePlatformTestCase {
         assertFalse("Should not be available for Cargo.toml",
                 action.isAvailable(getProject(), null, file));
     }
+
 }

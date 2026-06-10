@@ -33,6 +33,7 @@ public class CargoCAIntentionActionTest extends BasePlatformTestCase {
 
     private DependencyReport createReportWithRecommendation() {
         DependencyReport report = new DependencyReport();
+        report.setRef(new PackageRef("pkg:cargo/test-crate@1.0.0"));
         report.setRecommendation(new PackageRef("pkg:cargo/test-crate@" + CargoCAIntentionActionTest.NEW_VERSION));
         return report;
     }
@@ -376,4 +377,5 @@ public class CargoCAIntentionActionTest extends BasePlatformTestCase {
         assertTrue("winapi features should remain unchanged",
                 updatedText.contains("features = [\"winuser\"]"));
     }
+
 }

@@ -32,6 +32,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.serviceContainer.AlreadyDisposedException;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import io.github.guacsec.trustifyda.api.v5.LicenseIdentifier;
+import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
 import io.github.guacsec.trustifyda.license.LicenseCheck.IncompatibleDependency;
 import io.github.guacsec.trustifyda.license.LicenseCheck.LicenseSummary;
 import io.github.guacsec.trustifyda.license.LicenseCheck.ProjectLicenseSummary;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -105,7 +107,8 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
 
             LOG.info("Get vulnerability report from cache");
             Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports = CAService.getReports(path);
-            Map<Dependency, Result> dependencyResultMap = this.matchDependencies(info.getDependencies(), reports);
+            Map<Dependency, Map<String, RecommendationReport>> recommendations = CAService.getRecommendations(path);
+            Map<Dependency, Result> dependencyResultMap = this.matchDependencies(info.getDependencies(), reports, recommendations);
             return new AnnotationData(dependencyResultMap, info.getDependencies());
         }
 
@@ -137,19 +140,39 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
             annotationResult.forEach((key, value) -> {
             if (value != null) {
                 Map<VulnerabilitySource, DependencyReport> reports = value.getReports();
+                Map<String, RecommendationReport> recommendations = value.getRecommendations();
                 List<PsiElement> elements = value.getElements();
-                if (reports != null && !reports.isEmpty()
+                boolean hasReports = reports != null && !reports.isEmpty();
+                boolean hasRecommendations = recommendations != null && !recommendations.isEmpty();
+
+                if ((hasReports || hasRecommendations)
                         && elements != null && !elements.isEmpty()) {
-                    Optional<DependencyReport> reportOptional = reports.values().stream()
-                            .filter(Objects::nonNull).findAny();
 
-                    if (reportOptional.isPresent() && reportOptional.get().getRef() != null) {
-                        String name = getDependencyString(reportOptional.get().getRef().purl());
+                    // Determine the dependency name from reports or recommendations
+                    String name = null;
+                    if (hasReports) {
+                        Optional<DependencyReport> reportOptional = reports.values().stream()
+                                .filter(Objects::nonNull).findAny();
+                        if (reportOptional.isPresent() && reportOptional.get().getRef() != null) {
+                            name = getDependencyString(reportOptional.get().getRef().purl());
+                        }
+                    }
+                    if (name == null && hasRecommendations) {
+                        Optional<RecommendationReport> recOptional = recommendations.values().stream()
+                                .filter(r -> r != null && r.getRef() != null).findAny();
+                        if (recOptional.isPresent()) {
+                            name = getDependencyString(recOptional.get().getRef().purl());
+                        }
+                    }
+                    if (name == null) {
+                        return;
+                    }
 
-                        StringBuilder messageBuilder = new StringBuilder(name);
-                        StringBuilder tooltipBuilder = new StringBuilder("<html>").append("<p>").append(escapeHtml(name)).append("</p>");
-                        Map<VulnerabilitySource, DependencyReport> quickfixes = new HashMap<>();
+                    StringBuilder messageBuilder = new StringBuilder(name);
+                    StringBuilder tooltipBuilder = new StringBuilder("<html>").append("<p>").append(escapeHtml(name)).append("</p>");
+                    Map<VulnerabilitySource, DependencyReport> quickfixes = new HashMap<>();
 
+                    if (hasReports) {
                         reports.forEach((source, report) -> {
                             if (report.getIssues() != null && !report.getIssues().isEmpty()) {
                                 messageBuilder.append(System.lineSeparator());
@@ -190,45 +213,99 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                                 }
                             }
 
-                            if (CAIntentionAction.isQuickFixAvailable(report) || !CAIntentionAction.thereAreNoIssues(report)) {
+                            // Only add vulnerability-based quickfixes (TC remediation or legacy recommendation fallback)
+                            if (!CAIntentionAction.thereAreNoIssues(report)) {
+                                quickfixes.put(source, report);
+                            } else if (!hasRecommendations && CAIntentionAction.isQuickFixAvailable(report)) {
+                                // Fallback: use DependencyReport.recommendation only when provider-level is absent
                                 quickfixes.put(source, report);
                             }
                         });
+                    }
 
-                        // Merge license incompatibility info into the annotation
-                        Dependency noVersionKey = new Dependency(key, false);
-                        String licenseMsg = licenseMessages.get(noVersionKey);
-                        if (licenseMsg != null) {
-                            messageBuilder.append(System.lineSeparator()).append(licenseMsg);
-                            tooltipBuilder.append("<p/>").append(licenseTooltips.get(noVersionKey));
-                            annotatedLicenseDeps.add(noVersionKey);
-                        }
-
-                        elements.forEach(e -> {
-                            if (e != null) {
-                                if (!quickfixes.isEmpty() && this.isQuickFixApplicable(e)) {
-                                    DependencyReport firstReport = quickfixes.values().iterator().next();
-                                    AnnotationBuilder builder = holder
-                                            .newAnnotation(getHighlightSeverity(firstReport, e), messageBuilder.toString())
-                                            .tooltip(tooltipBuilder.toString())
-                                            .range(e);
-
-                                    quickfixes.forEach((source, report) -> {
-                                        if(CAIntentionAction.isQuickFixAvailable(report)) {
-                                            builder.withFix(this.createQuickFix(e, source, report));
-                                            CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
-                                            if(Objects.nonNull(patchManifest)) {
-                                                builder.withFix(patchManifest);
-                                            }
-                                        }
-                                    });
-                                    builder.withFix(new SAIntentionAction());
-                                    builder.withFix(new ExcludeManifestIntentionAction());
-                                    builder.create();
-                                }
+                    // Add provider-level recommendation info to annotation
+                    if (hasRecommendations) {
+                        recommendations.forEach((recSourceName, recReport) -> {
+                            if (CAIntentionAction.isQuickFixAvailable(recReport)) {
+                                messageBuilder.append(System.lineSeparator());
+                                tooltipBuilder.append("<p/>");
+                                messageBuilder.append(recSourceName)
+                                        .append(" recommendation: version ")
+                                        .append(recReport.getRecommendation().version());
+                                tooltipBuilder.append("<p>")
+                                        .append(escapeHtml(recSourceName))
+                                        .append(" recommendation: version ")
+                                        .append(escapeHtml(recReport.getRecommendation().version()))
+                                        .append("</p>");
                             }
                         });
                     }
+
+                    // Merge license incompatibility info into the annotation
+                    Dependency noVersionKey = new Dependency(key, false);
+                    String licenseMsg = licenseMessages.get(noVersionKey);
+                    if (licenseMsg != null) {
+                        messageBuilder.append(System.lineSeparator()).append(licenseMsg);
+                        tooltipBuilder.append("<p/>").append(licenseTooltips.get(noVersionKey));
+                        annotatedLicenseDeps.add(noVersionKey);
+                    }
+
+                    // Determine severity from first available report
+                    final DependencyReport severityReport = hasReports
+                            ? reports.values().stream().filter(Objects::nonNull).findAny().orElse(null)
+                            : null;
+
+                    elements.forEach(e -> {
+                        if (e != null) {
+                            boolean hasQuickfixes = !quickfixes.isEmpty() || hasRecommendations;
+                            if (hasQuickfixes && this.isQuickFixApplicable(e)) {
+                                AnnotationBuilder builder;
+                                if (severityReport != null) {
+                                    builder = holder
+                                            .newAnnotation(getHighlightSeverity(severityReport, e), messageBuilder.toString())
+                                            .tooltip(tooltipBuilder.toString())
+                                            .range(e);
+                                } else {
+                                    // Recommendation-only: use WEAK_WARNING
+                                    builder = holder
+                                            .newAnnotation(HighlightSeverity.WEAK_WARNING, messageBuilder.toString())
+                                            .tooltip(tooltipBuilder.toString())
+                                            .range(e);
+                                }
+
+                                // Add vulnerability-based quickfixes (TC remediation or legacy recommendation fallback)
+                                quickfixes.forEach((source, report) -> {
+                                    if(CAIntentionAction.isQuickFixAvailable(report)) {
+                                        builder.withFix(this.createQuickFix(e, source, report));
+                                        CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
+                                        if(Objects.nonNull(patchManifest)) {
+                                            builder.withFix(patchManifest);
+                                        }
+                                    }
+                                });
+
+                                // Add provider-level recommendation quickfixes (one per recommendation source)
+                                if (hasRecommendations) {
+                                    recommendations.forEach((recSourceName, recReport) -> {
+                                        if (CAIntentionAction.isQuickFixAvailable(recReport)) {
+                                            // Use first available DependencyReport as basis for the quickfix
+                                            DependencyReport basisReport = hasReports
+                                                    ? reports.values().iterator().next()
+                                                    : createSyntheticReport(recReport);
+                                            VulnerabilitySource syntheticSource = new VulnerabilitySource(recSourceName, recSourceName);
+                                            CAIntentionAction recAction = this.createQuickFix(e, syntheticSource, basisReport);
+                                            recAction.setRecommendationData(recSourceName, recReport);
+                                            builder.withFix(recAction);
+                                        }
+                                    });
+                                }
+
+                                builder.withFix(new SAIntentionAction());
+                                builder.withFix(new ExcludeManifestIntentionAction());
+                                builder.create();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -464,6 +541,14 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
         return HighlightSeverity.ERROR;
     }
 
+    /** Creates a synthetic DependencyReport from a RecommendationReport for quickfix creation. */
+    private static DependencyReport createSyntheticReport(RecommendationReport recReport) {
+        DependencyReport synthetic = new DependencyReport();
+        synthetic.setRef(recReport.getRef());
+        synthetic.setRecommendation(recReport.getRecommendation());
+        return synthetic;
+    }
+
     abstract protected String getInspectionShortName();
 
     abstract protected Map<Dependency, List<PsiElement>> getDependencies(PsiFile file);
@@ -477,18 +562,28 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
     abstract protected @Nullable LicenseUpdateIntentionAction createLicenseUpdateFix(PsiElement element, String newLicense);
 
     private Map<Dependency, Result> matchDependencies(Map<Dependency, List<PsiElement>> dependencies,
-                                                      Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports) {
-         if (dependencies != null && !dependencies.isEmpty()
-                && reports != null && !reports.isEmpty()) {
-            return dependencies.entrySet()
-                    .parallelStream()
-                    .filter(e -> reports.containsKey(e.getKey()))
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey,
-                            e -> new Result(dependencies.get(e.getKey()), reports.get(e.getKey())),
-                            (o1, o2) -> o1));
+                                                      Map<Dependency, Map<VulnerabilitySource, DependencyReport>> reports,
+                                                      Map<Dependency, Map<String, RecommendationReport>> recommendations) {
+        if (dependencies == null || dependencies.isEmpty()) {
+            return null;
         }
-        return null;
+        boolean hasReports = reports != null && !reports.isEmpty();
+        boolean hasRecommendations = recommendations != null && !recommendations.isEmpty();
+        if (!hasReports && !hasRecommendations) {
+            return null;
+        }
+
+        return dependencies.entrySet()
+                .parallelStream()
+                .filter(e -> (hasReports && reports.containsKey(e.getKey()))
+                        || (hasRecommendations && recommendations.containsKey(e.getKey())))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> new Result(
+                                dependencies.get(e.getKey()),
+                                hasReports ? reports.getOrDefault(e.getKey(), Collections.emptyMap()) : Collections.emptyMap(),
+                                hasRecommendations ? recommendations.getOrDefault(e.getKey(), null) : null),
+                        (o1, o2) -> o1));
     }
 
     private String getDependencyString(PackageURL purl) {
@@ -552,10 +647,18 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
     public static class Result {
         List<PsiElement> elements;
         Map<VulnerabilitySource, DependencyReport> reports;
+        Map<String, RecommendationReport> recommendations;
 
         public Result(List<PsiElement> elements, Map<VulnerabilitySource, DependencyReport> reports) {
             this.elements = elements;
             this.reports = reports;
+        }
+
+        public Result(List<PsiElement> elements, Map<VulnerabilitySource, DependencyReport> reports,
+                       Map<String, RecommendationReport> recommendations) {
+            this.elements = elements;
+            this.reports = reports;
+            this.recommendations = recommendations;
         }
 
         public List<PsiElement> getElements() {
@@ -564,6 +667,10 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
 
         public Map<VulnerabilitySource, DependencyReport> getReports() {
             return reports;
+        }
+
+        public Map<String, RecommendationReport> getRecommendations() {
+            return recommendations;
         }
     }
 

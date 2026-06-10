@@ -27,6 +27,8 @@ import io.github.guacsec.trustifyda.ComponentAnalysisResult;
 import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import io.github.guacsec.trustifyda.api.v5.ProviderReport;
+import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
+import io.github.guacsec.trustifyda.api.v5.RecommendationSource;
 import io.github.guacsec.trustifyda.api.v5.Source;
 import io.github.guacsec.trustifyda.license.LicenseCheck.LicenseSummary;
 import org.jboss.tools.intellij.exhort.ApiService;
@@ -53,6 +55,10 @@ public final class CAService {
             .maximumSize(100)
             .build();
 
+    private final Cache<String, Map<Dependency, Map<String, RecommendationReport>>> recommendationCache = Caffeine.newBuilder()
+            .maximumSize(100)
+            .build();
+
     private final Cache<String, Set<Dependency>> dependencyCache = Caffeine.newBuilder()
             .expireAfterWrite(25, TimeUnit.SECONDS)
             .maximumSize(100)
@@ -66,14 +72,21 @@ public final class CAService {
         return Collections.unmodifiableMap(getInstance().vulnerabilityCache.get(filePath, p -> Collections.emptyMap()));
     }
 
+    /** Returns provider-level recommendations keyed by dependency and recommendation source name. */
+    public static Map<Dependency, Map<String, RecommendationReport>> getRecommendations(String filePath) {
+        return Collections.unmodifiableMap(getInstance().recommendationCache.get(filePath, p -> Collections.emptyMap()));
+    }
+
     public static void deleteReports(String filePath) {
         getInstance().vulnerabilityCache.invalidate(filePath);
+        getInstance().recommendationCache.invalidate(filePath);
         getInstance().licenseCache.invalidate(filePath);
         getInstance().dependencyCache.invalidate(filePath);
     }
 
     public static void invalidateAllCaches() {
         getInstance().vulnerabilityCache.invalidateAll();
+        getInstance().recommendationCache.invalidateAll();
         getInstance().licenseCache.invalidateAll();
         getInstance().dependencyCache.invalidateAll();
     }
@@ -126,6 +139,7 @@ public final class CAService {
             }
 
             Map<Dependency, Map<VulnerabilitySource, DependencyReport>> resultMap = new ConcurrentHashMap<>();
+            Map<Dependency, Map<String, RecommendationReport>> recommendationMap = new ConcurrentHashMap<>();
 
             if (report.getProviders() != null) {
                 // Avoid comparing the version of dependency
@@ -183,6 +197,24 @@ public final class CAService {
                                             }
                                         });
                             }
+
+                            // Process provider-level recommendations
+                            if (providerReport.getRecommendations() != null) {
+                                providerReport.getRecommendations().forEach((recSourceName, recSource) -> {
+                                    if (recSource.getDependencies() != null) {
+                                        for (RecommendationReport recReport : recSource.getDependencies()) {
+                                            if (recReport.getRef() != null) {
+                                                Dependency recDep = new Dependency(recReport.getRef().purl(), false);
+                                                dependencyMap.entrySet().stream()
+                                                        .filter(e -> recDep.equals(e.getValue()))
+                                                        .forEach(e -> recommendationMap
+                                                                .computeIfAbsent(e.getKey(), key -> new ConcurrentHashMap<>())
+                                                                .put(recSourceName, recReport));
+                                            }
+                                        }
+                                    }
+                                });
+                            }
                         });
             }
 
@@ -190,6 +222,11 @@ public final class CAService {
                 getInstance().vulnerabilityCache.put(filePath, resultMap);
             } else {
                 getInstance().vulnerabilityCache.invalidate(filePath);
+            }
+            if (!recommendationMap.isEmpty()) {
+                getInstance().recommendationCache.put(filePath, recommendationMap);
+            } else {
+                getInstance().recommendationCache.invalidate(filePath);
             }
             getInstance().dependencyCache.put(filePath, dependencies);
             return true;

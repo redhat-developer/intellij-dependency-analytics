@@ -21,6 +21,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import io.github.guacsec.trustifyda.api.PackageRef;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -34,6 +35,16 @@ public abstract class CAUpdateManifestIntentionAction implements IntentionAction
 
     protected static String getRepositoryUrl(DependencyReport dependency) {
         return getRepositoryUrlFromPurl(dependency);
+    }
+
+    /** Extracts the repository URL from a provider-level recommendation report. */
+    protected static String getRepositoryUrl(RecommendationReport recReport) {
+        if (recReport != null && recReport.getRecommendation() != null
+                && recReport.getRecommendation().purl() != null
+                && recReport.getRecommendation().purl().getQualifiers() != null) {
+            return recReport.getRecommendation().purl().getQualifiers().get("repository_url");
+        }
+        return null;
     }
 
     protected static String getRepositoryUrlFromPurl(DependencyReport dependency) {

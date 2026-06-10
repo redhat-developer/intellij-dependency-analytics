@@ -23,6 +23,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import io.github.guacsec.trustifyda.api.v5.Issue;
+import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
 import org.jboss.tools.intellij.exhort.TelemetryService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,8 @@ public abstract class CAIntentionAction implements IntentionAction {
     protected @SafeFieldForPreview PsiElement element;
     protected @SafeFieldForPreview VulnerabilitySource source;
     protected @SafeFieldForPreview DependencyReport report;
+    protected @SafeFieldForPreview String recommendationSourceName;
+    protected @SafeFieldForPreview RecommendationReport recommendationReport;
 
     protected CAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         this.element = element;
@@ -41,8 +44,17 @@ public abstract class CAIntentionAction implements IntentionAction {
         this.report = report;
     }
 
+    /** Sets provider-level recommendation data for source-attributed quick-fixes. */
+    void setRecommendationData(String sourceName, RecommendationReport recReport) {
+        this.recommendationSourceName = sourceName;
+        this.recommendationReport = recReport;
+    }
+
     @Override
     public @IntentionName @NotNull String getText() {
+        if (recommendationSourceName != null) {
+            return getQuickFixTextForRecommendation(recommendationSourceName);
+        }
         return getQuickFixText(this.source, this.report);
     }
 
@@ -53,12 +65,24 @@ public abstract class CAIntentionAction implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
-        String recommendedVersion = getRecommendedVersion(this.report);
+        String recommendedVersion;
+        if (recommendationReport != null && recommendationReport.getRecommendation() != null) {
+            recommendedVersion = recommendationReport.getRecommendation().version();
+        } else {
+            recommendedVersion = getRecommendedVersion(this.report);
+        }
         this.updateVersion(project, editor, file, recommendedVersion);
         TelemetryService.sendPackageUpdateEvent(file, recommendedVersion, this.report.getRef().name(), "recommendation-accepted");
     }
 
     private String getRecommendationsRepo(DependencyReport dependency) {
+        // Check provider-level recommendation first
+        if (recommendationReport != null && recommendationReport.getRecommendation() != null
+                && recommendationReport.getRecommendation().purl() != null
+                && recommendationReport.getRecommendation().purl().getQualifiers() != null) {
+            return recommendationReport.getRecommendation().purl().getQualifiers().get("repository_url");
+        }
+
         String repo=null;
         if(thereAreNoIssues(dependency))
         {
@@ -86,7 +110,11 @@ public abstract class CAIntentionAction implements IntentionAction {
 
     @Override
     public @Nullable FileModifier getFileModifierForPreview(@NotNull PsiFile target) {
-        return this.createCAIntentionActionInCopy(PsiTreeUtil.findSameElementInCopy(this.element, target));
+        FileModifier modifier = this.createCAIntentionActionInCopy(PsiTreeUtil.findSameElementInCopy(this.element, target));
+        if (modifier instanceof CAIntentionAction copy && this.recommendationSourceName != null) {
+            copy.setRecommendationData(this.recommendationSourceName, this.recommendationReport);
+        }
+        return modifier;
     }
 
     protected abstract void updateVersion(@NotNull Project project, Editor editor, PsiFile file, String version);
@@ -129,6 +157,13 @@ public abstract class CAIntentionAction implements IntentionAction {
         return dependency.getRecommendation() != null && !dependency.getRecommendation().version().trim().isEmpty();
     }
 
+    /** Checks if a provider-level recommendation report has a valid recommendation. */
+    static boolean thereIsRecommendation(RecommendationReport recReport) {
+        return recReport != null && recReport.getRecommendation() != null
+                && recReport.getRecommendation().version() != null
+                && !recReport.getRecommendation().version().trim().isEmpty();
+    }
+
     static boolean thereAreNoIssues(DependencyReport dependency) {
         return dependency.getIssues() == null || dependency.getIssues().size() == 0;
     }
@@ -149,6 +184,10 @@ public abstract class CAIntentionAction implements IntentionAction {
         return text;
     }
 
+    private static @NotNull String getQuickFixTextForRecommendation(String recommendationSourceName) {
+        return "Quick-Fix suggestion (" + recommendationSourceName + ") - apply redhat Recommended version";
+    }
+
     static boolean isQuickFixAvailable(DependencyReport dependency) {
         boolean result=false;
         if(thereAreNoIssues(dependency))
@@ -166,5 +205,10 @@ public abstract class CAIntentionAction implements IntentionAction {
             }
         }
      return result;
+    }
+
+    /** Checks if a provider-level recommendation report has an available quick-fix. */
+    static boolean isQuickFixAvailable(RecommendationReport recReport) {
+        return thereIsRecommendation(recReport);
     }
 }
