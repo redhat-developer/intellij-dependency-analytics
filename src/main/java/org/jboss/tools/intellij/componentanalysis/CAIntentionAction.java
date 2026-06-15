@@ -172,20 +172,20 @@ public abstract class CAIntentionAction implements IntentionAction {
         String text="";
         if(thereAreNoIssues(dependency) && thereIsRecommendation(dependency))
         {
-            text = "Quick-Fix suggestion - apply redhat Recommended version";
+            text = "Quick-Fix suggestion - apply Red Hat Recommended version";
         }
         else
         {
             if(thereIsTcRemediation(dependency))
             {
-                text = "Quick-Fix suggestion - apply redhat remediation version";
+                text = "Quick-Fix suggestion - apply Red Hat remediation version";
             }
         }
         return text;
     }
 
     private static @NotNull String getQuickFixTextForRecommendation(String recommendationSourceName) {
-        return "Quick-Fix suggestion (" + recommendationSourceName + ") - apply redhat Recommended version";
+        return "Quick-Fix suggestion (" + recommendationSourceName + ") - apply Red Hat Recommended version";
     }
 
     static boolean isQuickFixAvailable(DependencyReport dependency) {
