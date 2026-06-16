@@ -59,6 +59,8 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 severity = Severity.MEDIUM;
             } else if (source.getSummary().getLow() != null && source.getSummary().getLow() > 0) {
                 severity = Severity.LOW;
+            } else if (source.getSummary().getUnknown() != null && source.getSummary().getUnknown() > 0) {
+                severity = Severity.UNKNOWN;
             }
         }
         return severity;
