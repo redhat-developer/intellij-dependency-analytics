@@ -28,6 +28,7 @@ import com.intellij.serviceContainer.AlreadyDisposedException;
 import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import io.github.guacsec.trustifyda.api.v5.ProviderReport;
+import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
 import io.github.guacsec.trustifyda.api.v5.Severity;
 import io.github.guacsec.trustifyda.api.v5.Source;
 import io.github.guacsec.trustifyda.image.ImageRef;
@@ -93,7 +94,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .orElse(false);
     }
 
-    static String generateMessage(String image, AnalysisReport report, String recommendation) {
+    static String generateMessage(String image, AnalysisReport report, RecommendationInfo recommendation) {
         var messageBuilder = new StringBuilder(image);
 
         Optional.ofNullable(report.getProviders())
@@ -131,15 +132,19 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         }));
 
         if (recommendation != null) {
-            messageBuilder.append(System.lineSeparator())
-                    .append("Replace your image with RedHat UBI: ")
-                    .append(recommendation);
+            messageBuilder.append(System.lineSeparator());
+            if (recommendation.isHardened()) {
+                messageBuilder.append("Switch to hardened image ").append(recommendation.imageRef());
+            } else {
+                messageBuilder.append("Switch to Red Hat UBI ").append(recommendation.imageRef())
+                        .append(" for enhanced security and enterprise-grade stability");
+            }
         }
 
         return messageBuilder.toString();
     }
 
-    static String generateTooltip(String image, AnalysisReport report, String recommendation) {
+    static String generateTooltip(String image, AnalysisReport report, RecommendationInfo recommendation) {
         var tooltipBuilder = new StringBuilder("<html>").append("<p>").append(image).append("</p>");
 
         Optional.ofNullable(report.getProviders())
@@ -181,10 +186,16 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         }));
 
         if (recommendation != null) {
-            tooltipBuilder.append("<p/>")
-                    .append("<p>Replace your image with RedHat UBI: ")
-                    .append(recommendation)
-                    .append("</p>");
+            tooltipBuilder.append("<p/>");
+            if (recommendation.isHardened()) {
+                tooltipBuilder.append("<p>Switch to hardened image ")
+                        .append(recommendation.imageRef())
+                        .append("</p>");
+            } else {
+                tooltipBuilder.append("<p>Switch to Red Hat UBI ")
+                        .append(recommendation.imageRef())
+                        .append(" for enhanced security and enterprise-grade stability</p>");
+            }
         }
 
         return tooltipBuilder.toString();
@@ -208,7 +219,55 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .orElse(false);
     }
 
-    static String getRecommendation(AnalysisReport report, ImageRef imageRef) {
+    record RecommendationInfo(String imageRef, String sourceId) {
+        boolean isHardened() {
+            return "hardened".equals(sourceId);
+        }
+    }
+
+    static String extractImageRefFromPurl(com.github.packageurl.PackageURL purl) {
+        var qualifiers = purl.getQualifiers();
+        if (qualifiers == null) {
+            return null;
+        }
+        String repoUrl = qualifiers.get("repository_url");
+        if (repoUrl == null || repoUrl.isBlank()) {
+            return null;
+        }
+        String tag = qualifiers.get("tag");
+        if (tag != null && !tag.isBlank()) {
+            return repoUrl + ":" + tag;
+        }
+        return repoUrl;
+    }
+
+    static RecommendationInfo getRecommendation(AnalysisReport report, ImageRef imageRef) {
+        // Check recommendations section first (Hummingbird hardened images, trusted-content)
+        var fromRecommendations = Optional.ofNullable(report.getProviders())
+                .flatMap(providers -> providers.values().stream()
+                        .filter(Objects::nonNull)
+                        .filter(p -> p.getRecommendations() != null)
+                        .flatMap(p -> p.getRecommendations().entrySet().stream())
+                        .flatMap(entry -> {
+                            var sourceName = entry.getKey();
+                            var recSource = entry.getValue();
+                            if (recSource.getDependencies() == null) {
+                                return java.util.stream.Stream.<RecommendationInfo>empty();
+                            }
+                            return recSource.getDependencies().stream()
+                                    .filter(r -> r.getRecommendation() != null)
+                                    .map(r -> new RecommendationInfo(
+                                            extractImageRefFromPurl(r.getRecommendation().purl()),
+                                            sourceName))
+                                    .filter(r -> r.imageRef() != null);
+                        })
+                        .findFirst());
+
+        if (fromRecommendations.isPresent()) {
+            return fromRecommendations.get();
+        }
+
+        // Fall back to sources section (legacy path)
         return Optional.ofNullable(report.getProviders())
                 .flatMap(provider -> provider.values()
                         .stream()
@@ -231,12 +290,14 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         .map(DependencyReport::getRecommendation)
                         .filter(Objects::nonNull)
                         .findAny())
-                .map(r -> new ImageRef(r.purl()).getImage().getNameWithoutTag())
+                .map(r -> new RecommendationInfo(
+                        new ImageRef(r.purl()).getImage().getNameWithoutTag(),
+                        "trusted-content"))
                 .orElse(null);
     }
 
     @NotNull
-    private static HighlightSeverity getHighlightSeverity(AnalysisReport report, String recommendation, boolean hasIssue, @NotNull PsiElement context) {
+    private static HighlightSeverity getHighlightSeverity(AnalysisReport report, RecommendationInfo recommendation, boolean hasIssue, @NotNull PsiElement context) {
         // Get the configured severity from the inspection settings
         final InspectionProfileEntry inspection = getInspection(context);
         if (inspection != null) {
@@ -345,8 +406,10 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                                         .newAnnotation(severity, message)
                                         .tooltip(tooltip)
                                         .range(e)
-                                        .withFix(new ImageReportIntentionAction())
-                                        .withFix(new UBIIntentionAction());
+                                        .withFix(new ImageReportIntentionAction());
+                                if (recommendation == null || !recommendation.isHardened()) {
+                                    builder = builder.withFix(new UBIIntentionAction());
+                                }
                                 builder.create();
                             }
                         });
