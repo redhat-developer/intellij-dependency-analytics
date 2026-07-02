@@ -315,9 +315,9 @@ public final class ApiService {
             System.setProperty("TRUSTIFY_DA_LICENSE_CHECK", "false");
         }
         if (settings.recommendationsEnabled) {
-            System.setProperty("TRUSTIFY_DA_RECOMMENDATIONS_ENABLED", "true");
+            System.setProperty("TRUSTIFY_DA_RECOMMEND", "true");
         } else {
-            System.setProperty("TRUSTIFY_DA_RECOMMENDATIONS_ENABLED", "false");
+            System.setProperty("TRUSTIFY_DA_RECOMMEND", "false");
         }
 
         Optional<String> proxyUrlOpt = getProxyUrl();
