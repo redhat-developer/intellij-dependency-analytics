@@ -40,13 +40,17 @@ import org.jboss.tools.intellij.settings.ApiSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import io.github.guacsec.trustifyda.api.PackageRef;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.Info, Map<BaseImage, DockerfileAnnotator.Result>> {
 
@@ -243,57 +247,55 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
 
     /** Returns the UBI image recommendation (from source-level dependencies), or null if none. */
     static String getRecommendation(AnalysisReport report, ImageRef imageRef) {
-        return Optional.ofNullable(report.getProviders())
-                .flatMap(provider -> provider.values()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .map(ProviderReport::getSources)
-                        .filter(Objects::nonNull)
-                        .map(Map::values)
-                        .flatMap(Collection::stream)
-                        .filter(Objects::nonNull)
-                        .map(Source::getDependencies)
-                        .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
-                        .filter(r -> r.getRef() != null)
-                        .filter(r -> {
-                            try {
-                                return imageRef.getPackageURL().equals(r.getRef().purl());
-                            } catch (MalformedPackageURLException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                        .map(DependencyReport::getRecommendation)
-                        .filter(Objects::nonNull)
-                        .findAny())
-                .map(DockerfileAnnotator::toImageName)
-                .orElse(null);
+        var deps = Optional.ofNullable(report.getProviders())
+                .stream()
+                .flatMap(provider -> provider.values().stream())
+                .filter(Objects::nonNull)
+                .map(ProviderReport::getSources)
+                .filter(Objects::nonNull)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .map(Source::getDependencies)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream);
+        return findMatchingRecommendation(deps, imageRef, DependencyReport::getRef, DependencyReport::getRecommendation);
     }
 
     /** Returns the hardened image recommendation (from provider-level recommendations), or null if none. */
     static String getHardenedRecommendation(AnalysisReport report, ImageRef imageRef) {
-        return Optional.ofNullable(report.getProviders())
-                .flatMap(provider -> provider.values()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .map(ProviderReport::getRecommendations)
-                        .filter(Objects::nonNull)
-                        .flatMap(recs -> recs.entrySet().stream())
-                        .filter(entry -> entry.getValue() != null)
-                        .map(entry -> entry.getValue().getDependencies())
-                        .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
-                        .filter(r -> r.getRef() != null)
-                        .filter(r -> {
-                            try {
-                                return imageRef.getPackageURL().equals(r.getRef().purl());
-                            } catch (MalformedPackageURLException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                        .map(r -> r.getRecommendation())
-                        .filter(Objects::nonNull)
-                        .findAny())
+        var deps = Optional.ofNullable(report.getProviders())
+                .stream()
+                .flatMap(provider -> provider.values().stream())
+                .filter(Objects::nonNull)
+                .map(ProviderReport::getRecommendations)
+                .filter(Objects::nonNull)
+                .flatMap(recs -> recs.entrySet().stream())
+                .filter(entry -> entry.getValue() != null)
+                .map(entry -> entry.getValue().getDependencies())
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream);
+        return findMatchingRecommendation(deps, imageRef,
+                io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRef,
+                io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRecommendation);
+    }
+
+    private static <T> String findMatchingRecommendation(Stream<T> items, ImageRef imageRef,
+                                                          Function<T, PackageRef> refExtractor,
+                                                          Function<T, PackageRef> recommendationExtractor) {
+        return items
+                .filter(r -> refExtractor.apply(r) != null)
+                .filter(r -> {
+                    try {
+                        return imageRef.getPackageURL().equals(refExtractor.apply(r).purl());
+                    } catch (MalformedPackageURLException e) {
+                        LOG.warn("Skipping recommendation with malformed PURL", e);
+                        return false;
+                    }
+                })
+                .map(recommendationExtractor)
+                .filter(Objects::nonNull)
+                .findAny()
                 .map(DockerfileAnnotator::toImageName)
                 .orElse(null);
     }
@@ -338,7 +340,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                                                            String hardenedRecommendation, boolean hasIssue,
                                                            @NotNull PsiElement context) {
         // Recommendation-only (no vulnerabilities): use INFORMATION severity (blue)
-        if (!hasIssue && !hasIssue(report)) {
+        if (!hasIssue) {
             boolean hasAnyRecommendation = recommendation != null || hardenedRecommendation != null;
             if (hasAnyRecommendation) {
                 return HighlightSeverity.INFORMATION;
@@ -466,11 +468,9 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                                     builder = builder.enforcedTextAttributes(attrs);
                                 }
                                 builder = builder.withFix(new ImageReportIntentionAction());
-                                if (recommendation != null) {
-                                    builder.withFix(new UBIIntentionAction());
-                                }
+                                builder = builder.withFix(new UBIIntentionAction());
                                 if (hardenedRecommendation != null) {
-                                    builder.withFix(new HardenedImageIntentionAction());
+                                    builder = builder.withFix(new HardenedImageIntentionAction());
                                 }
                                 builder.create();
                             }
