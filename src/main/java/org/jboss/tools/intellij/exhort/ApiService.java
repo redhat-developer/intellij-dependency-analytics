@@ -314,6 +314,11 @@ public final class ApiService {
         } else {
             System.setProperty("TRUSTIFY_DA_LICENSE_CHECK", "false");
         }
+        if (settings.recommendationsEnabled) {
+            System.setProperty("TRUSTIFY_DA_RECOMMEND", "true");
+        } else {
+            System.setProperty("TRUSTIFY_DA_RECOMMEND", "false");
+        }
 
         Optional<String> proxyUrlOpt = getProxyUrl();
         if (proxyUrlOpt.isPresent()) {

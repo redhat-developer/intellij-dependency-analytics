@@ -77,6 +77,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         modified |= !settingsComponent.getManifestExclusionPatternsText().equals(settings.manifestExclusionPatterns);
         modified |= !settingsComponent.getReportFilePathText().equals(settings.reportFilePath);
         modified |= settingsComponent.getLicenseCheckEnabledCheck() != settings.licenseCheckEnabled;
+        modified |= settingsComponent.getRecommendationsEnabledCheck() != settings.recommendationsEnabled;
         return modified;
     }
 
@@ -114,9 +115,11 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settings.batchContinueOnError = settingsComponent.getBatchContinueOnErrorCheck();
         settings.batchMetadata = settingsComponent.getBatchMetadataCheck();
 
-        // Check if license check setting changed
+        // Check if license check or recommendations setting changed
         boolean licenseCheckChanged = settingsComponent.getLicenseCheckEnabledCheck() != settings.licenseCheckEnabled;
         settings.licenseCheckEnabled = settingsComponent.getLicenseCheckEnabledCheck();
+        boolean recommendationsChanged = settingsComponent.getRecommendationsEnabledCheck() != settings.recommendationsEnabled;
+        settings.recommendationsEnabled = settingsComponent.getRecommendationsEnabledCheck();
 
         // Check if exclusion patterns changed
         String oldPatterns = settings.manifestExclusionPatterns;
@@ -124,9 +127,9 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         boolean patternsChanged = !Objects.equals(oldPatterns, newPatterns);
         settings.manifestExclusionPatterns = newPatterns;
 
-        // Trigger re-analysis if exclusion patterns or license check changed
-        if (patternsChanged || licenseCheckChanged) {
-            if (licenseCheckChanged) {
+        // Trigger re-analysis if exclusion patterns, license check, or recommendations changed
+        if (patternsChanged || licenseCheckChanged || recommendationsChanged) {
+            if (licenseCheckChanged || recommendationsChanged) {
                 CAService.invalidateAllCaches();
             }
             refreshComponentAnalysis();
@@ -182,6 +185,7 @@ public class ApiSettingsConfigurable implements com.intellij.openapi.options.Con
         settingsComponent.setManifestExclusionPatternsText(settings.manifestExclusionPatterns != null ? settings.manifestExclusionPatterns : "");
         settingsComponent.setReportFilePathText(settings.reportFilePath != null ? settings.reportFilePath : "");
         settingsComponent.setLicenseCheckEnabledCheck(settings.licenseCheckEnabled);
+        settingsComponent.setRecommendationsEnabledCheck(settings.recommendationsEnabled);
     }
 
     @Override

@@ -21,19 +21,26 @@ import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.markup.EffectType;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.profile.codeInspection.InspectionProjectProfileManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.serviceContainer.AlreadyDisposedException;
+import com.intellij.ui.JBColor;
 import io.github.guacsec.trustifyda.api.v5.AnalysisReport;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
 import io.github.guacsec.trustifyda.api.v5.ProviderReport;
+import io.github.guacsec.trustifyda.api.v5.RecommendationSource;
 import io.github.guacsec.trustifyda.api.v5.Severity;
 import io.github.guacsec.trustifyda.api.v5.Source;
 import io.github.guacsec.trustifyda.image.ImageRef;
 import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
+import org.jboss.tools.intellij.settings.ApiSettingsState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import io.github.guacsec.trustifyda.api.PackageRef;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,7 +48,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.Info, Map<BaseImage, DockerfileAnnotator.Result>> {
 
@@ -84,18 +93,32 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .map(providers -> providers
                         .values()
                         .stream()
-                        .map(ProviderReport::getSources)
+                        .anyMatch(provider -> hasVulnerabilities(provider) || hasProviderRecommendations(provider)))
+                .orElse(false);
+    }
+
+    private static boolean hasVulnerabilities(ProviderReport provider) {
+        return Optional.ofNullable(provider.getSources())
+                .map(sources -> sources.values().stream()
                         .filter(Objects::nonNull)
-                        .map(Map::entrySet)
-                        .flatMap(Collection::stream)
-                        .map(Map.Entry::getValue)
                         .map(Source::getSummary)
                         .filter(Objects::nonNull)
                         .anyMatch(s -> s.getTotal() != null && s.getTotal() > 0))
                 .orElse(false);
     }
 
-    static String generateMessage(String image, AnalysisReport report, String recommendation) {
+    private static boolean hasProviderRecommendations(ProviderReport provider) {
+        return Optional.ofNullable(provider.getRecommendations())
+                .map(recs -> recs.values().stream()
+                        .filter(Objects::nonNull)
+                        .map(RecommendationSource::getDependencies)
+                        .filter(Objects::nonNull)
+                        .anyMatch(deps -> !deps.isEmpty()))
+                .orElse(false);
+    }
+
+    static String generateMessage(String image, AnalysisReport report, String recommendation,
+                                   String hardenedRecommendation) {
         var messageBuilder = new StringBuilder(image);
 
         Optional.ofNullable(report.getProviders())
@@ -137,11 +160,17 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                     .append("Replace your image with RedHat UBI: ")
                     .append(recommendation);
         }
+        if (hardenedRecommendation != null) {
+            messageBuilder.append(System.lineSeparator())
+                    .append("A Red Hat Hardened Image is available: ")
+                    .append(hardenedRecommendation);
+        }
 
         return messageBuilder.toString();
     }
 
-    static String generateTooltip(String image, AnalysisReport report, String recommendation) {
+    static String generateTooltip(String image, AnalysisReport report, String recommendation,
+                                    String hardenedRecommendation) {
         var tooltipBuilder = new StringBuilder("<html>").append("<p>").append(image).append("</p>");
 
         Optional.ofNullable(report.getProviders())
@@ -188,6 +217,12 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                     .append(recommendation)
                     .append("</p>");
         }
+        if (hardenedRecommendation != null) {
+            tooltipBuilder.append("<p/>")
+                    .append("<p>A Red Hat Hardened Image is available: ")
+                    .append(hardenedRecommendation)
+                    .append("</p>");
+        }
 
         return tooltipBuilder.toString();
     }
@@ -210,35 +245,108 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .orElse(false);
     }
 
+    /** Returns the UBI image recommendation (from source-level dependencies), or null if none. */
     static String getRecommendation(AnalysisReport report, ImageRef imageRef) {
-        return Optional.ofNullable(report.getProviders())
-                .flatMap(provider -> provider.values()
-                        .stream()
-                        .filter(Objects::nonNull)
-                        .map(ProviderReport::getSources)
-                        .filter(Objects::nonNull)
-                        .map(Map::values)
-                        .flatMap(Collection::stream)
-                        .map(Source::getDependencies)
-                        .filter(Objects::nonNull)
-                        .flatMap(Collection::stream)
-                        .filter(r -> r.getRef() != null)
-                        .filter(r -> {
-                            try {
-                                return imageRef.getPackageURL().equals(r.getRef().purl());
-                            } catch (MalformedPackageURLException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
-                        .map(DependencyReport::getRecommendation)
-                        .filter(Objects::nonNull)
-                        .findAny())
-                .map(r -> new ImageRef(r.purl()).getImage().getNameWithoutTag())
+        var deps = Optional.ofNullable(report.getProviders())
+                .stream()
+                .flatMap(provider -> provider.values().stream())
+                .filter(Objects::nonNull)
+                .map(ProviderReport::getSources)
+                .filter(Objects::nonNull)
+                .map(Map::values)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .map(Source::getDependencies)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream);
+        return findMatchingRecommendation(deps, imageRef, DependencyReport::getRef, DependencyReport::getRecommendation);
+    }
+
+    /** Returns the hardened image recommendation (from provider-level recommendations), or null if none. */
+    static String getHardenedRecommendation(AnalysisReport report, ImageRef imageRef) {
+        var deps = Optional.ofNullable(report.getProviders())
+                .stream()
+                .flatMap(provider -> provider.values().stream())
+                .filter(Objects::nonNull)
+                .map(ProviderReport::getRecommendations)
+                .filter(Objects::nonNull)
+                .flatMap(recs -> recs.entrySet().stream())
+                .filter(entry -> entry.getValue() != null)
+                .map(entry -> entry.getValue().getDependencies())
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream);
+        return findMatchingRecommendation(deps, imageRef,
+                io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRef,
+                io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRecommendation);
+    }
+
+    private static <T> String findMatchingRecommendation(Stream<T> items, ImageRef imageRef,
+                                                          Function<T, PackageRef> refExtractor,
+                                                          Function<T, PackageRef> recommendationExtractor) {
+        return items
+                .filter(r -> refExtractor.apply(r) != null)
+                .filter(r -> {
+                    try {
+                        return imageRef.getPackageURL().equals(refExtractor.apply(r).purl());
+                    } catch (MalformedPackageURLException e) {
+                        LOG.warn("Skipping recommendation with malformed PURL", e);
+                        return false;
+                    }
+                })
+                .map(recommendationExtractor)
+                .filter(Objects::nonNull)
+                .findAny()
+                .map(DockerfileAnnotator::toImageName)
                 .orElse(null);
     }
 
+    private static String toImageName(io.github.guacsec.trustifyda.api.PackageRef ref) {
+        try {
+            var purl = ref.purl();
+            var qualifiers = purl.getQualifiers();
+            if (qualifiers != null && qualifiers.containsKey(ImageRef.REPOSITORY_QUALIFIER)) {
+                String repoUrl = qualifiers.get(ImageRef.REPOSITORY_QUALIFIER);
+                String decoded = fullyDecode(repoUrl);
+                if (!decoded.equals(repoUrl)) {
+                    var decodedQualifiers = new java.util.TreeMap<>(qualifiers);
+                    decodedQualifiers.put(ImageRef.REPOSITORY_QUALIFIER, decoded);
+                    purl = new com.github.packageurl.PackageURL(
+                            purl.getType(), purl.getNamespace(), purl.getName(),
+                            purl.getVersion(), decodedQualifiers, purl.getSubpath());
+                }
+            }
+            return new ImageRef(purl).getImage().getNameWithoutTag();
+        } catch (IllegalArgumentException | com.github.packageurl.MalformedPackageURLException e) {
+            LOG.warn("Failed to parse recommendation image from PURL: " + ref.ref(), e);
+            return null;
+        }
+    }
+
+    /** Repeatedly URL-decodes until the value stabilizes (handles double/triple encoding). */
+    private static String fullyDecode(String value) {
+        String previous = value;
+        for (int i = 0; i < 5; i++) {
+            String decoded = java.net.URLDecoder.decode(previous, java.nio.charset.StandardCharsets.UTF_8);
+            if (decoded.equals(previous)) {
+                break;
+            }
+            previous = decoded;
+        }
+        return previous;
+    }
+
     @NotNull
-    private static HighlightSeverity getHighlightSeverity(AnalysisReport report, String recommendation, boolean hasIssue, @NotNull PsiElement context) {
+    private static HighlightSeverity getHighlightSeverity(AnalysisReport report, String recommendation,
+                                                           String hardenedRecommendation, boolean hasIssue,
+                                                           @NotNull PsiElement context) {
+        // Recommendation-only (no vulnerabilities): use INFORMATION severity (blue)
+        if (!hasIssue) {
+            boolean hasAnyRecommendation = recommendation != null || hardenedRecommendation != null;
+            if (hasAnyRecommendation) {
+                return HighlightSeverity.INFORMATION;
+            }
+        }
+
         // Get the configured severity from the inspection settings
         final InspectionProfileEntry inspection = getInspection(context);
         if (inspection != null) {
@@ -335,20 +443,35 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         && elements != null && !elements.isEmpty()) {
                     if (isReportAvailable(report)) {
                         var hasIssue = hasIssue(report);
-                        var recommendation = getRecommendation(report, value.getImageRef());
+                        boolean recommendationsEnabled = ApiSettingsState.getInstance().recommendationsEnabled;
+                        var recommendation = recommendationsEnabled
+                                ? getRecommendation(report, value.getImageRef()) : null;
+                        var hardenedRecommendation = recommendationsEnabled
+                                ? getHardenedRecommendation(report, value.getImageRef()) : null;
 
-                        var message = generateMessage(key.getImageName(), report, recommendation);
-                        var tooltip = generateTooltip(key.getImageName(), report, recommendation);
+                        var message = generateMessage(key.getImageName(), report,
+                                recommendation, hardenedRecommendation);
+                        var tooltip = generateTooltip(key.getImageName(), report,
+                                recommendation, hardenedRecommendation);
 
                         elements.forEach(e -> {
-                            var severity = getHighlightSeverity(report, recommendation, hasIssue, e);
+                            var severity = getHighlightSeverity(report, recommendation, hardenedRecommendation, hasIssue, e);
                             if (e != null) {
                                 var builder = holder
                                         .newAnnotation(severity, message)
                                         .tooltip(tooltip)
-                                        .range(e)
-                                        .withFix(new ImageReportIntentionAction())
-                                        .withFix(new UBIIntentionAction());
+                                        .range(e);
+                                if (severity == HighlightSeverity.INFORMATION) {
+                                    var attrs = new TextAttributes();
+                                    attrs.setEffectType(EffectType.WAVE_UNDERSCORE);
+                                    attrs.setEffectColor(JBColor.BLUE);
+                                    builder = builder.enforcedTextAttributes(attrs);
+                                }
+                                builder = builder.withFix(new ImageReportIntentionAction());
+                                builder = builder.withFix(new UBIIntentionAction());
+                                if (hardenedRecommendation != null) {
+                                    builder = builder.withFix(new HardenedImageIntentionAction());
+                                }
                                 builder.create();
                             }
                         });

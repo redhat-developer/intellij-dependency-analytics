@@ -76,6 +76,8 @@ public final class ApiSettingsState implements PersistentStateComponent<ApiSetti
 
     public boolean licenseCheckEnabled = true;
 
+    public boolean recommendationsEnabled = true;
+
     public static ApiSettingsState getInstance() {
         ApiSettingsState state = ApplicationManager.getApplication().getService(ApiSettingsState.class);
         if (state.rhdaToken == null || state.rhdaToken.isBlank()) {

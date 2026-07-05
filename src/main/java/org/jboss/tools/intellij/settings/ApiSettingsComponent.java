@@ -94,6 +94,8 @@ public class ApiSettingsComponent {
             + "<br>Leave empty to use temporary files only.</html>";
     private final static String licenseCheckEnabledLabel = "<html>Component Analysis > License Check"
             + "<br>Enables license compatibility checking and notifications for incompatible dependencies.</html>";
+    private final static String recommendationsEnabledLabel = "<html>Component Analysis > Recommendations"
+            + "<br>Enables package version and image recommendations from Red Hat.</html>";
 
     private final JPanel mainPanel;
 
@@ -131,6 +133,7 @@ public class ApiSettingsComponent {
     private final JBScrollPane manifestExclusionPatternsScrollPane;
     private final TextFieldWithBrowseButton reportFilePathText;
     private final JBCheckBox licenseCheckEnabledCheck;
+    private final JBCheckBox recommendationsEnabledCheck;
 
 
     public ApiSettingsComponent() {
@@ -279,6 +282,7 @@ public class ApiSettingsComponent {
         batchMetadataCheck = new JBCheckBox("Include metadata in batch results");
 
         licenseCheckEnabledCheck = new JBCheckBox("Enable license compatibility checking");
+        recommendationsEnabledCheck = new JBCheckBox("Enable package and image recommendations");
 
         manifestExclusionPatternsText = new JBTextArea();
         manifestExclusionPatternsText.setRows(5);
@@ -357,6 +361,8 @@ public class ApiSettingsComponent {
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(licenseCheckEnabledLabel), licenseCheckEnabledCheck, 1, true)
+                .addVerticalGap(10)
+                .addLabeledComponent(new JBLabel(recommendationsEnabledLabel), recommendationsEnabledCheck, 1, true)
                 .addSeparator(10)
                 .addVerticalGap(10)
                 .addLabeledComponent(new JBLabel(manifestExclusionPatternsLabel), manifestExclusionPatternsScrollPane, 1, true)
@@ -642,5 +648,13 @@ public class ApiSettingsComponent {
 
     public void setLicenseCheckEnabledCheck(boolean selected) {
         licenseCheckEnabledCheck.setSelected(selected);
+    }
+
+    public boolean getRecommendationsEnabledCheck() {
+        return recommendationsEnabledCheck.isSelected();
+    }
+
+    public void setRecommendationsEnabledCheck(boolean selected) {
+        recommendationsEnabledCheck.setSelected(selected);
     }
 }
