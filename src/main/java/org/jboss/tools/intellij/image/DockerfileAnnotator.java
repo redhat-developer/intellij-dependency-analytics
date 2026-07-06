@@ -118,7 +118,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
     }
 
     static String generateMessage(String image, AnalysisReport report, String recommendation,
-                                   String hardenedRecommendation) {
+                                   List<String> hardenedRecommendations) {
         var messageBuilder = new StringBuilder(image);
 
         Optional.ofNullable(report.getProviders())
@@ -160,17 +160,17 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                     .append("Replace your image with RedHat UBI: ")
                     .append(recommendation);
         }
-        if (hardenedRecommendation != null) {
+        if (hardenedRecommendations != null && !hardenedRecommendations.isEmpty()) {
             messageBuilder.append(System.lineSeparator())
-                    .append("A Red Hat Hardened Image is available: ")
-                    .append(hardenedRecommendation);
+                    .append("Red Hat Hardened Image available: ")
+                    .append(String.join(", ", hardenedRecommendations));
         }
 
         return messageBuilder.toString();
     }
 
     static String generateTooltip(String image, AnalysisReport report, String recommendation,
-                                    String hardenedRecommendation) {
+                                    List<String> hardenedRecommendations) {
         var tooltipBuilder = new StringBuilder("<html>").append("<p>").append(image).append("</p>");
 
         Optional.ofNullable(report.getProviders())
@@ -217,10 +217,10 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                     .append(recommendation)
                     .append("</p>");
         }
-        if (hardenedRecommendation != null) {
+        if (hardenedRecommendations != null && !hardenedRecommendations.isEmpty()) {
             tooltipBuilder.append("<p/>")
-                    .append("<p>A Red Hat Hardened Image is available: ")
-                    .append(hardenedRecommendation)
+                    .append("<p>Red Hat Hardened Image available: ")
+                    .append(String.join(", ", hardenedRecommendations))
                     .append("</p>");
         }
 
@@ -262,9 +262,13 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
         return findMatchingRecommendation(deps, imageRef, DependencyReport::getRef, DependencyReport::getRecommendation);
     }
 
-    /** Returns the hardened image recommendation (from provider-level recommendations), or null if none. */
-    static String getHardenedRecommendation(AnalysisReport report, ImageRef imageRef) {
-        var deps = Optional.ofNullable(report.getProviders())
+    /**
+     * Returns hardened image references from provider-level recommendations matching the given image.
+     * Each entry is a displayable image reference suitable for Dockerfile FROM line replacement.
+     * Supports the 1→N case where multiple hardened alternatives exist for a single image.
+     */
+    static List<String> getHardenedRecommendations(AnalysisReport report, ImageRef imageRef) {
+        return Optional.ofNullable(report.getProviders())
                 .stream()
                 .flatMap(provider -> provider.values().stream())
                 .filter(Objects::nonNull)
@@ -274,10 +278,22 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .filter(entry -> entry.getValue() != null)
                 .map(entry -> entry.getValue().getDependencies())
                 .filter(Objects::nonNull)
-                .flatMap(Collection::stream);
-        return findMatchingRecommendation(deps, imageRef,
-                io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRef,
-                io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRecommendation);
+                .flatMap(Collection::stream)
+                .filter(r -> r.getRef() != null)
+                .filter(r -> {
+                    try {
+                        return imageRef.getPackageURL().equals(r.getRef().purl());
+                    } catch (MalformedPackageURLException e) {
+                        LOG.warn("Skipping recommendation with malformed PURL", e);
+                        return false;
+                    }
+                })
+                .map(io.github.guacsec.trustifyda.api.v5.RecommendationReport::getRecommendation)
+                .filter(Objects::nonNull)
+                .map(DockerfileAnnotator::toImageName)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private static <T> String findMatchingRecommendation(Stream<T> items, ImageRef imageRef,
@@ -337,11 +353,12 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
 
     @NotNull
     private static HighlightSeverity getHighlightSeverity(AnalysisReport report, String recommendation,
-                                                           String hardenedRecommendation, boolean hasIssue,
+                                                           List<String> hardenedRecommendations, boolean hasIssue,
                                                            @NotNull PsiElement context) {
         // Recommendation-only (no vulnerabilities): use INFORMATION severity (blue)
         if (!hasIssue) {
-            boolean hasAnyRecommendation = recommendation != null || hardenedRecommendation != null;
+            boolean hasAnyRecommendation = recommendation != null
+                    || (hardenedRecommendations != null && !hardenedRecommendations.isEmpty());
             if (hasAnyRecommendation) {
                 return HighlightSeverity.INFORMATION;
             }
@@ -446,16 +463,17 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         boolean recommendationsEnabled = ApiSettingsState.getInstance().recommendationsEnabled;
                         var recommendation = recommendationsEnabled
                                 ? getRecommendation(report, value.getImageRef()) : null;
-                        var hardenedRecommendation = recommendationsEnabled
-                                ? getHardenedRecommendation(report, value.getImageRef()) : null;
+                        var hardenedRecommendations = recommendationsEnabled
+                                ? getHardenedRecommendations(report, value.getImageRef()) : List.<String>of();
 
                         var message = generateMessage(key.getImageName(), report,
-                                recommendation, hardenedRecommendation);
+                                recommendation, hardenedRecommendations);
                         var tooltip = generateTooltip(key.getImageName(), report,
-                                recommendation, hardenedRecommendation);
+                                recommendation, hardenedRecommendations);
 
                         elements.forEach(e -> {
-                            var severity = getHighlightSeverity(report, recommendation, hardenedRecommendation, hasIssue, e);
+                            var severity = getHighlightSeverity(report, recommendation,
+                                    hardenedRecommendations, hasIssue, e);
                             if (e != null) {
                                 var builder = holder
                                         .newAnnotation(severity, message)
@@ -469,8 +487,9 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                                 }
                                 builder = builder.withFix(new ImageReportIntentionAction());
                                 builder = builder.withFix(new UBIIntentionAction());
-                                if (hardenedRecommendation != null) {
-                                    builder = builder.withFix(new HardenedImageIntentionAction());
+                                for (String hardenedImage : hardenedRecommendations) {
+                                    builder = builder.withFix(
+                                            new HardenedImageIntentionAction(hardenedImage));
                                 }
                                 builder.create();
                             }
