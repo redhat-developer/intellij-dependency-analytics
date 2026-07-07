@@ -24,6 +24,7 @@ import io.github.guacsec.trustifyda.api.v5.SourceSummary;
 import io.github.guacsec.trustifyda.image.ImageRef;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.TreeMap;
 
 import static org.junit.Assert.assertEquals;
@@ -47,7 +48,7 @@ public class DockerfileAnnotatorRecommendationTest {
     @Test
     public void testGenerateMessageWithUbiRecommendation() {
         AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, "ubi9/ubi", null);
+        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, "ubi9/ubi", List.of());
 
         assertTrue("Should contain UBI recommendation",
                 message.contains("Replace your image with RedHat UBI: ubi9/ubi"));
@@ -58,10 +59,10 @@ public class DockerfileAnnotatorRecommendationTest {
     @Test
     public void testGenerateMessageWithHardenedRecommendation() {
         AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, null, "hardened-nginx");
+        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, null, List.of("hardened-nginx"));
 
         assertTrue("Should contain hardened recommendation",
-                message.contains("A Red Hat Hardened Image is available: hardened-nginx"));
+                message.contains("Red Hat Hardened Image available: hardened-nginx"));
         assertFalse("Should not contain UBI recommendation",
                 message.contains("Replace your image with RedHat UBI"));
     }
@@ -69,18 +70,18 @@ public class DockerfileAnnotatorRecommendationTest {
     @Test
     public void testGenerateMessageWithBothRecommendations() {
         AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, "ubi9/ubi", "hardened-nginx");
+        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, "ubi9/ubi", List.of("hardened-nginx"));
 
         assertTrue("Should contain UBI recommendation",
                 message.contains("Replace your image with RedHat UBI: ubi9/ubi"));
         assertTrue("Should contain hardened recommendation",
-                message.contains("A Red Hat Hardened Image is available: hardened-nginx"));
+                message.contains("Red Hat Hardened Image available: hardened-nginx"));
     }
 
     @Test
     public void testGenerateMessageWithNoRecommendations() {
         AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, null, null);
+        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, null, List.of());
 
         assertEquals("Should only contain image name", "nginx:latest", message);
     }
@@ -90,27 +91,27 @@ public class DockerfileAnnotatorRecommendationTest {
     @Test
     public void testGenerateTooltipWithHardenedRecommendation() {
         AnalysisReport report = new AnalysisReport();
-        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, null, "hardened-nginx");
+        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, null, List.of("hardened-nginx"));
 
         assertTrue("Should contain hardened recommendation",
-                tooltip.contains("A Red Hat Hardened Image is available: hardened-nginx"));
+                tooltip.contains("Red Hat Hardened Image available: hardened-nginx"));
     }
 
     @Test
     public void testGenerateTooltipWithBothRecommendations() {
         AnalysisReport report = new AnalysisReport();
-        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, "ubi9/ubi", "hardened-nginx");
+        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, "ubi9/ubi", List.of("hardened-nginx"));
 
         assertTrue("Should contain UBI recommendation",
                 tooltip.contains("Replace your image with RedHat UBI: ubi9/ubi"));
         assertTrue("Should contain hardened recommendation",
-                tooltip.contains("A Red Hat Hardened Image is available: hardened-nginx"));
+                tooltip.contains("Red Hat Hardened Image available: hardened-nginx"));
     }
 
     @Test
     public void testGenerateTooltipWithNoRecommendations() {
         AnalysisReport report = new AnalysisReport();
-        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, null, null);
+        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, null, List.of());
 
         assertFalse("Should not contain UBI text", tooltip.contains("Replace your image"));
         assertFalse("Should not contain hardened text", tooltip.contains("Hardened Image"));
@@ -163,24 +164,24 @@ public class DockerfileAnnotatorRecommendationTest {
         assertNull("Should return null for null source value", recommendation);
     }
 
-    // ── getHardenedRecommendation tests (reads from provider-level recommendations) ──
+    // ── getHardenedRecommendations tests (reads from provider-level recommendations) ──
 
     @Test
-    public void testGetHardenedRecommendationFromProviderRecommendations() throws MalformedPackageURLException {
+    public void testGetHardenedRecommendationsFromProviderRecommendations() throws MalformedPackageURLException {
         PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
         ImageRef imageRef = new ImageRef(imagePurl);
 
         AnalysisReport report = buildReportWithHardenedRecommendation(imagePurl,
                 buildOciPurl("hardened-nginx", HARDENED_DIGEST, "registry.access.redhat.com/hardened/nginx"));
 
-        String recommendation = DockerfileAnnotator.getHardenedRecommendation(report, imageRef);
+        List<String> recommendations = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
 
-        assertNotNull("Hardened recommendation should be present", recommendation);
-        assertTrue("Should contain hardened path", recommendation.contains("hardened"));
+        assertFalse("Hardened recommendations should not be empty", recommendations.isEmpty());
+        assertTrue("Should contain hardened path", recommendations.get(0).contains("hardened"));
     }
 
     @Test
-    public void testGetHardenedRecommendationReturnsNullWhenOnlySourcesExist() throws MalformedPackageURLException {
+    public void testGetHardenedRecommendationsReturnsEmptyWhenOnlySourcesExist() throws MalformedPackageURLException {
         PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
         ImageRef imageRef = new ImageRef(imagePurl);
 
@@ -188,9 +189,9 @@ public class DockerfileAnnotatorRecommendationTest {
         AnalysisReport report = buildReportWithUbiSource(imagePurl,
                 buildOciPurl("ubi", UBI_DIGEST, "registry.access.redhat.com/ubi9/ubi"));
 
-        String recommendation = DockerfileAnnotator.getHardenedRecommendation(report, imageRef);
+        List<String> recommendations = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
 
-        assertNull("Hardened recommendation should be null when only sources exist", recommendation);
+        assertTrue("Hardened recommendations should be empty when only sources exist", recommendations.isEmpty());
     }
 
     @Test
@@ -222,25 +223,25 @@ public class DockerfileAnnotatorRecommendationTest {
         report.putProvidersItem("rhtpa", providerReport);
 
         String ubiRec = DockerfileAnnotator.getRecommendation(report, imageRef);
-        String hardenedRec = DockerfileAnnotator.getHardenedRecommendation(report, imageRef);
+        List<String> hardenedRecs = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
 
         assertNotNull("UBI recommendation should be present", ubiRec);
         assertTrue("Should contain ubi path", ubiRec.contains("ubi9/ubi"));
-        assertNotNull("Hardened recommendation should be present", hardenedRec);
-        assertTrue("Should contain hardened path", hardenedRec.contains("hardened"));
+        assertFalse("Hardened recommendations should not be empty", hardenedRecs.isEmpty());
+        assertTrue("Should contain hardened path", hardenedRecs.get(0).contains("hardened"));
     }
 
     @Test
-    public void testGetRecommendationsReturnNullForEmptyReport() throws MalformedPackageURLException {
+    public void testGetRecommendationsReturnEmptyForEmptyReport() throws MalformedPackageURLException {
         PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
         ImageRef imageRef = new ImageRef(imagePurl);
         AnalysisReport report = new AnalysisReport();
 
         String ubiRec = DockerfileAnnotator.getRecommendation(report, imageRef);
-        String hardenedRec = DockerfileAnnotator.getHardenedRecommendation(report, imageRef);
+        List<String> hardenedRecs = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
 
         assertNull("UBI recommendation should be null for empty report", ubiRec);
-        assertNull("Hardened recommendation should be null for empty report", hardenedRec);
+        assertTrue("Hardened recommendations should be empty for empty report", hardenedRecs.isEmpty());
     }
 
     // ── isReportAvailable tests ──────────────────────────────────────────────
@@ -301,7 +302,7 @@ public class DockerfileAnnotatorRecommendationTest {
     // ── Double-encoded PURL tests ─────────────────────────────────────────────
 
     @Test
-    public void testGetHardenedRecommendationWithDoubleEncodedPurl() throws MalformedPackageURLException {
+    public void testGetHardenedRecommendationsWithDoubleEncodedPurl() throws MalformedPackageURLException {
         PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
         ImageRef imageRef = new ImageRef(imagePurl);
 
@@ -312,10 +313,10 @@ public class DockerfileAnnotatorRecommendationTest {
 
         AnalysisReport report = buildReportWithHardenedRecommendation(imagePurl, hardenedPurl);
 
-        String recommendation = DockerfileAnnotator.getHardenedRecommendation(report, imageRef);
+        List<String> recommendations = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
 
-        assertNotNull("Should parse double-encoded PURL successfully", recommendation);
-        assertTrue("Should contain decoded path", recommendation.contains("quay.io/hummingbird/go"));
+        assertFalse("Should parse double-encoded PURL successfully", recommendations.isEmpty());
+        assertTrue("Should contain decoded path", recommendations.get(0).contains("quay.io/hummingbird/go"));
     }
 
     // ── Helper methods ───────────────────────────────────────────────────────

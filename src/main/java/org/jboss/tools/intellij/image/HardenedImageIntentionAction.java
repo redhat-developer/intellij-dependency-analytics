@@ -14,24 +14,34 @@ package org.jboss.tools.intellij.image;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
-import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
-import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
+import org.jboss.tools.intellij.image.build.filetype.DockerfileFileType;
+import org.jboss.tools.intellij.image.build.psi.DockerfileFromInstruction;
+import org.jboss.tools.intellij.image.build.psi.DockerfileImageName;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
-
-/** Intention action that directs users to the Red Hat Hardened Container Images catalog. */
+/**
+ * Intention action that replaces a Dockerfile FROM line's image reference
+ * with a recommended Red Hat Hardened Image.
+ */
 public class HardenedImageIntentionAction implements IntentionAction {
 
-    public static final String HARDENED_IMAGE_LINK = "https://catalog.redhat.com/software/containers/search?gs&q=hardened";
+    private final String imageReference;
+
+    public HardenedImageIntentionAction(String imageReference) {
+        this.imageReference = imageReference;
+    }
 
     @Override
     public @IntentionName @NotNull String getText() {
-        return "Switch to a Red Hat Hardened Image for enhanced security";
+        return "Replace with Red Hat Hardened Image: " + imageReference;
     }
 
     @Override
@@ -46,11 +56,22 @@ public class HardenedImageIntentionAction implements IntentionAction {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile) throws IncorrectOperationException {
-        BrowserUtil.browse(URI.create(HARDENED_IMAGE_LINK));
+        int offset = editor.getCaretModel().getOffset();
+        PsiElement element = psiFile.findElementAt(offset);
+        DockerfileFromInstruction fromInstruction =
+                PsiTreeUtil.getParentOfType(element, DockerfileFromInstruction.class, false);
+        if (fromInstruction != null) {
+            DockerfileImageName imageName = fromInstruction.getImageName();
+            if (imageName != null) {
+                Document document = editor.getDocument();
+                TextRange range = imageName.getTextRange();
+                document.replaceString(range.getStartOffset(), range.getEndOffset(), imageReference);
+            }
+        }
     }
 
     @Override
     public boolean startInWriteAction() {
-        return false;
+        return true;
     }
 }
