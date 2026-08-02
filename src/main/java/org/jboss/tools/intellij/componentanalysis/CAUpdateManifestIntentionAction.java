@@ -37,6 +37,21 @@ public abstract class CAUpdateManifestIntentionAction implements IntentionAction
         return getRepositoryUrlFromPurl(dependency);
     }
 
+    /** Checks if a repository URL belongs to a Red Hat Lightwell repository. */
+    protected static boolean isRhlwRepository(String repositoryUrl) {
+        return repositoryUrl != null && repositoryUrl.contains("rhlw");
+    }
+
+    /** Returns the repository display name based on the URL. */
+    protected static String getRepositoryDisplayName(String repositoryUrl) {
+        return isRhlwRepository(repositoryUrl) ? "Red Hat Lightwell Maven Repository" : "Red Hat GA Maven Repository";
+    }
+
+    /** Returns the repository ID based on the URL. */
+    protected static String getRepositoryId(String repositoryUrl) {
+        return isRhlwRepository(repositoryUrl) ? "rhlw" : "redhat-ga";
+    }
+
     /** Extracts the repository URL from a provider-level recommendation report. */
     protected static String getRepositoryUrl(RecommendationReport recReport) {
         if (recReport != null && recReport.getRecommendation() != null
@@ -53,10 +68,19 @@ public abstract class CAUpdateManifestIntentionAction implements IntentionAction
         {
             packageRef.set(dependency.getRecommendation());
         }
-        else {
-            dependency.getIssues().stream().filter(issue -> Objects.nonNull(issue.getRemediation().getTrustedContent())).findFirst().ifPresent( value -> packageRef.set(value.getRemediation().getTrustedContent().getRef()));
+        else if (dependency.getIssues() != null) {
+            dependency.getIssues().stream()
+                    .filter(issue -> issue.getRemediation() != null
+                            && issue.getRemediation().getTrustedContent() != null
+                            && issue.getRemediation().getTrustedContent().getRef() != null)
+                    .findFirst()
+                    .ifPresent(value -> packageRef.set(value.getRemediation().getTrustedContent().getRef()));
         }
-        return packageRef.get().purl().getQualifiers().get("repository_url");
+        PackageRef ref = packageRef.get();
+        if (ref == null || ref.purl() == null || ref.purl().getQualifiers() == null) {
+            return null;
+        }
+        return ref.purl().getQualifiers().get("repository_url");
     }
 
     protected CAUpdateManifestIntentionAction(PsiElement element, DependencyReport dependency) {

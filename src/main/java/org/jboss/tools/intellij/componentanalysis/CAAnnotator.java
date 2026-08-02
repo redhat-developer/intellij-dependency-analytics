@@ -30,9 +30,12 @@ import com.intellij.profile.codeInspection.InspectionProjectProfileManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.serviceContainer.AlreadyDisposedException;
+import io.github.guacsec.trustifyda.api.v5.AdvisoryRemediation;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.Issue;
 import io.github.guacsec.trustifyda.api.v5.LicenseIdentifier;
 import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
+import io.github.guacsec.trustifyda.api.v5.Severity;
 import io.github.guacsec.trustifyda.license.LicenseCheck.IncompatibleDependency;
 import io.github.guacsec.trustifyda.license.LicenseCheck.LicenseSummary;
 import io.github.guacsec.trustifyda.license.LicenseCheck.ProjectLicenseSummary;
@@ -42,8 +45,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -173,43 +178,52 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                     Map<VulnerabilitySource, DependencyReport> quickfixes = new HashMap<>();
 
                     if (hasReports) {
-                        reports.forEach((source, report) -> {
-                            if (report.getIssues() != null && !report.getIssues().isEmpty()) {
-                                messageBuilder.append(System.lineSeparator());
-                                tooltipBuilder.append("<p/>");
+                        // Sort reports so Red Hat / RHLW sources appear first
+                        List<Map.Entry<VulnerabilitySource, DependencyReport>> sortedReports = new ArrayList<>(reports.entrySet());
+                        sortedReports.sort(Comparator.comparingInt(e ->
+                                CAIntentionAction.isRedHatSource(e.getKey().getSource()) ? 0 : 1));
 
-                                if (source.getProvider().equals(source.getSource())) {
-                                    messageBuilder.append(source.getProvider())
-                                            .append(" vulnerability info: ");
-                                    tooltipBuilder.append("<p>")
-                                            .append(escapeHtml(source.getProvider()))
-                                            .append(" vulnerability info:</p>");
-                                } else {
-                                    messageBuilder.append(source.getSource())
-                                            .append(" (")
-                                            .append(source.getProvider())
-                                            .append(") vulnerability info: ");
-                                    tooltipBuilder.append("<p>")
-                                            .append(escapeHtml(source.getSource()))
-                                            .append(" (")
-                                            .append(escapeHtml(source.getProvider()))
-                                            .append(") vulnerability info:</p>");
+                        boolean hasVulnerabilities = sortedReports.stream()
+                                .anyMatch(e -> e.getValue().getIssues() != null && !e.getValue().getIssues().isEmpty());
+
+                        if (hasVulnerabilities) {
+                            messageBuilder.append(System.lineSeparator())
+                                    .append("Vulnerabilities: TOTAL (CRITICAL/HIGH/MEDIUM/LOW/UNKNOWN):");
+                            tooltipBuilder.append("<p/>")
+                                    .append("<p>Vulnerabilities: TOTAL (CRITICAL/HIGH/MEDIUM/LOW/UNKNOWN):</p>");
+                        }
+
+                        boolean hasFixOptions = false;
+
+                        for (Map.Entry<VulnerabilitySource, DependencyReport> entry : sortedReports) {
+                            VulnerabilitySource source = entry.getKey();
+                            DependencyReport report = entry.getValue();
+                            if (report.getIssues() != null && !report.getIssues().isEmpty()) {
+                                int total = report.getIssues().size();
+                                int critical = 0, high = 0, medium = 0, low = 0, unknown = 0;
+                                for (Issue issue : report.getIssues()) {
+                                    Severity sev = issue.getSeverity();
+                                    if (sev == null) { unknown++; continue; }
+                                    switch (sev) {
+                                        case CRITICAL: critical++; break;
+                                        case HIGH: high++; break;
+                                        case MEDIUM: medium++; break;
+                                        case LOW: low++; break;
+                                        default: unknown++; break;
+                                    }
                                 }
 
-                                int num = report.getIssues().size();
-                                messageBuilder.append("Known security vulnerabilities: ")
-                                        .append(num);
-                                tooltipBuilder.append("<p>Known security vulnerabilities: ")
-                                        .append(num)
+                                String sourceLabel = source.getProvider() + "(" + source.getSource() + ")";
+                                String counts = total + " (" + critical + "/" + high + "/" + medium + "/" + low + "/" + unknown + ")";
+
+                                messageBuilder.append(System.lineSeparator())
+                                        .append("- ").append(sourceLabel).append(": ").append(counts);
+                                tooltipBuilder.append("<p>- ")
+                                        .append(escapeHtml(sourceLabel)).append(": ").append(counts)
                                         .append("</p>");
 
-                                if (report.getHighestVulnerability() != null && report.getHighestVulnerability().getSeverity() != null) {
-                                    String severity = report.getHighestVulnerability().getSeverity().getValue();
-                                    messageBuilder.append(", Highest severity: ")
-                                            .append(severity);
-                                    tooltipBuilder.append("<p>Highest severity: ")
-                                            .append(escapeHtml(severity))
-                                            .append("</p>");
+                                if (!hasFixOptions && CAIntentionAction.isQuickFixAvailable(report)) {
+                                    hasFixOptions = true;
                                 }
                             }
 
@@ -220,7 +234,14 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                                 // Fallback: use DependencyReport.recommendation only when provider-level is absent
                                 quickfixes.put(source, report);
                             }
-                        });
+                        }
+
+                        if (hasFixOptions) {
+                            messageBuilder.append(System.lineSeparator()).append(System.lineSeparator())
+                                    .append("Fixes available. Select \"More actions\" to see the options");
+                            tooltipBuilder.append("<p/>")
+                                    .append("<p>Fixes available. Select &quot;More actions&quot; to see the options</p>");
+                        }
                     }
 
                     // Add provider-level recommendation info to annotation
@@ -283,6 +304,61 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
                                         }
                                     }
                                 });
+
+                                // Add advisory-based quickfixes sorted by Red Hat source first
+                                if (hasReports) {
+                                    Set<String> seenVersions = new HashSet<>();
+                                    // Exclude TC remediation versions from advisory options
+                                    quickfixes.values().stream()
+                                            .filter(r -> !CAIntentionAction.thereAreNoIssues(r))
+                                            .flatMap(r -> r.getIssues().stream())
+                                            .filter(issue -> issue.getRemediation() != null
+                                                    && issue.getRemediation().getTrustedContent() != null
+                                                    && issue.getRemediation().getTrustedContent().getRef() != null)
+                                            .forEach(issue -> {
+                                                String v = issue.getRemediation().getTrustedContent().getRef().version();
+                                                if (v != null) seenVersions.add(v);
+                                            });
+
+                                    List<Map.Entry<VulnerabilitySource, DependencyReport>> sortedForFixes = new ArrayList<>(reports.entrySet());
+                                    sortedForFixes.sort(Comparator.comparingInt(entry ->
+                                            CAIntentionAction.isRedHatSource(entry.getKey().getSource()) ? 0 : 1));
+
+                                    for (Map.Entry<VulnerabilitySource, DependencyReport> entry : sortedForFixes) {
+                                        VulnerabilitySource src = entry.getKey();
+                                        DependencyReport rpt = entry.getValue();
+                                        if (rpt.getIssues() == null) continue;
+
+                                        for (Issue issue : rpt.getIssues()) {
+                                            if (issue.getRemediation() == null) continue;
+
+                                            // Advisory-level fixedIn versions
+                                            if (issue.getRemediation().getAdvisories() != null) {
+                                                for (AdvisoryRemediation ar : issue.getRemediation().getAdvisories()) {
+                                                    if (ar.getFixedIn() != null && !ar.getFixedIn().trim().isEmpty()
+                                                            && seenVersions.add(ar.getFixedIn())) {
+                                                        String label = ar.getAdvisory() != null ? ar.getAdvisory().getId() : src.getSource();
+                                                        CAIntentionAction advisoryAction = this.createQuickFix(e, src, rpt);
+                                                        advisoryAction.setAdvisoryData(label, ar.getFixedIn());
+                                                        builder.withFix(advisoryAction);
+                                                    }
+                                                }
+                                            }
+
+                                            // Top-level fixedIn versions
+                                            if (issue.getRemediation().getFixedIn() != null) {
+                                                for (String fixedIn : issue.getRemediation().getFixedIn()) {
+                                                    if (fixedIn != null && !fixedIn.trim().isEmpty()
+                                                            && seenVersions.add(fixedIn)) {
+                                                        CAIntentionAction fixAction = this.createQuickFix(e, src, rpt);
+                                                        fixAction.setAdvisoryData(src.getSource(), fixedIn);
+                                                        builder.withFix(fixAction);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
 
                                 // Add provider-level recommendation quickfixes (one per recommendation source)
                                 if (hasRecommendations) {
