@@ -37,6 +37,8 @@ public abstract class CAIntentionAction implements IntentionAction {
     protected @SafeFieldForPreview DependencyReport report;
     protected @SafeFieldForPreview String recommendationSourceName;
     protected @SafeFieldForPreview RecommendationReport recommendationReport;
+    protected @SafeFieldForPreview String advisoryLabel;
+    protected @SafeFieldForPreview String advisoryFixedIn;
 
     protected CAIntentionAction(PsiElement element, VulnerabilitySource source, DependencyReport report) {
         this.element = element;
@@ -50,8 +52,17 @@ public abstract class CAIntentionAction implements IntentionAction {
         this.recommendationReport = recReport;
     }
 
+    /** Sets advisory-based fix data for vendor-specific quick-fixes. */
+    void setAdvisoryData(String label, String fixedInVersion) {
+        this.advisoryLabel = label;
+        this.advisoryFixedIn = fixedInVersion;
+    }
+
     @Override
     public @IntentionName @NotNull String getText() {
+        if (advisoryLabel != null && advisoryFixedIn != null) {
+            return "Switch to version " + advisoryFixedIn + " (" + advisoryLabel + ")";
+        }
         if (recommendationSourceName != null) {
             return getQuickFixTextForRecommendation(recommendationSourceName);
         }
@@ -66,7 +77,9 @@ public abstract class CAIntentionAction implements IntentionAction {
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile file) throws IncorrectOperationException {
         String recommendedVersion;
-        if (recommendationReport != null && recommendationReport.getRecommendation() != null) {
+        if (advisoryFixedIn != null) {
+            recommendedVersion = advisoryFixedIn;
+        } else if (recommendationReport != null && recommendationReport.getRecommendation() != null) {
             recommendedVersion = recommendationReport.getRecommendation().version();
         } else {
             recommendedVersion = getRecommendedVersion(this.report);
@@ -111,8 +124,13 @@ public abstract class CAIntentionAction implements IntentionAction {
     @Override
     public @Nullable FileModifier getFileModifierForPreview(@NotNull PsiFile target) {
         FileModifier modifier = this.createCAIntentionActionInCopy(PsiTreeUtil.findSameElementInCopy(this.element, target));
-        if (modifier instanceof CAIntentionAction copy && this.recommendationSourceName != null) {
-            copy.setRecommendationData(this.recommendationSourceName, this.recommendationReport);
+        if (modifier instanceof CAIntentionAction copy) {
+            if (this.recommendationSourceName != null) {
+                copy.setRecommendationData(this.recommendationSourceName, this.recommendationReport);
+            }
+            if (this.advisoryLabel != null) {
+                copy.setAdvisoryData(this.advisoryLabel, this.advisoryFixedIn);
+            }
         }
         return modifier;
     }
@@ -189,26 +207,36 @@ public abstract class CAIntentionAction implements IntentionAction {
     }
 
     static boolean isQuickFixAvailable(DependencyReport dependency) {
-        boolean result=false;
-        if(thereAreNoIssues(dependency))
-        {
-            if(thereIsRecommendation(dependency))
-            {
-                result = true;
-            }
+        if (thereAreNoIssues(dependency)) {
+            return thereIsRecommendation(dependency);
         }
-        else
-        {
-            if(thereIsTcRemediation(dependency))
-            {
-                result = true;
-            }
-        }
-     return result;
+        return thereIsTcRemediation(dependency) || hasAdvisoryFixes(dependency);
     }
 
     /** Checks if a provider-level recommendation report has an available quick-fix. */
     static boolean isQuickFixAvailable(RecommendationReport recReport) {
         return thereIsRecommendation(recReport);
+    }
+
+    /** Checks if a dependency has advisory-based fix versions. */
+    static boolean hasAdvisoryFixes(DependencyReport dependency) {
+        if (thereAreNoIssues(dependency)) return false;
+        return dependency.getIssues().stream()
+                .filter(issue -> issue.getRemediation() != null && issue.getRemediation().getAdvisories() != null)
+                .flatMap(issue -> issue.getRemediation().getAdvisories().stream())
+                .anyMatch(ar -> ar.getFixedIn() != null && !ar.getFixedIn().trim().isEmpty());
+    }
+
+    /** Checks whether the source identifier indicates a Red Hat or RHLW source. */
+    static boolean isRedHatSource(String sourceId) {
+        if (sourceId == null) return false;
+        String s = sourceId.toLowerCase();
+        return s.contains("redhat") || s.contains("rhlw");
+    }
+
+    /** Checks whether the source identifier indicates an RHLW (Red Hat Lightwell) source. */
+    static boolean isRhlwSource(String sourceId) {
+        if (sourceId == null) return false;
+        return sourceId.toLowerCase().contains("rhlw");
     }
 }

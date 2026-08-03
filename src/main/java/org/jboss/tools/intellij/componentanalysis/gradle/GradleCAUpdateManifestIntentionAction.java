@@ -19,7 +19,8 @@ import java.util.Arrays;
 public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestIntentionAction {
     @Override
     protected String getTextImpl() {
-        return "Add Redhat GA Maven Repository to your build.gradle";
+        String repoUrl = getRepositoryUrl(this.dependency);
+        return "Add " + getRepositoryDisplayName(repoUrl) + " to your build.gradle";
     }
 
     public GradleCAUpdateManifestIntentionAction(PsiElement element, DependencyReport report) {
@@ -63,8 +64,11 @@ public class GradleCAUpdateManifestIntentionAction extends CAUpdateManifestInten
         if (repositoriesFromBuildGradle == null) {
             return false;
         }
-        final String mavenRhGa = "https://maven.repository.redhat.com/ga/";
-        String mavenGaRepo = formatArtifactsRepository(mavenRhGa);
-        return !(repositoriesFromBuildGradle.getText().contains(mavenGaRepo) || repositoriesFromBuildGradle.getText().contains(mavenRhGa));
+        String repoUrl = getRepositoryUrl(this.dependency);
+        if (repoUrl == null) {
+            return false;
+        }
+        String mavenRepo = formatArtifactsRepository(repoUrl);
+        return !(repositoriesFromBuildGradle.getText().contains(mavenRepo) || repositoriesFromBuildGradle.getText().contains(repoUrl));
     }
 }

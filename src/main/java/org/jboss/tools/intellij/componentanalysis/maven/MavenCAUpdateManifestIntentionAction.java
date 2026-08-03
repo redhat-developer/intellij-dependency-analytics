@@ -18,7 +18,8 @@ import java.util.Optional;
 public final class MavenCAUpdateManifestIntentionAction extends CAUpdateManifestIntentionAction {
     @Override
     protected String getTextImpl() {
-        return "Add Redhat GA Maven Repository to your pom.xml";
+        String repoUrl = getRepositoryUrl(this.dependency);
+        return "Add " + getRepositoryDisplayName(repoUrl) + " to your pom.xml";
     }
 
     MavenCAUpdateManifestIntentionAction(PsiElement element, DependencyReport report) {
@@ -46,15 +47,19 @@ public final class MavenCAUpdateManifestIntentionAction extends CAUpdateManifest
         XmlTag repository = repositories.createChildTag("repository", repositories.getNamespace(), "", false);
         repository.setName("repository");
 
-        XmlTag id = repository.createChildTag("id", repository.getNamespace(), "redhat-ga", false);
-        XmlTag name = repository.createChildTag("name", repository.getNamespace(), "Redhat GA Maven Repository", false);
-        XmlTag url = repository.createChildTag("url", repository.getNamespace(), getRepositoryUrl(dependency), false);
+        String repoUrl = getRepositoryUrl(dependency);
+        String repoId = getRepositoryId(repoUrl);
+        String repoName = getRepositoryDisplayName(repoUrl);
+
+        XmlTag id = repository.createChildTag("id", repository.getNamespace(), repoId, false);
+        XmlTag name = repository.createChildTag("name", repository.getNamespace(), repoName, false);
+        XmlTag url = repository.createChildTag("url", repository.getNamespace(), repoUrl, false);
         id.setName("id");
         name.setName("name");
         url.setName("url");
-        id.getValue().setText("redhat-ga");
-        name.getValue().setText("Redhat GA Maven Repository");
-        url.getValue().setText(getRepositoryUrl(dependency));
+        id.getValue().setText(repoId);
+        name.getValue().setText(repoName);
+        url.getValue().setText(repoUrl);
         repository.addSubTag(id,false);
         repository.addSubTag(name,false);
         repository.addSubTag(url,false);
@@ -82,11 +87,12 @@ public final class MavenCAUpdateManifestIntentionAction extends CAUpdateManifest
         Optional<PsiElement> repoWrapper = Arrays.stream(rootPomElement.getChildren()).filter(psi -> psi instanceof XmlTag && ((XmlTag) psi).getName().equals("repositories")).findFirst();
         if (repoWrapper.isPresent()) {
              XmlTag repositories = (XmlTag) repoWrapper.get();
+            String targetRepoId = getRepositoryId(getRepositoryUrl(this.dependency));
             repositoryInPom = Arrays.stream(repositories.getChildren())
                     .flatMap(element -> Arrays.stream(element.getChildren()))
                     .filter(element -> element instanceof XmlTag && "id".equals(((XmlTag) element).getName()))
                     .flatMap(tagValue -> Arrays.stream(((XmlTag) tagValue).getValue().getChildren()))
-                    .anyMatch(tag -> tag instanceof XmlText && (((XmlText) tag).getValue().trim().equals("redhat-ga")));
+                    .anyMatch(tag -> tag instanceof XmlText && (((XmlText) tag).getValue().trim().equals(targetRepoId)));
 
         }
 
