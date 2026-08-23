@@ -215,7 +215,6 @@
         <br>After the analysis finishes, you can view any recommendations and remediation by clicking the <i>More
         actions...</i> menu from the highlighted image name.
         <br>Any recommendations for an alternative image does not replace the current image.
-        <br>By clicking <i>Switch to...</i>, you go to Red Hat's Ecosystem Catalog for the recommended image.
         <br>
         <br>You must have the <a href="https://github.com/anchore/syft#installation"
         rel="noopener noreferrer" target="_blank">syft</a> and <a href="https://www.redhat.com/en/topics/containers/what-is-skopeo"

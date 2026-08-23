@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Intention action that replaces a Dockerfile FROM line's image reference
- * with a recommended Red Hat Hardened Image.
+ * with a recommended image.
  */
 public class HardenedImageIntentionAction implements IntentionAction {
 
@@ -41,7 +41,7 @@ public class HardenedImageIntentionAction implements IntentionAction {
 
     @Override
     public @IntentionName @NotNull String getText() {
-        return "Replace with Red Hat Hardened Image: " + imageReference;
+        return "Switch to " + imageReference + " for enhanced security";
     }
 
     @Override

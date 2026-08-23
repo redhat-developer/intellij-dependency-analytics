@@ -49,7 +49,7 @@ public class HardenedImageIntentionActionTest {
     @Test
     public void testGetText_containsImageReference() {
         var action = new HardenedImageIntentionAction("quay.io/hardened/nginx");
-        assertEquals("Replace with Red Hat Hardened Image: quay.io/hardened/nginx", action.getText());
+        assertEquals("Switch to quay.io/hardened/nginx for enhanced security", action.getText());
     }
 
     /** Verifies that the family name matches the RHDA convention. */
@@ -263,23 +263,10 @@ public class HardenedImageIntentionActionTest {
     public void testGenerateMessage_withHardenedRecommendation() {
         AnalysisReport report = new AnalysisReport();
         String message = DockerfileAnnotator.generateMessage("nginx:latest", report,
-                null, List.of("quay.io/hardened/nginx"));
+                List.of("quay.io/hardened/nginx"));
 
-        assertTrue("Should contain hardened recommendation",
-                message.contains("Red Hat Hardened Image available: quay.io/hardened/nginx"));
-    }
-
-    /** Verifies message includes both UBI and hardened recommendation text. */
-    @Test
-    public void testGenerateMessage_withBothRecommendations() {
-        AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report,
-                "ubi9/ubi", List.of("quay.io/hardened/nginx"));
-
-        assertTrue("Should contain UBI recommendation",
-                message.contains("Replace your image with RedHat UBI: ubi9/ubi"));
-        assertTrue("Should contain hardened recommendation",
-                message.contains("Red Hat Hardened Image available: quay.io/hardened/nginx"));
+        assertTrue("Should contain recommendation",
+                message.contains("Recommended image: quay.io/hardened/nginx"));
     }
 
     /** Verifies message with multiple hardened recommendations lists them comma-separated. */
@@ -287,7 +274,7 @@ public class HardenedImageIntentionActionTest {
     public void testGenerateMessage_withMultipleHardenedRecommendations() {
         AnalysisReport report = new AnalysisReport();
         String message = DockerfileAnnotator.generateMessage("nginx:latest", report,
-                null, List.of("quay.io/hardened/nginx", "quay.io/hardened/nginx-alt"));
+                List.of("quay.io/hardened/nginx", "quay.io/hardened/nginx-alt"));
 
         assertTrue("Should contain both hardened recommendations",
                 message.contains("quay.io/hardened/nginx, quay.io/hardened/nginx-alt"));
@@ -298,7 +285,7 @@ public class HardenedImageIntentionActionTest {
     public void testGenerateMessage_withNoRecommendations() {
         AnalysisReport report = new AnalysisReport();
         String message = DockerfileAnnotator.generateMessage("nginx:latest", report,
-                null, List.of());
+                List.of());
 
         assertEquals("Should only contain image name", "nginx:latest", message);
     }
@@ -310,10 +297,10 @@ public class HardenedImageIntentionActionTest {
     public void testGenerateTooltip_withHardenedRecommendation() {
         AnalysisReport report = new AnalysisReport();
         String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report,
-                null, List.of("quay.io/hardened/nginx"));
+                List.of("quay.io/hardened/nginx"));
 
-        assertTrue("Should contain hardened recommendation",
-                tooltip.contains("Red Hat Hardened Image available: quay.io/hardened/nginx"));
+        assertTrue("Should contain recommendation",
+                tooltip.contains("Recommended image: quay.io/hardened/nginx"));
     }
 
     // ── Helper methods ──────────────────────────────────────────────────────

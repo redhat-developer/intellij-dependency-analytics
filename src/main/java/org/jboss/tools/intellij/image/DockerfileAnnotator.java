@@ -48,9 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.Info, Map<BaseImage, DockerfileAnnotator.Result>> {
 
@@ -117,7 +115,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .orElse(false);
     }
 
-    static String generateMessage(String image, AnalysisReport report, String recommendation,
+    static String generateMessage(String image, AnalysisReport report,
                                    List<String> hardenedRecommendations) {
         var messageBuilder = new StringBuilder(image);
 
@@ -155,21 +153,16 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                             }
                         }));
 
-        if (recommendation != null) {
-            messageBuilder.append(System.lineSeparator())
-                    .append("Replace your image with RedHat UBI: ")
-                    .append(recommendation);
-        }
         if (hardenedRecommendations != null && !hardenedRecommendations.isEmpty()) {
             messageBuilder.append(System.lineSeparator())
-                    .append("Red Hat Hardened Image available: ")
+                    .append("Recommended image: ")
                     .append(String.join(", ", hardenedRecommendations));
         }
 
         return messageBuilder.toString();
     }
 
-    static String generateTooltip(String image, AnalysisReport report, String recommendation,
+    static String generateTooltip(String image, AnalysisReport report,
                                     List<String> hardenedRecommendations) {
         var tooltipBuilder = new StringBuilder("<html>").append("<p>").append(image).append("</p>");
 
@@ -211,15 +204,9 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                             }
                         }));
 
-        if (recommendation != null) {
-            tooltipBuilder.append("<p/>")
-                    .append("<p>Replace your image with RedHat UBI: ")
-                    .append(recommendation)
-                    .append("</p>");
-        }
         if (hardenedRecommendations != null && !hardenedRecommendations.isEmpty()) {
             tooltipBuilder.append("<p/>")
-                    .append("<p>Red Hat Hardened Image available: ")
+                    .append("<p>Recommended image: ")
                     .append(String.join(", ", hardenedRecommendations))
                     .append("</p>");
         }
@@ -243,23 +230,6 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                         .filter(Objects::nonNull)
                         .anyMatch(i -> !i.isEmpty()))
                 .orElse(false);
-    }
-
-    /** Returns the UBI image recommendation (from source-level dependencies), or null if none. */
-    static String getRecommendation(AnalysisReport report, ImageRef imageRef) {
-        var deps = Optional.ofNullable(report.getProviders())
-                .stream()
-                .flatMap(provider -> provider.values().stream())
-                .filter(Objects::nonNull)
-                .map(ProviderReport::getSources)
-                .filter(Objects::nonNull)
-                .map(Map::values)
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .map(Source::getDependencies)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream);
-        return findMatchingRecommendation(deps, imageRef, DependencyReport::getRef, DependencyReport::getRecommendation);
     }
 
     /**
@@ -294,26 +264,6 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    private static <T> String findMatchingRecommendation(Stream<T> items, ImageRef imageRef,
-                                                          Function<T, PackageRef> refExtractor,
-                                                          Function<T, PackageRef> recommendationExtractor) {
-        return items
-                .filter(r -> refExtractor.apply(r) != null)
-                .filter(r -> {
-                    try {
-                        return imageRef.getPackageURL().equals(refExtractor.apply(r).purl());
-                    } catch (MalformedPackageURLException e) {
-                        LOG.warn("Skipping recommendation with malformed PURL", e);
-                        return false;
-                    }
-                })
-                .map(recommendationExtractor)
-                .filter(Objects::nonNull)
-                .findAny()
-                .map(DockerfileAnnotator::toImageName)
-                .orElse(null);
     }
 
     private static String toImageName(io.github.guacsec.trustifyda.api.PackageRef ref) {
@@ -352,13 +302,12 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
     }
 
     @NotNull
-    private static HighlightSeverity getHighlightSeverity(AnalysisReport report, String recommendation,
+    private static HighlightSeverity getHighlightSeverity(AnalysisReport report,
                                                            List<String> hardenedRecommendations, boolean hasIssue,
                                                            @NotNull PsiElement context) {
         // Recommendation-only (no vulnerabilities): use INFORMATION severity (blue)
         if (!hasIssue) {
-            boolean hasAnyRecommendation = recommendation != null
-                    || (hardenedRecommendations != null && !hardenedRecommendations.isEmpty());
+            boolean hasAnyRecommendation = hardenedRecommendations != null && !hardenedRecommendations.isEmpty();
             if (hasAnyRecommendation) {
                 return HighlightSeverity.INFORMATION;
             }
@@ -375,10 +324,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
             }
         }
 
-        // Fallback to original logic if inspection settings can't be determined
-        return hasIssue || recommendation == null ?
-                HighlightSeverity.ERROR :
-                HighlightSeverity.WEAK_WARNING;
+        return HighlightSeverity.ERROR;
     }
 
     @Override
@@ -461,18 +407,16 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                     if (isReportAvailable(report)) {
                         var hasIssue = hasIssue(report);
                         boolean recommendationsEnabled = ApiSettingsState.getInstance().recommendationsEnabled;
-                        var recommendation = recommendationsEnabled
-                                ? getRecommendation(report, value.getImageRef()) : null;
                         var hardenedRecommendations = recommendationsEnabled
                                 ? getHardenedRecommendations(report, value.getImageRef()) : List.<String>of();
 
                         var message = generateMessage(key.getImageName(), report,
-                                recommendation, hardenedRecommendations);
+                                hardenedRecommendations);
                         var tooltip = generateTooltip(key.getImageName(), report,
-                                recommendation, hardenedRecommendations);
+                                hardenedRecommendations);
 
                         elements.forEach(e -> {
-                            var severity = getHighlightSeverity(report, recommendation,
+                            var severity = getHighlightSeverity(report,
                                     hardenedRecommendations, hasIssue, e);
                             if (e != null) {
                                 var builder = holder
@@ -486,7 +430,6 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                                     builder = builder.enforcedTextAttributes(attrs);
                                 }
                                 builder = builder.withFix(new ImageReportIntentionAction());
-                                builder = builder.withFix(new UBIIntentionAction());
                                 for (String hardenedImage : hardenedRecommendations) {
                                     builder = builder.withFix(
                                             new HardenedImageIntentionAction(hardenedImage));

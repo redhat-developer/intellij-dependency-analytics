@@ -190,7 +190,6 @@ according to your preferences.
   After the analysis finishes, you can view any recommendations and remediation by clicking the _More actions..._ menu
   from the highlighted image name.
   Any recommendations for an alternative image does not replace the current image.
-  By clicking _Switch to..._, you go to Red Hat's Ecosystem Catalog for the recommended image.
 
   <br >You must have the [`syft`](https://github.com/anchore/syft#installation)
   and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to

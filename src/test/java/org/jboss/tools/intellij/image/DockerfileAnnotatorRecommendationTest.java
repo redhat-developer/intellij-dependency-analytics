@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for recommendation message and tooltip generation in DockerfileAnnotator,
- * covering UBI, hardened image, and disabled recommendation scenarios.
+ * covering hardened image recommendation and report availability scenarios.
  */
 public class DockerfileAnnotatorRecommendationTest {
 
@@ -46,42 +46,18 @@ public class DockerfileAnnotatorRecommendationTest {
     // ── generateMessage tests ─────────────────────────────────────────────────
 
     @Test
-    public void testGenerateMessageWithUbiRecommendation() {
-        AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, "ubi9/ubi", List.of());
-
-        assertTrue("Should contain UBI recommendation",
-                message.contains("Replace your image with RedHat UBI: ubi9/ubi"));
-        assertFalse("Should not contain hardened recommendation",
-                message.contains("Hardened Image"));
-    }
-
-    @Test
     public void testGenerateMessageWithHardenedRecommendation() {
         AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, null, List.of("hardened-nginx"));
+        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, List.of("hardened-nginx"));
 
-        assertTrue("Should contain hardened recommendation",
-                message.contains("Red Hat Hardened Image available: hardened-nginx"));
-        assertFalse("Should not contain UBI recommendation",
-                message.contains("Replace your image with RedHat UBI"));
-    }
-
-    @Test
-    public void testGenerateMessageWithBothRecommendations() {
-        AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, "ubi9/ubi", List.of("hardened-nginx"));
-
-        assertTrue("Should contain UBI recommendation",
-                message.contains("Replace your image with RedHat UBI: ubi9/ubi"));
-        assertTrue("Should contain hardened recommendation",
-                message.contains("Red Hat Hardened Image available: hardened-nginx"));
+        assertTrue("Should contain recommendation",
+                message.contains("Recommended image: hardened-nginx"));
     }
 
     @Test
     public void testGenerateMessageWithNoRecommendations() {
         AnalysisReport report = new AnalysisReport();
-        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, null, List.of());
+        String message = DockerfileAnnotator.generateMessage("nginx:latest", report, List.of());
 
         assertEquals("Should only contain image name", "nginx:latest", message);
     }
@@ -91,77 +67,19 @@ public class DockerfileAnnotatorRecommendationTest {
     @Test
     public void testGenerateTooltipWithHardenedRecommendation() {
         AnalysisReport report = new AnalysisReport();
-        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, null, List.of("hardened-nginx"));
+        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, List.of("hardened-nginx"));
 
-        assertTrue("Should contain hardened recommendation",
-                tooltip.contains("Red Hat Hardened Image available: hardened-nginx"));
-    }
-
-    @Test
-    public void testGenerateTooltipWithBothRecommendations() {
-        AnalysisReport report = new AnalysisReport();
-        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, "ubi9/ubi", List.of("hardened-nginx"));
-
-        assertTrue("Should contain UBI recommendation",
-                tooltip.contains("Replace your image with RedHat UBI: ubi9/ubi"));
-        assertTrue("Should contain hardened recommendation",
-                tooltip.contains("Red Hat Hardened Image available: hardened-nginx"));
+        assertTrue("Should contain recommendation",
+                tooltip.contains("Recommended image: hardened-nginx"));
     }
 
     @Test
     public void testGenerateTooltipWithNoRecommendations() {
         AnalysisReport report = new AnalysisReport();
-        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, null, List.of());
+        String tooltip = DockerfileAnnotator.generateTooltip("nginx:latest", report, List.of());
 
-        assertFalse("Should not contain UBI text", tooltip.contains("Replace your image"));
-        assertFalse("Should not contain hardened text", tooltip.contains("Hardened Image"));
+        assertFalse("Should not contain recommendation text", tooltip.contains("Recommended image"));
         assertTrue("Should contain image name", tooltip.contains("nginx:latest"));
-    }
-
-    // ── getRecommendation tests (reads from source-level dependencies) ───────
-
-    @Test
-    public void testGetRecommendationFromSources() throws MalformedPackageURLException {
-        PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
-        ImageRef imageRef = new ImageRef(imagePurl);
-
-        AnalysisReport report = buildReportWithUbiSource(imagePurl,
-                buildOciPurl("ubi", UBI_DIGEST, "registry.access.redhat.com/ubi9/ubi"));
-
-        String recommendation = DockerfileAnnotator.getRecommendation(report, imageRef);
-
-        assertNotNull("UBI recommendation should be present", recommendation);
-        assertTrue("Should contain ubi path", recommendation.contains("ubi9/ubi"));
-    }
-
-    @Test
-    public void testGetRecommendationReturnsNullWhenNoSources() throws MalformedPackageURLException {
-        PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
-        ImageRef imageRef = new ImageRef(imagePurl);
-
-        // Report with only provider-level recommendations, no sources
-        AnalysisReport report = buildReportWithHardenedRecommendation(imagePurl,
-                buildOciPurl("hardened-nginx", HARDENED_DIGEST, "registry.access.redhat.com/hardened/nginx"));
-
-        String recommendation = DockerfileAnnotator.getRecommendation(report, imageRef);
-
-        assertNull("UBI recommendation should be null when no sources exist", recommendation);
-    }
-
-    @Test
-    public void testGetRecommendationHandlesNullSourceValue() throws MalformedPackageURLException {
-        PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
-        ImageRef imageRef = new ImageRef(imagePurl);
-
-        ProviderReport providerReport = new ProviderReport();
-        providerReport.putSourcesItem("ubi", null);
-
-        AnalysisReport report = new AnalysisReport();
-        report.putProvidersItem("rhtpa", providerReport);
-
-        String recommendation = DockerfileAnnotator.getRecommendation(report, imageRef);
-
-        assertNull("Should return null for null source value", recommendation);
     }
 
     // ── getHardenedRecommendations tests (reads from provider-level recommendations) ──
@@ -195,52 +113,13 @@ public class DockerfileAnnotatorRecommendationTest {
     }
 
     @Test
-    public void testGetBothRecommendationsFromMixedReport() throws MalformedPackageURLException {
-        PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
-        ImageRef imageRef = new ImageRef(imagePurl);
-
-        // Build a report with both source-level UBI and provider-level hardened
-        PackageURL ubiPurl = buildOciPurl("ubi", UBI_DIGEST, "registry.access.redhat.com/ubi9/ubi");
-        PackageURL hardenedPurl = buildOciPurl("hardened-nginx", HARDENED_DIGEST, "registry.access.redhat.com/hardened/nginx");
-
-        DependencyReport dep = new DependencyReport();
-        dep.setRef(new PackageRef(imagePurl));
-        dep.setRecommendation(new PackageRef(ubiPurl));
-        Source source = new Source();
-        source.addDependenciesItem(dep);
-
-        RecommendationReport recReport = new RecommendationReport();
-        recReport.setRef(new PackageRef(imagePurl));
-        recReport.setRecommendation(new PackageRef(hardenedPurl));
-        RecommendationSource recSource = new RecommendationSource();
-        recSource.addDependenciesItem(recReport);
-
-        ProviderReport providerReport = new ProviderReport();
-        providerReport.putSourcesItem("ubi", source);
-        providerReport.putRecommendationsItem("hardened", recSource);
-
-        AnalysisReport report = new AnalysisReport();
-        report.putProvidersItem("rhtpa", providerReport);
-
-        String ubiRec = DockerfileAnnotator.getRecommendation(report, imageRef);
-        List<String> hardenedRecs = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
-
-        assertNotNull("UBI recommendation should be present", ubiRec);
-        assertTrue("Should contain ubi path", ubiRec.contains("ubi9/ubi"));
-        assertFalse("Hardened recommendations should not be empty", hardenedRecs.isEmpty());
-        assertTrue("Should contain hardened path", hardenedRecs.get(0).contains("hardened"));
-    }
-
-    @Test
-    public void testGetRecommendationsReturnEmptyForEmptyReport() throws MalformedPackageURLException {
+    public void testGetHardenedRecommendationsReturnEmptyForEmptyReport() throws MalformedPackageURLException {
         PackageURL imagePurl = buildOciPurl("nginx", IMAGE_DIGEST, "docker.io/library/nginx");
         ImageRef imageRef = new ImageRef(imagePurl);
         AnalysisReport report = new AnalysisReport();
 
-        String ubiRec = DockerfileAnnotator.getRecommendation(report, imageRef);
         List<String> hardenedRecs = DockerfileAnnotator.getHardenedRecommendations(report, imageRef);
 
-        assertNull("UBI recommendation should be null for empty report", ubiRec);
         assertTrue("Hardened recommendations should be empty for empty report", hardenedRecs.isEmpty());
     }
 
