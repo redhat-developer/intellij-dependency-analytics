@@ -194,7 +194,7 @@ according to your preferences.
   <br >You must have the [`syft`](https://github.com/anchore/syft#installation)
   and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to
   use the Dockerfile scanning feature.
-  <br >Dockerfile scanning is not supported on Windows, because `skopeo` provides no native Windows binary.
+  <br >Dockerfile analysis is not supported on Windows, because `skopeo` provides no native Windows binary.
   You can specify a specific path to these binaries, and others by settings the following parameters as environment
   variables or system properties:
 
