@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.jboss.tools.intellij.analytics</id>
     <name>Red Hat Dependency Analytics</name>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
     <vendor email="developers@redhat.com" url="https://www.redhat.com">Red-Hat</vendor>
 
     <description><![CDATA[
@@ -411,6 +411,20 @@
   ]]></description>
 
     <change-notes><![CDATA[
+  <p><b>1.4.0</b></p>
+  <p>Added batch workspace analysis action for JS/TS monorepos and Cargo workspaces.</p>
+  <p>Added license compatibility checking and mismatch detection.</p>
+  <p>Added PyPI pyproject.toml support.</p>
+  <p>Added uv path settings for Python.</p>
+  <p>Added Generate SBOM action.</p>
+  <p>Added hardened image recommendations to Dockerfile analysis.</p>
+  <p>Added unknown severity handling in Dockerfile analysis.</p>
+  <p>Surfaced full remediation UX: fix versions, advisory info, and vendor ordering.</p>
+  <p>Read provider-level recommendations in analysis results.</p>
+  <p>Dockerfile image analysis is not supported on Windows.</p>
+  <p><b>1.3.1</b></p>
+  <p>Fixed compatibility with IntelliJ 2025.1: replaced internal MavenGeneralSettings.getLocalRepository() API.</p>
+  <p>Fixed compatibility with IntelliJ 2025.1: replaced internal IElementType.getDebugName() with direct type equality check.</p>
   <p><b>1.3.0</b></p>
   <p>Added Reports Save Directory configuration option to permanently save dependency analysis reports to a user-specified directory.</p>
   <p>Added support for Rust.</p>
