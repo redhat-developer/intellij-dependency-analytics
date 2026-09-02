@@ -252,7 +252,7 @@ public class DockerfileAnnotator extends ExternalAnnotator<DockerfileAnnotator.I
                 .filter(r -> r.getRef() != null)
                 .filter(r -> {
                     try {
-                        return imageRef.getPackageURL().equals(r.getRef().purl());
+                        return imageRef.getPackageURL().equals(new ImageRef(r.getRef().purl()).getPackageURL());
                     } catch (MalformedPackageURLException e) {
                         LOG.warn("Skipping recommendation with malformed PURL", e);
                         return false;
