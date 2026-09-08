@@ -214,7 +214,13 @@
         Dockerfile.
         <br>After the analysis finishes, you can view any recommendations and remediation by clicking the <i>More
         actions...</i> menu from the highlighted image name.
-        <br>Any recommendations for an alternative image does not replace the current image.
+        <br>When a Red Hat hardened image alternative is available for a base image, RHDA highlights the <code>FROM</code>
+        statement and recommends it in the hover tooltip. Images with known vulnerabilities are underlined as errors;
+        base images with no known vulnerabilities are highlighted as informational to promote a more secure,
+        long-term-supported alternative. Use the <i>Switch to &lt;image&gt; for enhanced security</i> quick fix
+        (lightbulb) to update the <code>FROM</code> line to the hardened equivalent in place. Recommendations are
+        controlled by the
+        <i>Enable package and image recommendations</i> setting (enabled by default).
         <br>
         <br>You must have the <a href="https://github.com/anchore/syft#installation"
         rel="noopener noreferrer" target="_blank">syft</a> and <a href="https://www.redhat.com/en/topics/containers/what-is-skopeo"

@@ -189,7 +189,12 @@ according to your preferences.
   <br >Upon opening a Dockerfile, a vulnerability scan starts analyzing the images within the Dockerfile.
   After the analysis finishes, you can view any recommendations and remediation by clicking the _More actions..._ menu
   from the highlighted image name.
-  Any recommendations for an alternative image does not replace the current image.
+
+  <br >When a Red Hat hardened image alternative is available for a base image, RHDA highlights the `FROM` statement and
+  recommends it in the hover tooltip. Images with known vulnerabilities are underlined as errors; base images with no
+  known vulnerabilities are highlighted as informational to promote a more secure, long-term-supported alternative.
+  Use the _Switch to &lt;image&gt; for enhanced security_ quick fix (lightbulb) to update the `FROM` line to the hardened
+  equivalent in place. Recommendations are controlled by the _Enable package and image recommendations_ setting (enabled by default).
 
   <br >You must have the [`syft`](https://github.com/anchore/syft#installation)
   and [`skopeo`](https://www.redhat.com/en/topics/containers/what-is-skopeo) binaries installed on your workstation to
