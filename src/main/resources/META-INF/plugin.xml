@@ -80,8 +80,6 @@
     <li>Click <b>Settings</b> from the menu, and click <b>Tools</b>.</li>
     <li>Click the <b>Red Hat Dependency Analytics</b>.</li>
 </ol>
-<img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/settings.png"
-     alt="Red Hat Dependency Analytics plugin settings">
 <p>
     <b>Configurable parameters</b>
 <ul>
@@ -205,8 +203,6 @@
         the security concern.
         <br>The summary has the full package name, version number, the amount of known security vulnerabilities, and the
         highest severity status of said vulnerabilities.
-        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/component-analysis.gif"
-             alt="Animated screenshot showing the inline reporting feature of Dependency Analytics">
     </li>
     <li>
         <b>Dockerfile scanning</b>
@@ -238,8 +234,6 @@
             <li><code>TRUSTIFY_DA_PODMAN_PATH</code> : Specify the absolute path of <code>podman</code> executable.</li>
             <li><code>TRUSTIFY_DA_IMAGE_PLATFORM</code> : Specify the platform used for multi-arch images.</li>
         </ul>
-        <img src="https://raw.githubusercontent.com/redhat-developer/intellij-dependency-analytics/main/src/main/resources/images/image-analysis.gif"
-             alt="Animated screenshot showing the inline reporting feature of Image Analysis">
     </li>
     <li>
         <b>Excluding dependencies with <code>trustify-da-ignore</code></b>
