@@ -494,12 +494,13 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="242.0"/>
+    <idea-version since-build="253.0"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.json</depends>
+    <depends optional="true" config-file="jcef-extensions.xml">com.intellij.modules.jcef</depends>
     <depends>com.intellij.java</depends>
     <depends>org.toml.lang</depends>
     <depends>org.jetbrains.idea.maven</depends>
@@ -507,9 +508,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <notificationGroup id="Red Hat Dependency Analytics" displayType="BALLOON"/>
-        <fileEditorProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorProvider"/>
-        <editorTabTitleProvider implementation="org.jboss.tools.intellij.report.AnalyticsReportEditorTabTitleProvider"
-                                order="first"/>
 
         <applicationConfigurable
                 parentId="tools"
