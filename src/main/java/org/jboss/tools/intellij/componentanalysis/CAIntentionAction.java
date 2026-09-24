@@ -213,6 +213,19 @@ public abstract class CAIntentionAction implements IntentionAction {
         return thereIsTcRemediation(dependency) || hasAdvisoryFixes(dependency);
     }
 
+    /**
+     * True only when the base vulnerability quick-fix (created without advisory or recommendation
+     * data) can actually produce a version. Advisory-only reports are excluded here because their
+     * fixes are added separately with explicit advisory data; admitting the base fix for them yields
+     * an empty menu option and a null recommended version (see {@link #getRecommendedVersion}).
+     */
+    static boolean hasBaseVulnerabilityFix(DependencyReport dependency) {
+        if (thereAreNoIssues(dependency)) {
+            return thereIsRecommendation(dependency);
+        }
+        return thereIsTcRemediation(dependency);
+    }
+
     /** Checks if a provider-level recommendation report has an available quick-fix. */
     static boolean isQuickFixAvailable(RecommendationReport recReport) {
         return thereIsRecommendation(recReport);
