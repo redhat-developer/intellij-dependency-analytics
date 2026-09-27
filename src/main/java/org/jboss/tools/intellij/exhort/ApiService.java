@@ -233,10 +233,10 @@ public final class ApiService {
 
         // Raise the Gradle subprocess timeout from the library default (120s) so large projects
         // finish instead of being killed mid-generation. Read once by GradleProvider at class load.
-        // Only set a default so an explicit -Dtrustify.gradle.timeout.seconds at launch still wins
+        // Only set a default so an explicit -DTRUSTIFY_DA_GRADLE_TIMEOUT at launch still wins
         // (useful for testing/verification).
-        if (System.getProperty("trustify.gradle.timeout.seconds") == null) {
-            System.setProperty("trustify.gradle.timeout.seconds", "600");
+        if (System.getProperty("TRUSTIFY_DA_GRADLE_TIMEOUT") == null) {
+            System.setProperty("TRUSTIFY_DA_GRADLE_TIMEOUT", "600");
         }
 
         if (settings.javaPath != null && !settings.javaPath.isBlank()) {
