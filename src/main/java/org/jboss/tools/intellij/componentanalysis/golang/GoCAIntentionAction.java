@@ -39,6 +39,13 @@ public final class GoCAIntentionAction extends CAIntentionAction {
         Document document = PsiDocumentManager.getInstance(project).getDocument(file);
         if (document == null) return;
 
+        // Go module versions in go.mod must be prefixed with "v" (e.g. v0.7.7). Recommended
+        // versions come from PackageURLs, which store Go versions without the prefix, so writing
+        // them verbatim yields an invalid go.mod that "go mod edit -json" rejects. See TC-6587.
+        if (version != null && !version.startsWith("v")) {
+            version = "v" + version;
+        }
+
         // Find the line containing our element
         int offset = element.getTextOffset();
         int lineNumber = document.getLineNumber(offset);
