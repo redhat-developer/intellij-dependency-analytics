@@ -231,6 +231,14 @@ public final class ApiService {
             System.clearProperty("TRUSTIFY_DA_GRADLE_PATH");
         }
 
+        // Raise the Gradle subprocess timeout from the library default (120s) so large projects
+        // finish instead of being killed mid-generation. Read once by GradleProvider at class load.
+        // Only set a default so an explicit -DTRUSTIFY_DA_GRADLE_TIMEOUT at launch still wins
+        // (useful for testing/verification).
+        if (System.getProperty("TRUSTIFY_DA_GRADLE_TIMEOUT") == null) {
+            System.setProperty("TRUSTIFY_DA_GRADLE_TIMEOUT", "600");
+        }
+
         if (settings.javaPath != null && !settings.javaPath.isBlank()) {
             System.setProperty("JAVA_HOME", settings.javaPath);
         } else {
