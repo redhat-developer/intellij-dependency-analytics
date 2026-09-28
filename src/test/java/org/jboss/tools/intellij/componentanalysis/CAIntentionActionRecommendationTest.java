@@ -12,9 +12,14 @@
 package org.jboss.tools.intellij.componentanalysis;
 
 import io.github.guacsec.trustifyda.api.PackageRef;
+import io.github.guacsec.trustifyda.api.v5.AdvisoryRemediation;
 import io.github.guacsec.trustifyda.api.v5.DependencyReport;
+import io.github.guacsec.trustifyda.api.v5.Issue;
 import io.github.guacsec.trustifyda.api.v5.RecommendationReport;
+import io.github.guacsec.trustifyda.api.v5.Remediation;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -125,5 +130,36 @@ public class CAIntentionActionRecommendationTest {
         RecommendationReport recReport = createProviderLevelRecommendation();
         assertNotNull("Recommendation should not be null", recReport.getRecommendation());
         assertEquals("Version should match", NEW_VERSION, recReport.getRecommendation().version());
+    }
+
+    // ── hasBaseVulnerabilityFix (TC-6474 regression) ───────────────────────────
+
+    /**
+     * A report whose issue has an advisory-based fix (fixedIn) but NO trusted
+     * content remediation and no recommendation. The base quick-fix cannot render text or produce a
+     * version for such reports, so it must not be admitted — otherwise the "More Actions" menu shows
+     * an empty option that throws a null @NotNull exception on click.
+     */
+    @Test
+    public void testAdvisoryOnlyReportHasNoBaseVulnerabilityFix() {
+        AdvisoryRemediation advisory = new AdvisoryRemediation();
+        advisory.setFixedIn("1.0.1");
+
+        Remediation remediation = new Remediation();
+        remediation.setAdvisories(List.of(advisory));
+        // no trusted content set → not a TC remediation
+
+        Issue issue = new Issue();
+        issue.setId("CVE-2024-58264");
+        issue.setRemediation(remediation);
+
+        DependencyReport report = new DependencyReport();
+        report.setRef(new PackageRef("pkg:cargo/serde-json-wasm@1.0.0"));
+        report.setIssues(List.of(issue));
+
+        assertTrue("Advisory fix should still count as an available quick-fix",
+                CAIntentionAction.isQuickFixAvailable(report));
+        assertFalse("Base vulnerability fix must NOT be offered for advisory-only reports",
+                CAIntentionAction.hasBaseVulnerabilityFix(report));
     }
 }

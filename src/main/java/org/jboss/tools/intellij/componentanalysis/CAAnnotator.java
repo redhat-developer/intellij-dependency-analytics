@@ -296,7 +296,7 @@ public abstract class CAAnnotator extends ExternalAnnotator<CAAnnotator.Info, CA
 
                                 // Add vulnerability-based quickfixes (TC remediation or legacy recommendation fallback)
                                 quickfixes.forEach((source, report) -> {
-                                    if(CAIntentionAction.isQuickFixAvailable(report)) {
+                                    if(CAIntentionAction.hasBaseVulnerabilityFix(report)) {
                                         builder.withFix(this.createQuickFix(e, source, report));
                                         CAUpdateManifestIntentionAction patchManifest = this.patchManifest(file, report);
                                         if(Objects.nonNull(patchManifest)) {
