@@ -52,7 +52,7 @@ public class GradleCAAnnotator extends CAAnnotator {
                             !((Artifact)artifact).getComment().getText().contains(EXHORT_IGNORE))
                     .map(dep -> (Artifact)dep)
                     .forEach(  dep -> {
-                            Dependency dependency = new Dependency("maven", dep.getGroup().getText().replace("\"","") , dep.getArtifactId().getText(),dep.getVersion().getText());
+                            Dependency dependency = new Dependency("maven", dep.getGroup().getText().replace("\"", "").replace("'", ""), dep.getArtifactId().getText(), dep.getVersion().getText());
                             resultMap.computeIfAbsent(dependency, k -> new LinkedList<>()).add(dep);
                         }
                     );
