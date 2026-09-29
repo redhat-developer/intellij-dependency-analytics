@@ -64,13 +64,13 @@ public final class GradleKotlinCAAnnotator extends GradleCAAnnotator {
         if (args.size() == 1) {
             KtExpression arg = args.get(0).getArgumentExpression();
             if (arg instanceof KtStringTemplateExpression literal) {
-                // implementation("group:artifact:version")
+                // implementation("group:artifact:version") | implementation("group:artifact:version:classifier")
                 String coordinate = literalText(literal);
                 if (coordinate == null) {
                     return null;
                 }
                 String[] parts = coordinate.split(":", -1);
-                if (parts.length != 3 || parts[0].isBlank() || parts[1].isBlank() || parts[2].isBlank()) {
+                if (parts.length < 3 || parts[0].isBlank() || parts[1].isBlank() || parts[2].isBlank()) {
                     return null;
                 }
                 return new Parsed(new Dependency("maven", parts[0], parts[1], parts[2]), literal);
