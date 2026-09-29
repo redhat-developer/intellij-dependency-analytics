@@ -418,9 +418,11 @@
   <p>Added uv path settings for Python.</p>
   <p>Added Generate SBOM action.</p>
   <p>Added hardened image recommendations to Dockerfile analysis.</p>
+  <p>Removed UBI branding and deprecated source-level image recommendations.</p>
   <p>Added unknown severity handling in Dockerfile analysis.</p>
   <p>Surfaced full remediation UX: fix versions, advisory info, and vendor ordering.</p>
   <p>Read provider-level recommendations in analysis results.</p>
+  <p>Fixed a data inconsistency in Python analysis where the Java client did not honour the TRUSTIFY_DA_PYTHON_INSTALL_BEST_EFFORTS environment variable.</p>
   <p>Dockerfile image analysis is not supported on Windows.</p>
   <p><b>1.3.1</b></p>
   <p>Fixed compatibility with IntelliJ 2025.1: replaced internal MavenGeneralSettings.getLocalRepository() API.</p>
