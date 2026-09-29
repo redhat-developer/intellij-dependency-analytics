@@ -99,6 +99,27 @@ public class GradleKotlinCAAnnotatorTest extends BasePlatformTestCase {
         assertTrue(dependencies.containsKey(new Dependency("maven", "org.lwjgl", "lwjgl", "3.3.1")));
     }
 
+    public void testVersionCatalogSubTableSyntax() {
+        myFixture.addFileToProject("gradle/libs.versions.toml", """
+                [versions]
+                commonsText = "1.9"
+
+                [libraries.commons-text]
+                module = "org.apache.commons:commons-text"
+                version.ref = "commonsText"
+                """);
+        PsiFile file = myFixture.configureByText("build.gradle.kts", """
+                dependencies {
+                    implementation(libs.commons.text)
+                }
+                """);
+
+        var dependencies = new GradleKotlinCAAnnotator().getDependencies(file);
+
+        assertEquals(1, dependencies.size());
+        assertTrue(dependencies.containsKey(new Dependency("maven", "org.apache.commons", "commons-text", "1.9")));
+    }
+
     public void testVersionCatalogDependencies() {
         myFixture.addFileToProject("gradle/libs.versions.toml", """
                 [versions]

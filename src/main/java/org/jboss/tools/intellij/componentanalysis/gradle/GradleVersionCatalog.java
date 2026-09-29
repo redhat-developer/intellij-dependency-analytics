@@ -70,15 +70,40 @@ public final class GradleVersionCatalog {
 
         String wantedAlias = normalizeAlias(String.join(".", segments));
         TomlTable libraries = findTable(toml, "libraries");
-        if (libraries == null) {
-            return null;
+        if (libraries != null) {
+            for (TomlKeyValue kv : PsiTreeUtil.getChildrenOfTypeAsList(libraries, TomlKeyValue.class)) {
+                if (!wantedAlias.equals(normalizeAlias(unquote(kv.getKey().getText())))) {
+                    continue;
+                }
+                return parseLibrary(toml, kv.getValue());
+            }
         }
+        // Sub-table syntax: [libraries.commons-text] with module/version.ref as its own table body.
+        TomlTable subTable = findSubTable(toml, wantedAlias);
+        if (subTable != null) {
+            return parseKeyValues(toml, PsiTreeUtil.getChildrenOfTypeAsList(subTable, TomlKeyValue.class));
+        }
+        return null;
+    }
 
-        for (TomlKeyValue kv : PsiTreeUtil.getChildrenOfTypeAsList(libraries, TomlKeyValue.class)) {
-            if (!wantedAlias.equals(normalizeAlias(unquote(kv.getKey().getText())))) {
+    /** Finds a top-level {@code [libraries.<alias>]} table matching the wanted (normalized) alias. */
+    private static @Nullable TomlTable findSubTable(PsiFile toml, String wantedAlias) {
+        for (TomlTable table : PsiTreeUtil.getChildrenOfTypeAsList(toml, TomlTable.class)) {
+            TomlKey key = table.getHeader().getKey();
+            List<TomlKeySegment> segs = key == null ? List.of() : key.getSegments();
+            if (segs.size() < 2 || !"libraries".equals(segs.get(0).getName())) {
                 continue;
             }
-            return parseLibrary(toml, kv.getValue());
+            StringBuilder alias = new StringBuilder();
+            for (int i = 1; i < segs.size(); i++) {
+                if (i > 1) {
+                    alias.append('.');
+                }
+                alias.append(segs.get(i).getName());
+            }
+            if (wantedAlias.equals(normalizeAlias(unquote(alias.toString())))) {
+                return table;
+            }
         }
         return null;
     }
@@ -95,10 +120,14 @@ public final class GradleVersionCatalog {
         if (!(value instanceof TomlInlineTable table)) {
             return null;
         }
+        return parseKeyValues(toml, PsiTreeUtil.getChildrenOfTypeAsList(table, TomlKeyValue.class));
+    }
 
+    /** Parses module/group/name/version key-values shared by inline tables and [libraries.x] sub-tables. */
+    private static @Nullable Entry parseKeyValues(PsiFile toml, List<TomlKeyValue> keyValues) {
         String group = null, name = null, version = null;
         TomlValue versionElement = null;
-        for (TomlKeyValue kv : PsiTreeUtil.getChildrenOfTypeAsList(table, TomlKeyValue.class)) {
+        for (TomlKeyValue kv : keyValues) {
             List<TomlKeySegment> segs = kv.getKey().getSegments();
             String key = segs.isEmpty() ? "" : segs.get(0).getName();
             TomlValue v = kv.getValue();
