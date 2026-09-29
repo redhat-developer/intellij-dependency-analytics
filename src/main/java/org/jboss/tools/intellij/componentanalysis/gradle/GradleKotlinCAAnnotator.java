@@ -174,7 +174,8 @@ public final class GradleKotlinCAAnnotator extends GradleCAAnnotator {
 
     private static boolean isDependencyConfiguration(String configuration) {
         return configuration.equals("implementation") || configuration.equals("api")
-                || configuration.endsWith("Implementation") || configuration.endsWith("Only");
+                || configuration.endsWith("Implementation") || configuration.endsWith("Only")
+                || configuration.endsWith("Api");
     }
 
     private record Parsed(Dependency dependency, PsiElement anchor) {}

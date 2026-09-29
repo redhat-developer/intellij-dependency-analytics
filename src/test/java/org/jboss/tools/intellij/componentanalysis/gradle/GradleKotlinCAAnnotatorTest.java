@@ -73,6 +73,19 @@ public class GradleKotlinCAAnnotatorTest extends BasePlatformTestCase {
         assertTrue(myFixture.getEditor().getDocument().getText().contains("version = \"1.10.0\""));
     }
 
+    public void testCompileOnlyApiIsScanned() {
+        PsiFile file = myFixture.configureByText("build.gradle.kts", """
+                dependencies {
+                    compileOnlyApi("org.apache.commons:commons-text:1.9")
+                }
+                """);
+
+        var dependencies = new GradleKotlinCAAnnotator().getDependencies(file);
+
+        assertEquals(1, dependencies.size());
+        assertTrue(dependencies.containsKey(new Dependency("maven", "org.apache.commons", "commons-text", "1.9")));
+    }
+
     public void testVersionCatalogDependencies() {
         myFixture.addFileToProject("gradle/libs.versions.toml", """
                 [versions]
